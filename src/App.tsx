@@ -420,10 +420,11 @@ const FlavorPropSVG = React.memo(({ flavor = 'periperi' }: any) => {
 // ============================================================================
 // CUSTOM SVG: REALISTIC 3D ROASTED SPICED MAKHANA PUFF (SUPPORTS FLAVOR COATING)
 // ============================================================================
-const RealisticMakhanaSVG = React.memo(({ variant = 0, spiceColor = '#9E1B12', idSuffix = '0', glowColor = null }: any) => {
-  const gradId = `makhana-grad-${idSuffix}-${variant}`;
-  const lobeGradId = `makhana-lobe-${idSuffix}-${variant}`;
-  const craterGradId = `makhana-crater-${idSuffix}-${variant}`;
+const RealisticMakhanaSVG = React.memo(({ variant = 0, spiceColor = '#9E1B12', idSuffix = '', glowColor = null }: any) => {
+  const v = variant % 3;
+  const gradId = idSuffix ? `makhana-grad-${idSuffix}-${v}` : `makhana-grad-${v}${glowColor ? '-gold' : ''}`;
+  const lobeGradId = idSuffix ? `makhana-lobe-${idSuffix}` : 'makhana-lobe-shared';
+  const craterGradId = idSuffix ? `makhana-crater-${idSuffix}` : 'makhana-crater-shared';
 
   const paths = [
     "M 50,6 C 64,4 78,10 86,21 C 95,30 97,46 94,60 C 92,75 82,88 68,93 C 55,97 39,96 26,90 C 13,83 5,70 5,54 C 4,38 11,23 23,14 C 32,7 41,7 50,6 Z",
@@ -1591,7 +1592,6 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(1);
   const [lives, setLives] = useState(3);
-  const [foxX, setFoxX] = useState(50);
   const [foxMood, setFoxMood] = useState('idle');
   const [targetFlavorIdx, setTargetFlavorIdx] = useState(0);
   const [orderProgress, setOrderProgress] = useState(0); // 0..3 matching flavor catches
@@ -1599,6 +1599,8 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
   const [popups, setPopups] = useState([]);
 
   const arenaRef = useRef(null);
+  const foxRef = useRef(null);
+  const itemElementsRef = useRef(new Map());
   const stRef = useRef({
     foxX: 50,
     score: 0,
@@ -1630,6 +1632,7 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
       items: [],
       keys: { left: false, right: false },
     };
+    if (foxRef.current) foxRef.current.style.left = '50%';
     setScore(0);
     setCombo(1);
     setLives(3);
@@ -1664,7 +1667,9 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const pct = Math.max(10, Math.min(90, ((clientX - rect.left) / rect.width) * 100));
     stRef.current.foxX = pct;
-    setFoxX(pct);
+    if (foxRef.current) {
+      foxRef.current.style.left = `${pct}%`;
+    }
   };
 
   const smashBomb = (e, item) => {
@@ -1690,10 +1695,13 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
       const st = stRef.current;
+      let itemsChanged = false;
 
       if (st.keys.left) st.foxX = Math.max(10, st.foxX - 65 * dt);
       if (st.keys.right) st.foxX = Math.min(90, st.foxX + 65 * dt);
-      setFoxX(st.foxX);
+      if (foxRef.current && (st.keys.left || st.keys.right)) {
+        foxRef.current.style.left = `${st.foxX}%`;
+      }
 
       spawnTimer += dt;
       if (spawnTimer >= 0.58) {
@@ -1725,15 +1733,26 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
           vRot: (Math.random() - 0.5) * 200,
           variant: Math.floor(Math.random() * 3),
         });
+        itemsChanged = true;
       }
 
       const next = [];
       for (const item of st.items) {
-        const ny = item.y + item.vy * dt;
-        const inY = ny >= 73 && ny <= 88;
+        item.y += item.vy * dt;
+        item.rot += item.vRot * dt;
+
+        // Hardware accelerated GPU transform - 0 layout reflows!
+        const el = itemElementsRef.current.get(item.id);
+        if (el) {
+          el.style.top = `${item.y}%`;
+          el.style.transform = `translate(-50%, -50%) rotate(${item.rot}deg)`;
+        }
+
+        const inY = item.y >= 73 && item.y <= 88;
         const inX = Math.abs(item.x - st.foxX) <= 10.5;
 
         if (inY && inX) {
+          itemsChanged = true;
           if (item.kind === 'bomb') {
             if (soundEnabled) playSoundFX('bomb');
             st.lives -= 1;
@@ -1787,13 +1806,18 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
           continue;
         }
 
-        if (ny < 104) {
-          next.push({ ...item, y: ny, rot: item.rot + item.vRot * dt });
+        if (item.y < 104) {
+          next.push(item);
+        } else {
+          itemsChanged = true;
         }
       }
 
       st.items = next;
-      setItems(next);
+      // Only re-render React when items list changes (spawn / despawn), not on every frame
+      if (itemsChanged) {
+        setItems([...next]);
+      }
       animId = requestAnimationFrame(loop);
     };
 
@@ -1857,6 +1881,10 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
         {items.map((item) => (
           <div
             key={item.id}
+            ref={(el) => {
+              if (el) itemElementsRef.current.set(item.id, el);
+              else itemElementsRef.current.delete(item.id);
+            }}
             onMouseDown={(e) => smashBomb(e, item)}
             onTouchStart={(e) => smashBomb(e, item)}
             style={{
@@ -1865,6 +1893,7 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
               width: item.kind === 'flavor' ? '62px' : '66px',
               height: item.kind === 'flavor' ? '62px' : '66px',
               transform: `translate(-50%, -50%) rotate(${item.rot}deg)`,
+              willChange: 'transform, top',
             }}
             className={`absolute ${item.kind === 'bomb' ? 'pointer-events-auto cursor-crosshair' : ''}`}
           >
@@ -1875,7 +1904,7 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
                 <FlavorPropSVG flavor={item.flavorId} />
               </div>
             ) : (
-              <RealisticMakhanaSVG variant={item.variant} spiceColor={targetFlavor.spiceColor} idSuffix={String(item.id)} />
+              <RealisticMakhanaSVG variant={item.variant} spiceColor={targetFlavor.spiceColor} />
             )}
           </div>
         ))}
@@ -1883,7 +1912,8 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
 
       {/* Player Lottie Fox Mascot + Striped Bucket at Bottom */}
       <div
-        style={{ left: `${foxX}%` }}
+        ref={foxRef}
+        style={{ left: `${stRef.current.foxX}%`, willChange: 'left' }}
         className="absolute bottom-14 sm:bottom-5 -translate-x-1/2 z-25 flex items-end pointer-events-none"
       >
         <div className="-mr-7 mb-2 w-20 h-20 sm:w-28 sm:h-28">
@@ -1961,14 +1991,19 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
   const [shotsLeft, setShotsLeft] = useState(10);
   const [targetFlavorIdx, setTargetFlavorIdx] = useState(0);
   const [foxMood, setFoxMood] = useState('focus');
-  const [isDragging, setIsDragging] = useState(false);
-  const [aimVec, setAimVec] = useState({ dx: 65, dy: -45 }); // Default aim vector
-  const [projectile, setProjectile] = useState(null);
-  const [tubY, setTubY] = useState(55);
+  const [hasProjectile, setHasProjectile] = useState(false);
   const [popups, setPopups] = useState([]);
 
   const arenaRef = useRef(null);
+  const tubRef = useRef(null);
+  const projectileRef = useRef(null);
+  const dotElementsRef = useRef([]);
   const dragStartRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  const aimVecRef = useRef({ dx: 65, dy: -45 });
+  const tubYRef = useRef(52);
+  const projStateRef = useRef(null);
+
   const targetFlavor = FLAVORS[targetFlavorIdx];
 
   // 3 Floating Flavor Clouds in the center of the arena (1 is always the Target Flavor!)
@@ -1984,7 +2019,20 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
     setTimeout(() => setPopups((p) => p.filter((item) => item.id !== id)), 800);
   }, []);
 
-  // Animate moving target tub & flying foxnut projectile
+  const updateTrajectoryDots = (dx, dy) => {
+    for (let i = 1; i <= 9; i++) {
+      const stepT = i * 0.11;
+      const x = 18 + dx * stepT;
+      const y = 66 + dy * stepT + 0.5 * 58 * stepT * stepT;
+      const el = dotElementsRef.current[i - 1];
+      if (el) {
+        el.style.left = `${x}%`;
+        el.style.top = `${y}%`;
+      }
+    }
+  };
+
+  // Animate moving target tub & flying foxnut projectile without React state thrashing
   useEffect(() => {
     let animId;
     let last = performance.now();
@@ -1996,30 +2044,39 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
       t += dt;
 
       const currentTubY = 52 + Math.sin(t * 1.8) * 24;
-      setTubY(currentTubY);
+      tubYRef.current = currentTubY;
+      if (tubRef.current) {
+        tubRef.current.style.top = `${currentTubY}%`;
+      }
 
-      setProjectile((prev) => {
-        if (!prev) return null;
-        const nx = prev.x + prev.vx * dt;
-        const ny = prev.y + prev.vy * dt;
-        const nvy = prev.vy + 58 * dt; // Gravity
-        let coatedFlavor = prev.coatedFlavor;
+      const p = projStateRef.current;
+      if (p) {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += 58 * dt; // Gravity
+        p.rot += 320 * dt;
 
-        // Check if projectile passes through any of the 3 Flavor Seasoning Clouds
+        if (projectileRef.current) {
+          projectileRef.current.style.left = `${p.x}%`;
+          projectileRef.current.style.top = `${p.y}%`;
+          projectileRef.current.style.transform = `translate(-50%, -50%) rotate(${p.rot}deg)`;
+        }
+
+        // Check flavor clouds
         for (const c of clouds) {
           const fl = FLAVORS[c.idx];
-          const dist = Math.hypot(nx - c.x, ny - c.y);
-          if (dist < 10 && coatedFlavor !== fl.id) {
-            coatedFlavor = fl.id;
+          const dist = Math.hypot(p.x - c.x, p.y - c.y);
+          if (dist < 10 && p.coatedFlavor !== fl.id) {
+            p.coatedFlavor = fl.id;
             if (soundEnabled) playSoundFX('pop');
             spawnPopup(c.x, c.y, `COATED IN ${fl.name.toUpperCase()}!`, fl.accent);
           }
         }
 
-        // Check if projectile lands inside the Moving Target Tub on the right (x: 82..92, y near currentTubY)
-        if (nx >= 80 && nx <= 93 && Math.abs(ny - currentTubY) <= 12) {
-          const isMatch = coatedFlavor === targetFlavor.id;
-          const pts = isMatch ? 150 : coatedFlavor ? 60 : 35;
+        // Check if projectile lands inside moving target tub
+        if (p.x >= 80 && p.x <= 93 && Math.abs(p.y - currentTubY) <= 12) {
+          const isMatch = p.coatedFlavor === targetFlavor.id;
+          const pts = isMatch ? 150 : p.coatedFlavor ? 60 : 35;
           setScore((s) => {
             const ns = s + pts;
             onScoreSave(ns);
@@ -2036,17 +2093,15 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
           if (isMatch) {
             setTargetFlavorIdx((i) => (i + 1) % FLAVORS.length);
           }
-          return null;
-        }
-
-        // Out of bounds
-        if (nx > 102 || ny > 104 || nx < -5) {
+          projStateRef.current = null;
+          setHasProjectile(false);
+        } else if (p.x > 102 || p.y > 104 || p.x < -5) {
+          // Out of bounds
           setFoxMood('idle');
-          return null;
+          projStateRef.current = null;
+          setHasProjectile(false);
         }
-
-        return { ...prev, x: nx, y: ny, vy: nvy, rot: prev.rot + 320 * dt, coatedFlavor };
-      });
+      }
 
       animId = requestAnimationFrame(loop);
     };
@@ -2056,16 +2111,16 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
   }, [targetFlavorIdx, targetFlavor, soundEnabled, spawnPopup, onScoreSave]);
 
   const handlePointerDown = (e) => {
-    if (projectile || shotsLeft <= 0) return;
+    if (projStateRef.current || shotsLeft <= 0) return;
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     dragStartRef.current = { x: clientX, y: clientY };
-    setIsDragging(true);
+    isDraggingRef.current = true;
     setFoxMood('focus');
   };
 
   const handlePointerMove = (e) => {
-    if (!isDragging || !dragStartRef.current) return;
+    if (!isDraggingRef.current || !dragStartRef.current) return;
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     const rawDx = dragStartRef.current.x - clientX;
@@ -2073,33 +2128,26 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
     // Clamp launch velocity
     const dx = Math.max(30, Math.min(115, rawDx * 0.45 + 60));
     const dy = Math.max(-85, Math.min(10, rawDy * 0.45 - 35));
-    setAimVec({ dx, dy });
+    aimVecRef.current = { dx, dy };
+    updateTrajectoryDots(dx, dy);
   };
 
   const launchFoxnut = () => {
-    if (projectile || shotsLeft <= 0) return;
-    setIsDragging(false);
+    if (projStateRef.current || shotsLeft <= 0) return;
+    isDraggingRef.current = false;
     setShotsLeft((s) => s - 1);
     if (soundEnabled) playSoundFX('slash');
-    setProjectile({
+    const { dx, dy } = aimVecRef.current;
+    projStateRef.current = {
       x: 18,
       y: 66,
-      vx: aimVec.dx,
-      vy: aimVec.dy,
+      vx: dx,
+      vy: dy,
       rot: 0,
       coatedFlavor: null,
-    });
+    };
+    setHasProjectile(true);
   };
-
-  // Compute trajectory preview dots
-  const trajectoryDots = [];
-  for (let i = 1; i <= 9; i++) {
-    const stepT = i * 0.11;
-    trajectoryDots.push({
-      x: 18 + aimVec.dx * stepT,
-      y: 66 + aimVec.dy * stepT + 0.5 * 58 * stepT * stepT,
-    });
-  }
 
   return (
     <div
@@ -2153,15 +2201,21 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
       </div>
 
       {/* Slingshot Aim Trajectory Dots */}
-      {!projectile &&
+      {!hasProjectile &&
         shotsLeft > 0 &&
-        trajectoryDots.map((pt, i) => (
-          <div
-            key={i}
-            style={{ left: `${pt.x}%`, top: `${pt.y}%` }}
-            className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FFE600] border-2 border-black pointer-events-none z-15"
-          />
-        ))}
+        [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => {
+          const stepT = i * 0.11;
+          const initialX = 18 + aimVecRef.current.dx * stepT;
+          const initialY = 66 + aimVecRef.current.dy * stepT + 0.5 * 58 * stepT * stepT;
+          return (
+            <div
+              key={i}
+              ref={(el) => (dotElementsRef.current[i - 1] = el)}
+              style={{ left: `${initialX}%`, top: `${initialY}%`, willChange: 'left, top' }}
+              className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FFE600] border-2 border-black pointer-events-none z-15"
+            />
+          );
+        })}
 
       {/* Left Side: Lottie Slingshot Fox Mascot & Slingshot Post */}
       <div className="absolute left-[10%] top-[62%] -translate-x-1/2 -translate-y-1/2 z-20 flex items-center pointer-events-none">
@@ -2169,9 +2223,9 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
           <FoxLottieMascot mood={foxMood} role="slingshot" className="w-full h-full" />
         </div>
         {/* Ready Foxnut in Slingshot */}
-        {!projectile && shotsLeft > 0 && (
+        {!hasProjectile && shotsLeft > 0 && (
           <div className="w-14 h-14 -ml-2 animate-pulse">
-            <RealisticMakhanaSVG variant={0} idSuffix="sling-ready" />
+            <RealisticMakhanaSVG variant={0} />
           </div>
         )}
       </div>
@@ -2207,31 +2261,32 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
       })}
 
       {/* Flying Foxnut Projectile */}
-      {projectile && (
+      {hasProjectile && (
         <div
+          ref={projectileRef}
           style={{
-            left: `${projectile.x}%`,
-            top: `${projectile.y}%`,
-            transform: `translate(-50%, -50%) rotate(${projectile.rot}deg)`,
+            left: '18%',
+            top: '66%',
+            willChange: 'transform, left, top',
           }}
           className="absolute w-16 h-16 z-25 pointer-events-none"
         >
           <RealisticMakhanaSVG
             variant={1}
             spiceColor={
-              projectile.coatedFlavor
-                ? FLAVORS.find((f) => f.id === projectile.coatedFlavor)?.color || '#9E1B12'
+              projStateRef.current?.coatedFlavor
+                ? FLAVORS.find((f) => f.id === projStateRef.current?.coatedFlavor)?.color || '#9E1B12'
                 : '#9E1B12'
             }
-            glowColor={projectile.coatedFlavor === targetFlavor.id ? 'gold' : null}
-            idSuffix="flying-sling"
+            glowColor={projStateRef.current?.coatedFlavor === targetFlavor.id ? 'gold' : null}
           />
         </div>
       )}
 
       {/* Right Side: Moving Target Tub */}
       <div
-        style={{ left: '86%', top: `${tubY}%` }}
+        ref={tubRef}
+        style={{ left: '86%', top: '52%', willChange: 'top' }}
         className="absolute -translate-x-1/2 -translate-y-1/2 w-[150px] h-[125px] z-20 pointer-events-none"
       >
         <div className="text-center mb-1">
@@ -2256,7 +2311,7 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
       </div>
 
       {/* Out of Shots Modal */}
-      {shotsLeft <= 0 && !projectile && (
+      {shotsLeft <= 0 && !hasProjectile && (
         <div className="absolute inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#FDF8E2] border-[5px] border-black rounded-3xl shadow-[8px_8px_0_#000] p-6 max-w-md w-full text-center">
             <div className="w-28 h-28 mx-auto mb-2">
@@ -2301,6 +2356,9 @@ function Game3FoxyFlavorChef({ soundEnabled, onScoreSave }: any) {
   const [beltItems, setBeltItems] = useState([]);
   const [popups, setPopups] = useState([]);
 
+  const beltItemsRef = useRef([]);
+  const beltElementsRef = useRef(new Map());
+
   const createNewRecipe = useCallback(() => {
     const fl = FLAVORS[Math.floor(Math.random() * FLAVORS.length)];
     return {
@@ -2336,6 +2394,7 @@ function Game3FoxyFlavorChef({ soundEnabled, onScoreSave }: any) {
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
       spawnAcc += dt;
+      let changed = false;
 
       if (spawnAcc >= 0.48) {
         spawnAcc = 0;
@@ -2354,26 +2413,37 @@ function Game3FoxyFlavorChef({ soundEnabled, onScoreSave }: any) {
               : FLAVORS[Math.floor(Math.random() * FLAVORS.length)].id;
         }
 
-        setBeltItems((prev) => [
-          ...prev,
-          {
-            id: Date.now() + Math.random(),
-            kind,
-            flavorId,
-            lane,
-            x: lane === 0 ? -6 : 106,
-            y: lane === 0 ? 38 : 56,
-            vx: lane === 0 ? 28 : -28,
-            variant: Math.floor(Math.random() * 3),
-          },
-        ]);
+        beltItemsRef.current.push({
+          id: Date.now() + Math.random(),
+          kind,
+          flavorId,
+          lane,
+          x: lane === 0 ? -6 : 106,
+          y: lane === 0 ? 38 : 56,
+          vx: lane === 0 ? 28 : -28,
+          variant: Math.floor(Math.random() * 3),
+        });
+        changed = true;
       }
 
-      setBeltItems((prev) =>
-        prev
-          .map((it) => ({ ...it, x: it.x + it.vx * dt }))
-          .filter((it) => it.x >= -10 && it.x <= 110)
-      );
+      const remaining = [];
+      for (const it of beltItemsRef.current) {
+        it.x += it.vx * dt;
+        const el = beltElementsRef.current.get(it.id);
+        if (el) {
+          el.style.left = `${it.x}%`;
+        }
+        if (it.x >= -10 && it.x <= 110) {
+          remaining.push(it);
+        } else {
+          changed = true;
+        }
+      }
+      beltItemsRef.current = remaining;
+
+      if (changed) {
+        setBeltItems([...remaining]);
+      }
 
       animId = requestAnimationFrame(loop);
     };
@@ -2384,7 +2454,8 @@ function Game3FoxyFlavorChef({ soundEnabled, onScoreSave }: any) {
 
   const handleSelectIngredient = (item) => {
     if (timeLeft <= 0) return;
-    setBeltItems((prev) => prev.filter((i) => i.id !== item.id));
+    beltItemsRef.current = beltItemsRef.current.filter((i) => i.id !== item.id);
+    setBeltItems([...beltItemsRef.current]);
 
     if (item.kind === 'bomb') {
       if (soundEnabled) playSoundFX('bomb');
@@ -2492,11 +2563,16 @@ function Game3FoxyFlavorChef({ soundEnabled, onScoreSave }: any) {
         {beltItems.map((item) => (
           <button
             key={item.id}
+            ref={(el) => {
+              if (el) beltElementsRef.current.set(item.id, el);
+              else beltElementsRef.current.delete(item.id);
+            }}
             onClick={() => handleSelectIngredient(item)}
             style={{
               left: `${item.x}%`,
               top: `${item.y}%`,
               transform: 'translate(-50%, -50%)',
+              willChange: 'left',
             }}
             className="absolute w-16 h-16 p-1.5 rounded-2xl bg-white/90 hover:bg-[#FFE600] border-[3px] border-black shadow-[3px_3px_0_#000] hover:scale-110 active:scale-95 transition-transform cursor-pointer"
           >
@@ -2505,7 +2581,7 @@ function Game3FoxyFlavorChef({ soundEnabled, onScoreSave }: any) {
             ) : item.kind === 'flavor' ? (
               <FlavorPropSVG flavor={item.flavorId} />
             ) : (
-              <RealisticMakhanaSVG variant={item.variant} idSuffix={String(item.id)} />
+              <RealisticMakhanaSVG variant={item.variant} />
             )}
           </button>
         ))}
@@ -2575,10 +2651,14 @@ function Game4FoxjaSpiceSlash({ soundEnabled, onScoreSave }: any) {
   const [foxMood, setFoxMood] = useState('focus');
   const [lastFlavorSliced, setLastFlavorSliced] = useState(FLAVORS[0]);
   const [targets, setTargets] = useState([]);
-  const [trail, setTrail] = useState([]);
   const [popups, setPopups] = useState([]);
 
   const arenaRef = useRef(null);
+  const trailCanvasRef = useRef(null);
+  const trailPointsRef = useRef([]);
+  const targetsRef = useRef([]);
+  const targetElementsRef = useRef(new Map());
+  const lastFlavorSlicedRef = useRef(FLAVORS[0]);
 
   const spawnPopup = useCallback((x, y, text, bg = POP_YELLOW) => {
     const id = Date.now() + Math.random();
@@ -2586,7 +2666,7 @@ function Game4FoxjaSpiceSlash({ soundEnabled, onScoreSave }: any) {
     setTimeout(() => setPopups((p) => p.filter((item) => item.id !== id)), 650);
   }, []);
 
-  // Toss items upward in parabolic arcs
+  // Toss items upward in parabolic arcs without per-frame React state thrashing
   useEffect(() => {
     if (lives <= 0) return;
     let animId;
@@ -2597,6 +2677,49 @@ function Game4FoxjaSpiceSlash({ soundEnabled, onScoreSave }: any) {
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
       spawnAcc += dt;
+      let changed = false;
+
+      // Render glowing ninja blade trail on GPU Canvas
+      const cvs = trailCanvasRef.current;
+      if (cvs) {
+        const ctx = cvs.getContext('2d');
+        if (ctx) {
+          if (cvs.width !== cvs.clientWidth || cvs.height !== cvs.clientHeight) {
+            cvs.width = cvs.clientWidth;
+            cvs.height = cvs.clientHeight;
+          }
+          ctx.clearRect(0, 0, cvs.width, cvs.height);
+          const pts = trailPointsRef.current.filter((p) => now - p.time < 220);
+          trailPointsRef.current = pts;
+          if (pts.length >= 2) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(pts[0].x, pts[0].y);
+            for (let i = 1; i < pts.length; i++) {
+              ctx.lineTo(pts[i].x, pts[i].y);
+            }
+            ctx.strokeStyle = lastFlavorSlicedRef.current.color;
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.shadowColor = '#FFE600';
+            ctx.shadowBlur = 12;
+            ctx.stroke();
+
+            // Inner white-hot neon blade core
+            ctx.beginPath();
+            ctx.moveTo(pts[0].x, pts[0].y);
+            for (let i = 1; i < pts.length; i++) {
+              ctx.lineTo(pts[i].x, pts[i].y);
+            }
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2.5;
+            ctx.shadowBlur = 0;
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+      }
 
       if (spawnAcc >= 0.55) {
         spawnAcc = 0;
@@ -2605,35 +2728,47 @@ function Game4FoxjaSpiceSlash({ soundEnabled, onScoreSave }: any) {
         const fl = FLAVORS[Math.floor(Math.random() * FLAVORS.length)];
         const startX = 18 + Math.random() * 64;
 
-        setTargets((prev) => [
-          ...prev,
-          {
-            id: Date.now() + Math.random(),
-            kind,
-            flavor: fl,
-            x: startX,
-            y: 96,
-            vx: (50 - startX) * 0.45 + (Math.random() - 0.5) * 18,
-            vy: -(68 + Math.random() * 22),
-            rot: Math.random() * 360,
-            vRot: (Math.random() - 0.5) * 260,
-            sliced: false,
-            variant: Math.floor(Math.random() * 3),
-          },
-        ]);
+        targetsRef.current.push({
+          id: Date.now() + Math.random(),
+          kind,
+          flavor: fl,
+          x: startX,
+          y: 96,
+          vx: (50 - startX) * 0.45 + (Math.random() - 0.5) * 18,
+          vy: -(68 + Math.random() * 22),
+          rot: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 260,
+          sliced: false,
+          variant: Math.floor(Math.random() * 3),
+        });
+        changed = true;
       }
 
-      setTargets((prev) =>
-        prev
-          .map((t) => ({
-            ...t,
-            x: t.x + t.vx * dt,
-            y: t.y + t.vy * dt,
-            vy: t.vy + 56 * dt,
-            rot: t.rot + t.vRot * dt,
-          }))
-          .filter((t) => t.y <= 105 && !t.sliced)
-      );
+      const remaining = [];
+      for (const t of targetsRef.current) {
+        t.x += t.vx * dt;
+        t.y += t.vy * dt;
+        t.vy += 56 * dt;
+        t.rot += t.vRot * dt;
+
+        const el = targetElementsRef.current.get(t.id);
+        if (el) {
+          el.style.left = `${t.x}%`;
+          el.style.top = `${t.y}%`;
+          el.style.transform = `translate(-50%, -50%) rotate(${t.rot}deg)`;
+        }
+
+        if (t.y <= 105 && !t.sliced) {
+          remaining.push(t);
+        } else {
+          changed = true;
+        }
+      }
+      targetsRef.current = remaining;
+
+      if (changed) {
+        setTargets([...remaining]);
+      }
 
       animId = requestAnimationFrame(loop);
     };
@@ -2645,50 +2780,55 @@ function Game4FoxjaSpiceSlash({ soundEnabled, onScoreSave }: any) {
   const handleSliceAt = (clientX, clientY) => {
     if (!arenaRef.current || lives <= 0) return;
     const rect = arenaRef.current.getBoundingClientRect();
-    const xPct = ((clientX - rect.left) / rect.width) * 100;
-    const yPct = ((clientY - rect.top) / rect.height) * 100;
+    const xPx = clientX - rect.left;
+    const yPx = clientY - rect.top;
+    const xPct = (xPx / rect.width) * 100;
+    const yPct = (yPx / rect.height) * 100;
 
-    // Add glowing blade trail point
-    const ptId = Date.now() + Math.random();
-    setTrail((prev) => [...prev.slice(-10), { id: ptId, x: xPct, y: yPct }]);
-    setTimeout(() => setTrail((prev) => prev.filter((p) => p.id !== ptId)), 220);
+    // Add glowing blade trail point for GPU Canvas
+    trailPointsRef.current.push({ x: xPx, y: yPx, time: performance.now() });
 
     // Check slice hits against flying targets
-    setTargets((prev) =>
-      prev.map((t) => {
-        if (t.sliced) return t;
-        const dist = Math.hypot(t.x - xPct, t.y - yPct);
-        if (dist < 8.5) {
-          if (t.kind === 'bomb') {
-            if (soundEnabled) playSoundFX('bomb');
-            setLives((l) => l - 1);
-            setFoxMood('ouch');
-            spawnPopup(t.x, t.y, 'KABOOM! -1 ❤️', '#EF4444');
-          } else if (t.kind === 'flavor') {
-            if (soundEnabled) playSoundFX('golden');
-            setLastFlavorSliced(t.flavor);
-            setFoxMood('happy');
-            setScore((s) => {
-              const ns = s + 35;
-              onScoreSave(ns);
-              return ns;
-            });
-            spawnPopup(t.x, t.y, `${t.flavor.name.toUpperCase()} SLICE! +35`, t.flavor.accent);
-          } else {
-            if (soundEnabled) playSoundFX('slash');
-            setFoxMood('happy');
-            setScore((s) => {
-              const ns = s + 25;
-              onScoreSave(ns);
-              return ns;
-            });
-            spawnPopup(t.x, t.y, 'CRUNCH SLASH! +25', POP_YELLOW);
-          }
-          return { ...t, sliced: true };
+    let slicedAny = false;
+    for (const t of targetsRef.current) {
+      if (t.sliced) continue;
+      const dist = Math.hypot(t.x - xPct, t.y - yPct);
+      if (dist < 8.5) {
+        t.sliced = true;
+        slicedAny = true;
+        if (t.kind === 'bomb') {
+          if (soundEnabled) playSoundFX('bomb');
+          setLives((l) => l - 1);
+          setFoxMood('ouch');
+          spawnPopup(t.x, t.y, 'KABOOM! -1 ❤️', '#EF4444');
+        } else if (t.kind === 'flavor') {
+          if (soundEnabled) playSoundFX('golden');
+          setLastFlavorSliced(t.flavor);
+          lastFlavorSlicedRef.current = t.flavor;
+          setFoxMood('happy');
+          setScore((s) => {
+            const ns = s + 35;
+            onScoreSave(ns);
+            return ns;
+          });
+          spawnPopup(t.x, t.y, `${t.flavor.name.toUpperCase()} SLICE! +35`, t.flavor.accent);
+        } else {
+          if (soundEnabled) playSoundFX('slash');
+          setFoxMood('happy');
+          setScore((s) => {
+            const ns = s + 25;
+            onScoreSave(ns);
+            return ns;
+          });
+          spawnPopup(t.x, t.y, 'CRUNCH SLASH! +25', POP_YELLOW);
         }
-        return t;
-      })
-    );
+      }
+    }
+
+    if (slicedAny) {
+      targetsRef.current = targetsRef.current.filter((t) => !t.sliced);
+      setTargets([...targetsRef.current]);
+    }
   };
 
   return (
@@ -2738,24 +2878,26 @@ function Game4FoxjaSpiceSlash({ soundEnabled, onScoreSave }: any) {
         </div>
       </div>
 
-      {/* Glowing Ninja Blade Swipe Trail */}
-      {trail.map((pt) => (
-        <div
-          key={pt.id}
-          style={{ left: `${pt.x}%`, top: `${pt.y}%`, backgroundColor: lastFlavorSliced.color }}
-          className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_12px_#FFE600] pointer-events-none z-30"
-        />
-      ))}
+      {/* High-Performance GPU Canvas for Glowing Ninja Blade Swipe Trail */}
+      <canvas
+        ref={trailCanvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none z-30"
+      />
 
       {/* Tossed Targets */}
       <div className="absolute inset-0 z-20 pointer-events-none">
         {targets.map((t) => (
           <div
             key={t.id}
+            ref={(el) => {
+              if (el) targetElementsRef.current.set(t.id, el);
+              else targetElementsRef.current.delete(t.id);
+            }}
             style={{
               left: `${t.x}%`,
               top: `${t.y}%`,
               transform: `translate(-50%, -50%) rotate(${t.rot}deg)`,
+              willChange: 'transform, left, top',
             }}
             className="absolute w-16 h-16"
           >
@@ -2767,7 +2909,6 @@ function Game4FoxjaSpiceSlash({ soundEnabled, onScoreSave }: any) {
               <RealisticMakhanaSVG
                 variant={t.variant}
                 spiceColor={lastFlavorSliced.spiceColor}
-                idSuffix={String(t.id)}
               />
             )}
           </div>
