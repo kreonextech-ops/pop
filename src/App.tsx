@@ -2006,11 +2006,11 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
 
   const targetFlavor = FLAVORS[targetFlavorIdx];
 
-  // 3 Floating Flavor Clouds in the center of the arena (1 is always the Target Flavor!)
+  // 3 Staggered Floating Flavor Rings with ample breathing room (Target is highlighted!)
   const clouds = [
-    { idx: targetFlavorIdx, x: 48, y: 28 },
-    { idx: (targetFlavorIdx + 1) % FLAVORS.length, x: 52, y: 56 },
-    { idx: (targetFlavorIdx + 2) % FLAVORS.length, x: 46, y: 80 },
+    { idx: targetFlavorIdx, x: 40, y: 32 },
+    { idx: (targetFlavorIdx + 1) % FLAVORS.length, x: 55, y: 65 },
+    { idx: (targetFlavorIdx + 2) % FLAVORS.length, x: 68, y: 36 },
   ];
 
   const spawnPopup = useCallback((x, y, text, bg = POP_YELLOW) => {
@@ -2230,7 +2230,7 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
         )}
       </div>
 
-      {/* Center: 3 Floating Flavor Seasoning Clouds */}
+      {/* Center: Spacious Floating Flavor Rings (Target Ring is highlighted!) */}
       {clouds.map((c, i) => {
         const fl = FLAVORS[c.idx];
         const isTarget = fl.id === targetFlavor.id;
@@ -2240,22 +2240,30 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
             style={{
               left: `${c.x}%`,
               top: `${c.y}%`,
-              backgroundColor: fl.bgLight,
-              borderColor: isTarget ? '#000000' : '#000000',
             }}
-            className={`absolute -translate-x-1/2 -translate-y-1/2 px-4 py-2.5 rounded-full border-[3.5px] shadow-[4px_4px_0_#000] flex items-center gap-2 pointer-events-none z-15 ${
-              isTarget ? 'ring-4 ring-[#FFE600] scale-105' : 'opacity-90'
-            }`}
+            className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none z-15"
           >
-            <div className="w-9 h-9">
+            {isTarget && (
+              <span className="bg-[#FFE600] text-black font-black text-[9px] px-2 py-0.5 rounded-full border-2 border-black shadow-[1.5px_1.5px_0_#000] mb-1 animate-bounce uppercase">
+                TARGET +150
+              </span>
+            )}
+            <div
+              style={{
+                backgroundColor: fl.bgLight,
+              }}
+              className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full border-[3.5px] border-black flex items-center justify-center p-2 shadow-[3.5px_3.5px_0_#000] transition-transform ${
+                isTarget ? 'ring-4 ring-[#FFE600] scale-110 shadow-[0_0_16px_#FFE600]' : 'opacity-90'
+              }`}
+            >
               <FlavorPropSVG flavor={fl.id} />
             </div>
-            <div>
-              <div className="text-[9px] font-black uppercase text-black/60">SEASONING CLOUD</div>
-              <div className="text-xs font-black uppercase" style={{ color: fl.color }}>
-                {fl.name}
-              </div>
-            </div>
+            <span
+              style={{ color: fl.color }}
+              className="mt-1 bg-white/95 text-[10px] font-black uppercase px-2 py-0.5 rounded-md border-[1.5px] border-black shadow-[1.5px_1.5px_0_#000] whitespace-nowrap"
+            >
+              {fl.name}
+            </span>
           </div>
         );
       })}
