@@ -1989,7 +1989,6 @@ function Game1FlavorCatch({ soundEnabled, onScoreSave }: any) {
 function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
   const [score, setScore] = useState(0);
   const [shotsLeft, setShotsLeft] = useState(10);
-  const [targetFlavorIdx, setTargetFlavorIdx] = useState(0);
   const [foxMood, setFoxMood] = useState('focus');
   const [hasProjectile, setHasProjectile] = useState(false);
   const [popups, setPopups] = useState([]);
@@ -2003,15 +2002,6 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
   const aimVecRef = useRef({ dx: 65, dy: -45 });
   const tubYRef = useRef(52);
   const projStateRef = useRef(null);
-
-  const targetFlavor = FLAVORS[targetFlavorIdx];
-
-  // 3 Staggered Floating Flavor Rings with ample breathing room (Target is highlighted!)
-  const clouds = [
-    { idx: targetFlavorIdx, x: 40, y: 32 },
-    { idx: (targetFlavorIdx + 1) % FLAVORS.length, x: 55, y: 65 },
-    { idx: (targetFlavorIdx + 2) % FLAVORS.length, x: 68, y: 36 },
-  ];
 
   const spawnPopup = useCallback((x, y, text, bg = POP_YELLOW) => {
     const id = Date.now() + Math.random();
@@ -2062,41 +2052,27 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
           projectileRef.current.style.transform = `translate(-50%, -50%) rotate(${p.rot}deg)`;
         }
 
-        // Check flavor clouds
-        for (const c of clouds) {
-          const fl = FLAVORS[c.idx];
-          const dist = Math.hypot(p.x - c.x, p.y - c.y);
-          if (dist < 10 && p.coatedFlavor !== fl.id) {
-            p.coatedFlavor = fl.id;
-            if (soundEnabled) playSoundFX('pop');
-            spawnPopup(c.x, c.y, `COATED IN ${fl.name.toUpperCase()}!`, fl.accent);
-          }
-        }
-
         // Check if projectile lands inside moving target tub
         if (p.x >= 80 && p.x <= 93 && Math.abs(p.y - currentTubY) <= 12) {
-          const isMatch = p.coatedFlavor === targetFlavor.id;
-          const pts = isMatch ? 150 : p.coatedFlavor ? 60 : 35;
+          const isSwish = Math.abs(p.y - currentTubY) <= 6;
+          const pts = isSwish ? 150 : 100;
           setScore((s) => {
             const ns = s + pts;
             onScoreSave(ns);
             return ns;
           });
           setFoxMood('happy');
-          if (soundEnabled) playSoundFX(isMatch ? 'golden' : 'catch');
+          if (soundEnabled) playSoundFX(isSwish ? 'golden' : 'catch');
           spawnPopup(
             84,
             currentTubY - 10,
-            isMatch ? `PERFECT ${targetFlavor.name.toUpperCase()} DUNK! +150` : `BUCKET HIT! +${pts}`,
-            isMatch ? POP_YELLOW : '#00F5D4'
+            isSwish ? 'PERFECT SWISH! +150' : `BUCKET DUNK! +${pts}`,
+            isSwish ? POP_YELLOW : '#00F5D4'
           );
-          if (isMatch) {
-            setTargetFlavorIdx((i) => (i + 1) % FLAVORS.length);
-          }
           projStateRef.current = null;
           setHasProjectile(false);
         } else if (p.x > 102 || p.y > 104 || p.x < -5) {
-          // Out of bounds
+          // Out of bounds / missed
           setFoxMood('idle');
           projStateRef.current = null;
           setHasProjectile(false);
@@ -2108,7 +2084,7 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [targetFlavorIdx, targetFlavor, soundEnabled, spawnPopup, onScoreSave]);
+  }, [soundEnabled, spawnPopup, onScoreSave]);
 
   const handlePointerDown = (e) => {
     if (projStateRef.current || shotsLeft <= 0) return;
@@ -2144,7 +2120,6 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
       vx: dx,
       vy: dy,
       rot: 0,
-      coatedFlavor: null,
     };
     setHasProjectile(true);
   };
@@ -2173,20 +2148,10 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
           </div>
         </div>
 
-        {/* Target Flavor Order */}
-        <div
-          style={{ backgroundColor: targetFlavor.bgLight }}
-          className="flex items-center gap-2.5 border-[3.5px] border-black rounded-2xl px-3.5 py-1.5 shadow-[4px_4px_0_#000]"
-        >
-          <div className="w-8 h-8">
-            <FlavorPropSVG flavor={targetFlavor.id} />
-          </div>
-          <div>
-            <div className="text-[10px] font-black uppercase text-black/70">COAT FOXNUT IN THIS CLOUD:</div>
-            <div className="text-sm font-black uppercase" style={{ color: targetFlavor.color }}>
-              {targetFlavor.name} (+150 PTS)
-            </div>
-          </div>
+        {/* Clean Slingshot Mission Badge */}
+        <div className="flex items-center gap-2 bg-[#00F5D4] px-4 py-2 rounded-2xl border-[3.5px] border-black shadow-[4px_4px_0_#000] font-black text-xs text-black">
+          <Target className="w-4 h-4 text-black" />
+          <span>AIM & DUNK INTO THE MOVING POP TUB! (+100 PTS)</span>
         </div>
 
         <button
@@ -2230,44 +2195,6 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
         )}
       </div>
 
-      {/* Center: Spacious Floating Flavor Rings (Target Ring is highlighted!) */}
-      {clouds.map((c, i) => {
-        const fl = FLAVORS[c.idx];
-        const isTarget = fl.id === targetFlavor.id;
-        return (
-          <div
-            key={fl.id}
-            style={{
-              left: `${c.x}%`,
-              top: `${c.y}%`,
-            }}
-            className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none z-15"
-          >
-            {isTarget && (
-              <span className="bg-[#FFE600] text-black font-black text-[9px] px-2 py-0.5 rounded-full border-2 border-black shadow-[1.5px_1.5px_0_#000] mb-1 animate-bounce uppercase">
-                TARGET +150
-              </span>
-            )}
-            <div
-              style={{
-                backgroundColor: fl.bgLight,
-              }}
-              className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full border-[3.5px] border-black flex items-center justify-center p-2 shadow-[3.5px_3.5px_0_#000] transition-transform ${
-                isTarget ? 'ring-4 ring-[#FFE600] scale-110 shadow-[0_0_16px_#FFE600]' : 'opacity-90'
-              }`}
-            >
-              <FlavorPropSVG flavor={fl.id} />
-            </div>
-            <span
-              style={{ color: fl.color }}
-              className="mt-1 bg-white/95 text-[10px] font-black uppercase px-2 py-0.5 rounded-md border-[1.5px] border-black shadow-[1.5px_1.5px_0_#000] whitespace-nowrap"
-            >
-              {fl.name}
-            </span>
-          </div>
-        );
-      })}
-
       {/* Flying Foxnut Projectile */}
       {hasProjectile && (
         <div
@@ -2281,12 +2208,7 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
         >
           <RealisticMakhanaSVG
             variant={1}
-            spiceColor={
-              projStateRef.current?.coatedFlavor
-                ? FLAVORS.find((f) => f.id === projStateRef.current?.coatedFlavor)?.color || '#9E1B12'
-                : '#9E1B12'
-            }
-            glowColor={projStateRef.current?.coatedFlavor === targetFlavor.id ? 'gold' : null}
+            spiceColor="#B3281E"
           />
         </div>
       )}
@@ -2302,7 +2224,7 @@ function Game2FlavorSlingshot({ soundEnabled, onScoreSave }: any) {
             TARGET TUB
           </span>
         </div>
-        <MakhanaBucketSVG tilted={false} accentColor={targetFlavor.color} />
+        <MakhanaBucketSVG tilted={false} accentColor="#B3281E" />
       </div>
 
       {/* Popups */}
