@@ -1163,10 +1163,10 @@ function PosterSegment({ soundEnabled }: { soundEnabled: boolean }) {
     : Math.min(420, Math.round(width * 0.82), Math.round((height - 150) * 0.48));
 
   const centerScale = Math.max(0.50, Math.min(1.0, maxCenterWidth / 520));
-  const subtitleFontSize = Math.max(13, Math.min(30, Math.round(27 * centerScale)));
+  const subtitleFontSize = Math.max(10, Math.min(22, Math.round(20 * centerScale)));
   const subtitleGap = Math.max(6, Math.min(16, Math.round(15 * centerScale)));
-  const arrowWidth = Math.max(16, Math.min(34, Math.round(32 * centerScale)));
-  const arrowHeight = Math.max(13, Math.min(28, Math.round(26 * centerScale)));
+  const arrowWidth = Math.max(14, Math.min(28, Math.round(26 * centerScale)));
+  const arrowHeight = Math.max(11, Math.min(24, Math.round(22 * centerScale)));
 
   // Responsive Bucket Sizing — firmly anchored to bottom-right corner, 100% visible, never cut
   const bucketWidth = isLandscape
@@ -1464,7 +1464,7 @@ function PosterSegment({ soundEnabled }: { soundEnabled: boolean }) {
       </div>
 
       {/* ====================================================================
-          4. CENTERPIECE STACK: FOX LOGO + GAP + MAKHANA SNACKS + GAP + COMING SOON
+          4. CENTERPIECE STACK: FOX LOGO + GAP + COOLEST WAY TO SNACK BETTER + GAP + COMING SOON
           Dynamically fitted to guaranteed safe area with ZERO border collision!
       ==================================================================== */}
       <main
@@ -1488,8 +1488,8 @@ function PosterSegment({ soundEnabled }: { soundEnabled: boolean }) {
           {/* CLEAR VERTICAL GAP 1 */}
           <div style={{ height: `${subtitleGap}px` }} />
 
-          {/* B. \\ MAKHANA SNACKS // SUBTITLE */}
-          <div className="flex items-center justify-center" style={{ gap: `${Math.round(12 * centerScale)}px` }}>
+          {/* B. \\ COOLEST WAY TO SNACK BETTER // SUBTITLE */}
+          <div className="flex items-center justify-center" style={{ gap: `${Math.round(8 * centerScale)}px` }}>
             <svg
               viewBox="0 0 55 45"
               style={{ width: `${arrowWidth}px`, height: `${arrowHeight}px` }}
@@ -1499,14 +1499,14 @@ function PosterSegment({ soundEnabled }: { soundEnabled: boolean }) {
             </svg>
 
             <h2
-              className="font-black tracking-[0.11em] uppercase text-center leading-none select-none"
+              className="font-black tracking-[0.05em] uppercase text-center leading-none select-none whitespace-nowrap"
               style={{
                 fontSize: `${subtitleFontSize}px`,
                 color: BRAND_SUBTITLE_GREEN,
                 fontFamily: "'Fredoka', 'Rubik', 'Arial Rounded MT Bold', sans-serif",
               }}
             >
-              MAKHANA SNACKS
+              COOLEST WAY TO SNACK BETTER
             </h2>
 
             <svg
