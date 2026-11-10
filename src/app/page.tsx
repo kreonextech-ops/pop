@@ -36,7 +36,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     desktop: { x: -335, y: -140, rotate: -24, scale: 1.08 },
     mobile: { x: -185, y: -100, rotate: -24, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-gentle",
+    floatClass: "animate-scatter-wander-1",
     delay: "0.01s",
   },
   {
@@ -46,7 +46,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     desktop: { x: 335, y: -140, rotate: 20, scale: 1.08 },
     mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-slow",
+    floatClass: "animate-scatter-wander-2",
     delay: "0.02s",
   },
   {
@@ -56,7 +56,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     desktop: { x: -355, y: 12, rotate: 12, scale: 1.05 },
     mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-reverse",
+    floatClass: "animate-scatter-wander-3",
     delay: "0.03s",
   },
   {
@@ -66,7 +66,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     desktop: { x: 355, y: 12, rotate: -12, scale: 1.05 },
     mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-wiggle",
+    floatClass: "animate-scatter-wander-4",
     delay: "0.04s",
   },
   {
@@ -76,7 +76,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     desktop: { x: -325, y: 165, rotate: -16, scale: 1.02 },
     mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-slow",
+    floatClass: "animate-scatter-wander-5",
     delay: "0.05s",
   },
   {
@@ -86,7 +86,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     desktop: { x: 325, y: 165, rotate: 22, scale: 1.02 },
     mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-gentle",
+    floatClass: "animate-scatter-wander-6",
     delay: "0.06s",
   },
 ];
@@ -99,7 +99,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     desktop: { x: -335, y: -140, rotate: -25, scale: 1.08 },
     mobile: { x: -185, y: -100, rotate: -25, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-gentle",
+    floatClass: "animate-scatter-wander-1",
     delay: "0.01s",
   },
   {
@@ -109,7 +109,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     desktop: { x: 335, y: -140, rotate: 20, scale: 1.08 },
     mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-slow",
+    floatClass: "animate-scatter-wander-2",
     delay: "0.02s",
   },
   {
@@ -119,7 +119,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     desktop: { x: -355, y: 12, rotate: 12, scale: 1.05 },
     mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-reverse",
+    floatClass: "animate-scatter-wander-3",
     delay: "0.03s",
   },
   {
@@ -129,7 +129,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     desktop: { x: 355, y: 12, rotate: -12, scale: 1.05 },
     mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-wiggle",
+    floatClass: "animate-scatter-wander-4",
     delay: "0.04s",
   },
   {
@@ -139,7 +139,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     desktop: { x: -325, y: 165, rotate: -16, scale: 1.02 },
     mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-slow",
+    floatClass: "animate-scatter-wander-5",
     delay: "0.05s",
   },
   {
@@ -149,7 +149,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     desktop: { x: 325, y: 165, rotate: 22, scale: 1.02 },
     mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-gentle",
+    floatClass: "animate-scatter-wander-6",
     delay: "0.06s",
   },
 ];
@@ -162,7 +162,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     desktop: { x: -335, y: -140, rotate: -20, scale: 1.08 },
     mobile: { x: -185, y: -100, rotate: -20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-gentle",
+    floatClass: "animate-scatter-wander-1",
     delay: "0.01s",
   },
   {
@@ -172,7 +172,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     desktop: { x: 335, y: -140, rotate: 20, scale: 1.08 },
     mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-slow",
+    floatClass: "animate-scatter-wander-2",
     delay: "0.02s",
   },
   {
@@ -182,7 +182,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     desktop: { x: -355, y: 12, rotate: 12, scale: 1.05 },
     mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-reverse",
+    floatClass: "animate-scatter-wander-3",
     delay: "0.03s",
   },
   {
@@ -192,7 +192,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     desktop: { x: 355, y: 12, rotate: -12, scale: 1.05 },
     mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-wiggle",
+    floatClass: "animate-scatter-wander-4",
     delay: "0.04s",
   },
   {
@@ -202,7 +202,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     desktop: { x: -325, y: 165, rotate: -16, scale: 1.02 },
     mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-slow",
+    floatClass: "animate-scatter-wander-5",
     delay: "0.05s",
   },
   {
@@ -212,7 +212,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     desktop: { x: 325, y: 165, rotate: 22, scale: 1.02 },
     mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
-    floatClass: "animate-float-gentle",
+    floatClass: "animate-scatter-wander-6",
     delay: "0.06s",
   },
 ];
@@ -363,46 +363,46 @@ export default function BiteJoyPage() {
     {
       id: "periperi",
       code: "01 / 03",
-      name: "PERI PERI PUNCH",
-      tagline: "Fiery, Zesty & Bold Indian Spices",
-      description: "A scorching cosmic burst of bird's eye chillies, citrus zest, and roasted makhana crunch.",
+      name: "PERI PERI",
+      tagline: "",
+      description: "",
       packImage: "/packets/peri peri.svg",
       bgSvg: "/product-bg/peri-peri.svg",
       bgMobileSvg: "/product-bg/mobile-peri-peri.svg",
       themeColor: "#D73B3A",
       planetGradient: "radial-gradient(circle at 35% 30%, #FF6B6B 0%, #D73B3A 55%, #7A1211 100%)",
       glowColor: "rgba(215, 59, 58, 0.45)",
-      badge: "Spicy Hit 🌶️",
+      badge: "🌶️ PERI PERI",
       accentBg: "#FB0008",
     },
     {
       id: "plain",
       code: "02 / 03",
-      name: "PLAIN MAKHANA",
-      tagline: "Pure, Roasted & Naturally Crisp Lotus Seeds",
-      description: "100% natural pond-harvested lotus seeds, slow-roasted to crispy perfection with zero additives and pure crunch.",
+      name: "RAW MAKHANA",
+      tagline: "",
+      description: "",
       packImage: "/packets/plain.png",
       bgSvg: "/product-bg/plain.svg",
       bgMobileSvg: "/product-bg/mobile-plain.svg",
       themeColor: "#2D6A4F",
       planetGradient: "radial-gradient(circle at 35% 30%, #D8F3DC 0%, #52B788 55%, #1B4332 100%)",
       glowColor: "rgba(45, 106, 79, 0.45)",
-      badge: "Pure & Raw 🌱",
+      badge: "🌱 RAW MAKHANA",
       accentBg: "#2D6A4F",
     },
     {
       id: "cheddar",
       code: "03 / 03",
-      name: "CHEESE BLAST",
-      tagline: "Rich, Melty & Creamy Golden Crunch",
-      description: "A velvety celestial cloud of slow-aged golden cheddar dust melted over crunchy lotus pops.",
+      name: "CHEDDAR CHEESE",
+      tagline: "",
+      description: "",
       packImage: "/packets/cheese.svg",
       bgSvg: "/product-bg/cheese.svg",
       bgMobileSvg: "/product-bg/mobile-cheese.svg",
       themeColor: "#FFCD3C",
       planetGradient: "radial-gradient(circle at 35% 30%, #FFE082 0%, #F37D20 55%, #8C3900 100%)",
       glowColor: "rgba(255, 205, 60, 0.45)",
-      badge: "Ultra Cheesy 🧀",
+      badge: "🧀 CHEDDAR CHEESE",
       accentBg: "#F37D20",
     },
   ];
@@ -579,13 +579,16 @@ export default function BiteJoyPage() {
         </div>
 
         {/* Section Header */}
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-20 pt-3 sm:pt-8 mb-1 sm:mb-3 shrink-0 transition-all duration-500 ease-out">
-          <h2 className="font-display text-lg sm:text-3xl md:text-4xl font-black tracking-tight text-[#25100E] uppercase drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-20 pt-4 sm:pt-10 mb-2 sm:mb-4 shrink-0 transition-all duration-500 ease-out">
+          <h2
+            className={`font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-tight uppercase transition-colors duration-300 ${
+              activePlanetIndex === 0
+                ? "text-[#FFF8EE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
+                : "text-[#25100E] drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]"
+            }`}
+          >
             Find Your Flavour
           </h2>
-          <p className="mt-0.5 text-[11px] sm:text-sm text-[#4A201B] font-semibold tracking-wide drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
-            {currentFlavour.tagline}
-          </p>
         </div>
 
         {/* Central Packet Stage with Dynamic Ingredient Scatter & Slider Controls */}
@@ -656,15 +659,6 @@ export default function BiteJoyPage() {
               })}
             </div>
 
-            {/* Playful Interactive Hint Badge */}
-            <div className="absolute -bottom-4 sm:-bottom-5 left-1/2 -translate-x-1/2 z-35 pointer-events-none whitespace-nowrap">
-              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/90 text-[#522C28] text-[9px] sm:text-[10px] font-bold shadow-sm border border-[#522C28]/15 backdrop-blur-sm animate-pulse">
-                <span>✦</span>
-                <span>Move & fling the ingredients with mouse or finger!</span>
-                <span>✦</span>
-              </span>
-            </div>
-
           </div>
         </div>
 
@@ -679,28 +673,34 @@ export default function BiteJoyPage() {
                 <button
                   key={flavour.id}
                   onClick={() => changeFlavour(idx)}
-                  className={`px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1 ${
+                  className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1.5 ${
                     isActive
-                      ? "bg-[#25100E] text-white shadow-md scale-105 ring-2 ring-[#FFCD3C]"
-                      : "bg-white/80 hover:bg-white text-[#522C28] border border-[#522C28]/20 hover:scale-100"
+                      ? "bg-[#25100E] text-[#FFCD3C] shadow-lg scale-105 ring-2 ring-[#FFCD3C]"
+                      : "bg-white/85 hover:bg-white text-[#522C28] border border-[#522C28]/20 hover:scale-100"
                   }`}
                 >
-                  <span className="text-xs">{flavour.badge.split(" ").slice(-1)[0]}</span>
-                  <span>{flavour.name}</span>
+                  <span>{flavour.badge}</span>
                 </button>
               );
             })}
           </div>
 
-          <div className="text-[9px] sm:text-xs font-black tracking-widest text-[#522C28]/70 uppercase">
+          <div
+            className={`text-[10px] sm:text-xs font-black tracking-widest uppercase transition-colors duration-300 ${
+              activePlanetIndex === 0 ? "text-white/80" : "text-[#522C28]/80"
+            }`}
+          >
             {currentFlavour.code}
           </div>
-          <h3 className="font-display text-base sm:text-2xl md:text-3xl font-black tracking-wider text-[#25100E] uppercase drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)] mt-0.5">
+          <h3
+            className={`font-display text-xl sm:text-3xl md:text-4xl font-black tracking-wider uppercase mt-0.5 transition-colors duration-300 ${
+              activePlanetIndex === 0
+                ? "text-[#FFF8EE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
+                : "text-[#25100E] drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]"
+            }`}
+          >
             {currentFlavour.name}
           </h3>
-          <p className="text-[10px] sm:text-xs md:text-sm text-[#3D1A16] max-w-[270px] sm:max-w-md mx-auto font-medium leading-tight sm:leading-relaxed mt-0.5 drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
-            {currentFlavour.description}
-          </p>
 
           {/* Dual Action Buttons: Buy Now & See Details */}
           <div className="mt-2 sm:mt-3 flex items-center justify-center gap-2 sm:gap-3 z-30 relative">

@@ -184,6 +184,82 @@ body {
   will-change: transform;
 }
 
+/* Organic Zero-Gravity 2D Slow Random Floating Animations for Scatter Pieces */
+@keyframes scatter-wander-1 {
+  0% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+  25% { transform: translate3d(14px, -18px, 0) rotate(4deg); }
+  50% { transform: translate3d(-10px, -8px, 0) rotate(-3deg); }
+  75% { transform: translate3d(-16px, 14px, 0) rotate(5deg); }
+  100% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+}
+
+@keyframes scatter-wander-2 {
+  0% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+  25% { transform: translate3d(-15px, 12px, 0) rotate(-4deg); }
+  50% { transform: translate3d(16px, -14px, 0) rotate(3deg); }
+  75% { transform: translate3d(10px, 16px, 0) rotate(-3deg); }
+  100% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+}
+
+@keyframes scatter-wander-3 {
+  0% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+  33% { transform: translate3d(18px, 12px, 0) rotate(5deg); }
+  66% { transform: translate3d(-14px, -18px, 0) rotate(-4deg); }
+  100% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+}
+
+@keyframes scatter-wander-4 {
+  0% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+  30% { transform: translate3d(-18px, -12px, 0) rotate(-5deg); }
+  70% { transform: translate3d(14px, 15px, 0) rotate(4deg); }
+  100% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+}
+
+@keyframes scatter-wander-5 {
+  0% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+  20% { transform: translate3d(12px, -16px, 0) rotate(4deg); }
+  60% { transform: translate3d(-16px, 10px, 0) rotate(-3deg); }
+  80% { transform: translate3d(8px, 16px, 0) rotate(3deg); }
+  100% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+}
+
+@keyframes scatter-wander-6 {
+  0% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+  35% { transform: translate3d(-12px, 18px, 0) rotate(-4deg); }
+  65% { transform: translate3d(16px, -14px, 0) rotate(5deg); }
+  100% { transform: translate3d(0px, 0px, 0) rotate(0deg); }
+}
+
+.animate-scatter-wander-1 {
+  animation: scatter-wander-1 7.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-scatter-wander-2 {
+  animation: scatter-wander-2 8.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-scatter-wander-3 {
+  animation: scatter-wander-3 9.4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-scatter-wander-4 {
+  animation: scatter-wander-4 7.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-scatter-wander-5 {
+  animation: scatter-wander-5 8.9s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-scatter-wander-6 {
+  animation: scatter-wander-6 7.5s ease-in-out infinite;
+  will-change: transform;
+}
+
 @keyframes float-slow {
   0%, 100% {
     transform: translateY(0px) rotate(0deg);
