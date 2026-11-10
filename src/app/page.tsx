@@ -362,6 +362,7 @@ export default function BiteJoyPage() {
   const flavourPlanets = [
     {
       id: "periperi",
+      slug: "peri-peri",
       code: "01 / 03",
       name: "PERI PERI",
       tagline: "",
@@ -377,6 +378,7 @@ export default function BiteJoyPage() {
     },
     {
       id: "plain",
+      slug: "raw-makhana",
       code: "02 / 03",
       name: "RAW MAKHANA",
       tagline: "",
@@ -392,6 +394,7 @@ export default function BiteJoyPage() {
     },
     {
       id: "cheddar",
+      slug: "cheddar-cheese",
       code: "03 / 03",
       name: "CHEDDAR CHEESE",
       tagline: "",
@@ -709,7 +712,7 @@ export default function BiteJoyPage() {
 
             {/* See Details Button (Solid Crisp White) */}
             <Link
-              href="#details"
+              href={`/product/${currentFlavour.slug || "peri-peri"}`}
               className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer bg-white hover:bg-[#FFF8EE] text-[#25100E] border-2 border-[#25100E]/20 hover:border-[#25100E]"
             >
               <span>See Details</span>
