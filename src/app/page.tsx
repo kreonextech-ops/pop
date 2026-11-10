@@ -662,10 +662,16 @@ export default function BiteJoyPage() {
         {/* Flavour Details, Switcher & Action Buttons */}
         <div className="relative max-w-xl w-full mx-auto px-4 text-center mt-1 sm:mt-2 mb-2 sm:mb-4 relative z-30 shrink-0 flex flex-col items-center">
           
-          {/* 1. Flavour Name directly below the Product Pouch */}
-          <h3 className="font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-wider uppercase text-[#25100E] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
-            {currentFlavour.name}
-          </h3>
+          {/* 1. Flavour Name directly below the Product Pouch (Clickable link to product page) */}
+          <Link
+            href={`/product/${currentFlavour.slug || "peri-peri"}`}
+            title={`View ${currentFlavour.name} details & nutrition`}
+            className="group cursor-pointer block"
+          >
+            <h3 className="font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-wider uppercase text-[#25100E] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)] group-hover:scale-102 transition-transform">
+              {currentFlavour.name}
+            </h3>
+          </Link>
 
           {/* 2. Premium Tactile Flavour Switcher Dock */}
           <div className="mt-2 sm:mt-2.5 z-30">
