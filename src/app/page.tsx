@@ -37,7 +37,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: -185, y: -100, rotate: -24, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.02s",
+    delay: "0.01s",
   },
   {
     id: 2,
@@ -47,7 +47,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.05s",
+    delay: "0.02s",
   },
   {
     id: 3,
@@ -57,7 +57,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-reverse",
-    delay: "0.08s",
+    delay: "0.03s",
   },
   {
     id: 4,
@@ -67,7 +67,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-wiggle",
-    delay: "0.11s",
+    delay: "0.04s",
   },
   {
     id: 5,
@@ -77,7 +77,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.14s",
+    delay: "0.05s",
   },
   {
     id: 6,
@@ -87,7 +87,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.17s",
+    delay: "0.06s",
   },
 ];
 
@@ -100,7 +100,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: -185, y: -100, rotate: -25, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.02s",
+    delay: "0.01s",
   },
   {
     id: 2,
@@ -110,7 +110,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.05s",
+    delay: "0.02s",
   },
   {
     id: 3,
@@ -120,7 +120,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-reverse",
-    delay: "0.08s",
+    delay: "0.03s",
   },
   {
     id: 4,
@@ -130,7 +130,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-wiggle",
-    delay: "0.11s",
+    delay: "0.04s",
   },
   {
     id: 5,
@@ -140,7 +140,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.14s",
+    delay: "0.05s",
   },
   {
     id: 6,
@@ -150,7 +150,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.17s",
+    delay: "0.06s",
   },
 ];
 
@@ -163,7 +163,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: -185, y: -100, rotate: -20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.02s",
+    delay: "0.01s",
   },
   {
     id: 2,
@@ -173,7 +173,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.05s",
+    delay: "0.02s",
   },
   {
     id: 3,
@@ -183,7 +183,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-reverse",
-    delay: "0.08s",
+    delay: "0.03s",
   },
   {
     id: 4,
@@ -193,7 +193,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-wiggle",
-    delay: "0.11s",
+    delay: "0.04s",
   },
   {
     id: 5,
@@ -203,7 +203,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.14s",
+    delay: "0.05s",
   },
   {
     id: 6,
@@ -213,7 +213,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.17s",
+    delay: "0.06s",
   },
 ];
 
@@ -231,33 +231,54 @@ export default function BiteJoyPage() {
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     handleResize();
     window.addEventListener("resize", handleResize);
+
+    // Eagerly preload all flavour packets, backgrounds, and scatter piece textures into browser cache
+    const allAssetUrls = [
+      "/packets/peri peri.svg",
+      "/packets/cheese.svg",
+      "/packets/plain.png",
+      "/product-bg/peri-peri.svg",
+      "/product-bg/mobile-peri-peri.svg",
+      "/product-bg/cheese.svg",
+      "/product-bg/mobile-cheese.svg",
+      "/product-bg/plain.svg",
+      "/product-bg/mobile-plain.svg",
+      ...cheeseScatterPieces.map((p) => p.src),
+      ...periPeriScatterPieces.map((p) => p.src),
+      ...plainScatterPieces.map((p) => p.src),
+    ];
+    allAssetUrls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+
     // Initial smooth burst delay after page mounts
-    const timer = setTimeout(() => setIsScattered(true), 350);
+    const timer = setTimeout(() => setIsScattered(true), 250);
     return () => {
       window.removeEventListener("resize", handleResize);
       clearTimeout(timer);
     };
   }, []);
 
-  // Orchestrate the smooth retract & burst lifecycle during flavour switching
+  // Orchestrate the snappy retract & burst lifecycle during flavour switching
   const changeFlavour = useCallback(
     (targetIndex: number) => {
       if (targetIndex === activePlanetIndex || isTransitioningFlavour) return;
       setIsTransitioningFlavour(true);
 
-      // 1. Smoothly pull current assets back behind the packet
+      // 1. Snappy pull current assets back behind the packet (180ms)
       setIsScattered(false);
 
-      // 2. Once retracted behind the pouch (420ms), swap flavour pack and background
+      // 2. Once retracted behind the pouch (180ms), swap flavour pack and background
       setTimeout(() => {
         setActivePlanetIndex(targetIndex);
 
-        // 3. Frame tick (60ms) for DOM to mount new pieces behind packet, then burst outward from behind!
+        // 3. Ultra-short frame tick (30ms), then burst outward immediately from behind!
         setTimeout(() => {
           setIsScattered(true);
           setIsTransitioningFlavour(false);
-        }, 60);
-      }, 420);
+        }, 30);
+      }, 180);
     },
     [activePlanetIndex, isTransitioningFlavour]
   );
@@ -290,7 +311,7 @@ export default function BiteJoyPage() {
     setIsScattered(false);
     setTimeout(() => {
       setIsScattered(true);
-    }, 420);
+    }, 200);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -491,32 +512,36 @@ export default function BiteJoyPage() {
         className="pt-2 sm:pt-12 md:pt-14 pb-0 bg-[#FDF2E8] text-[#522C28] relative z-10 overflow-hidden select-none w-full aspect-[941/1250] sm:aspect-auto flex flex-col justify-between transition-all duration-500 ease-out"
       >
         
-        {/* Dynamic Product Background SVG Layer (Smooth Crossfade with Zero Flash) */}
+        {/* Dynamic Product Background SVG Layer (Smooth Crossfade with Instant Pre-colored Theme Fallback) */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
           {[
             {
               id: "periperi",
+              themeBg: "#E53925", // Peri Peri Red
               desktopSvg: "/product-bg/peri-peri.svg",
               mobileSvg: "/product-bg/mobile-peri-peri.svg",
-              active: activePlanetIndex === 0, // Active for Peri Peri
+              active: activePlanetIndex === 0,
             },
             {
               id: "plain",
+              themeBg: "#FFF3E3", // Warm Plain Cream
               desktopSvg: "/product-bg/plain.svg",
               mobileSvg: "/product-bg/mobile-plain.svg",
-              active: activePlanetIndex === 1, // Active for Plain Makhana
+              active: activePlanetIndex === 1,
             },
             {
               id: "cheese",
+              themeBg: "#F79E1B", // Cheddar Golden Cheese
               desktopSvg: "/product-bg/cheese.svg",
               mobileSvg: "/product-bg/mobile-cheese.svg",
-              active: activePlanetIndex === 2, // Active for Cheese Blast
+              active: activePlanetIndex === 2,
             },
           ].map((bg) => (
             <div
               key={bg.id}
-              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
-                bg.active ? "opacity-100 z-10" : "opacity-0 z-0"
+              style={{ backgroundColor: bg.themeBg }}
+              className={`absolute inset-0 w-full h-full transition-opacity duration-300 ease-in-out ${
+                bg.active ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
               }`}
             >
               <picture className="w-full h-full block">
@@ -524,7 +549,9 @@ export default function BiteJoyPage() {
                 <img
                   src={bg.desktopSvg}
                   alt=""
-                  className="w-full h-full object-fill sm:object-cover object-center transition-all duration-500 ease-out"
+                  loading="eager"
+                  decoding="sync"
+                  className="w-full h-full object-fill sm:object-cover object-center"
                 />
               </picture>
             </div>
@@ -576,19 +603,35 @@ export default function BiteJoyPage() {
               onResetTrigger={resetScatterTrigger}
             />
 
-            {/* Central Product Packet (Heroic, Well-Proportioned on Mobile & Desktop) */}
+            {/* Central Product Packet Stack (Pre-rendered, Zero-Lag, Instant Crossfade) */}
             <div
               onClick={triggerScatter}
-              className={`relative z-30 flex items-center justify-center animate-float-gentle group cursor-pointer select-none transition-all duration-400 ease-out ${
-                isTransitioningFlavour ? "scale-92 opacity-85" : "scale-100 opacity-100"
+              className={`relative z-30 flex items-center justify-center h-[235px] sm:h-80 md:h-[340px] lg:h-[380px] w-56 sm:w-72 md:w-80 group cursor-pointer select-none transition-transform duration-250 ease-out animate-float-gentle ${
+                isTransitioningFlavour ? "scale-92" : "scale-100"
               }`}
               title="Click pouch to recall & re-burst scatter pieces!"
             >
-              <img
-                src={currentFlavour.packImage}
-                alt={currentFlavour.name}
-                className="h-[235px] sm:h-80 md:h-[340px] lg:h-[380px] w-auto max-w-full object-contain drop-shadow-[0_20px_35px_rgba(120,40,0,0.35)] transition-transform duration-300 group-hover:scale-105 group-active:scale-95 pointer-events-auto"
-              />
+              {flavourPlanets.map((flavour, idx) => {
+                const isActive = activePlanetIndex === idx;
+                return (
+                  <div
+                    key={flavour.id}
+                    className={`absolute inset-0 flex items-center justify-center transition-all duration-250 ease-out ${
+                      isActive
+                        ? "opacity-100 scale-100 z-10 pointer-events-auto"
+                        : "opacity-0 scale-90 z-0 pointer-events-none"
+                    }`}
+                  >
+                    <img
+                      src={flavour.packImage}
+                      alt={flavour.name}
+                      loading="eager"
+                      decoding="sync"
+                      className="h-full w-auto max-w-full object-contain drop-shadow-[0_20px_35px_rgba(120,40,0,0.35)] transition-transform duration-200 group-hover:scale-105 group-active:scale-95 pointer-events-auto"
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             {/* Playful Interactive Hint Badge */}
