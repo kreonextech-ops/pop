@@ -64,12 +64,12 @@ export const PRODUCTS: Record<string, ProductDetails> = {
       "Zero Cholesterol & 0g Trans Fat",
       "Authentic Peri Peri Spices",
     ],
-    themeColor: "#E53925",
-    accentBg: "#FB0008",
-    gradient: "from-[#E53925] via-[#C92328] to-[#991B1B]",
+    themeColor: "#D73B3A", // Scarlet Rush
+    accentBg: "#ED0006", // Accent Vibrant Red
+    gradient: "from-[#D73B3A] via-[#ED0006] to-[#522C28]",
     packImage: "/packets/peri peri.svg",
     bgSvg: "/product-bg/peri-peri.svg",
-    accentColor: "#FFCD3C",
+    accentColor: "#FAC537", // Accent Warm Yellow
     servingSize: "20g",
     borderAccentColor: "#F97316", // Vibrant Orange as seen in packaging
     ingredients:
@@ -149,12 +149,12 @@ export const PRODUCTS: Record<string, ProductDetails> = {
       "0g Trans Fat & Zero Cholesterol",
       "Kid-Friendly & Guilt-Free",
     ],
-    themeColor: "#F79E1B",
-    accentBg: "#F37D20",
-    gradient: "from-[#F79E1B] via-[#E8890C] to-[#B45309]",
+    themeColor: "#FAC537", // Accent Warm Yellow
+    accentBg: "#F79E1B",
+    gradient: "from-[#FAC537] via-[#F79E1B] to-[#522C28]",
     packImage: "/packets/cheese.svg",
     bgSvg: "/product-bg/cheese.svg",
-    accentColor: "#25100E",
+    accentColor: "#522C28", // Espresso
     servingSize: "20g",
     borderAccentColor: "#A855F7", // Purple Accent as seen in packaging image
     ingredients:
@@ -234,12 +234,12 @@ export const PRODUCTS: Record<string, ProductDetails> = {
       "Keto, Vegan & Fasting Friendly",
       "Zero Added Flavours or Preservatives",
     ],
-    themeColor: "#2D6A4F",
-    accentBg: "#2D6A4F",
-    gradient: "from-[#2D6A4F] via-[#1B4332] to-[#0F291E]",
+    themeColor: "#3CA837", // Accent Kelly Green
+    accentBg: "#3CA837",
+    gradient: "from-[#93BF56] via-[#3CA837] to-[#522C28]",
     packImage: "/packets/plain.png",
     bgSvg: "/product-bg/plain.svg",
-    accentColor: "#A7F3D0",
+    accentColor: "#93BF56", // Accent Lime Green
     servingSize: "20g",
     borderAccentColor: "#10B981", // Fresh Green Accent
     ingredients:

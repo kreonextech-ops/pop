@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 
 const lilita = localFont({
@@ -20,6 +21,13 @@ const lilita = localFont({
   preload: true,
 });
 
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Pop Culture — Small Bites, Big Goodness",
   description: "the coolest way to snack better",
@@ -31,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lilita.variable} overflow-x-hidden`}>
+    <html lang="en" className={`${lilita.variable} ${manrope.variable} overflow-x-hidden`}>
       <head>
         <link
           rel="preload"

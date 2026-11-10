@@ -12,18 +12,41 @@
 @tailwind utilities;
 
 :root {
-  --background: #FFF8EE; /* Floral White */
-  --foreground: #522C28; /* Espresso */
+  /* Primary Colours (Slide 15) */
+  --color-scarlet-rush: #D73B3A;
+  --color-floral-white: #FFF8EE;
+
+  /* Secondary Colours (Slide 16) */
+  --color-rosy-taupe: #B1847D; /* Corrected from #C9E4E7 */
+  --color-espresso: #522C28;
+
+  /* Accent Colours (Slide 17) */
+  --color-accent-rose: #C66B8E;
+  --color-accent-yellow: #FAC537;
+  --color-accent-red: #ED0006;
+  --color-accent-green: #3CA837;
+  --color-accent-lime: #93BF56;
+
+  --background: var(--color-floral-white);
+  --foreground: var(--color-espresso);
 }
 
 html,
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-lilita), 'Lilita One', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-manrope), 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
+}
+
+h1, h2, h3, .font-display, .font-heading {
+  font-family: var(--font-lilita), 'Lilita One', cursive, sans-serif;
+}
+
+p, span, li, button, input, textarea, .font-body, .font-sans {
+  font-family: var(--font-manrope), 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 @keyframes wave-marquee {

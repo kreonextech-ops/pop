@@ -9,27 +9,31 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Core Palette from DESIGN_BLUEPRINT.md
+        // Core Primary & Secondary from Pop Culture Brand Deck
         primary: "#D73B3A", // Scarlet Rush
         bg: "#FFF8EE", // Floral White
-        secondary: "#C9E4E7", // Rosy Taupe / Mist
+        secondary: "#B1847D", // Rosy Taupe (corrected from deck typo)
+        espresso: "#522C28", // Espresso Dark
         dark: "#522C28", // Espresso
 
-        // Accent Colours from DESIGN_BLUEPRINT.md
+        // Accent Colours from Pop Culture Brand Deck Slide 17
         accent: {
-          pink: "#D26D99", // Berry Pink
-          yellow: "#FFCD3C", // Sunshine Yellow
-          red: "#FB0008", // Poppy / Vivid Red
-          green: "#4AAC31", // Kelly Green
-          lime: "#92C358", // Lime Green
-          orange: "#F37D20", // Tangerine Orange
-          gold: "#FCC434", // Amber Gold
+          rose: "#C66B8E", // Dusty Rose / Mauve
+          yellow: "#FAC537", // Warm Yellow / Golden
+          red: "#ED0006", // Vibrant Red
+          green: "#3CA837", // Kelly Green
+          lime: "#93BF56", // Lime / Sage Green
+          // Legacy mappings for backwards-compatibility
+          pink: "#C66B8E",
+          gold: "#FAC537",
+          orange: "#F79E1B",
         },
       },
       fontFamily: {
-        display: ["var(--font-lilita)", "'Lilita One'", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "sans-serif"],
-        body: ["var(--font-lilita)", "'Lilita One'", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "sans-serif"],
-        sans: ["var(--font-lilita)", "'Lilita One'", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "sans-serif"],
+        display: ["var(--font-lilita)", "'Lilita One'", "cursive", "sans-serif"],
+        heading: ["var(--font-lilita)", "'Lilita One'", "cursive", "sans-serif"],
+        sans: ["var(--font-manrope)", "'Manrope'", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "sans-serif"],
+        body: ["var(--font-manrope)", "'Manrope'", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "sans-serif"],
       },
     },
   },
