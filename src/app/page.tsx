@@ -37,7 +37,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: -185, y: -100, rotate: -24, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.04s",
+    delay: "0.02s",
   },
   {
     id: 2,
@@ -47,7 +47,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.08s",
+    delay: "0.05s",
   },
   {
     id: 3,
@@ -57,7 +57,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-reverse",
-    delay: "0.12s",
+    delay: "0.08s",
   },
   {
     id: 4,
@@ -67,7 +67,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-wiggle",
-    delay: "0.16s",
+    delay: "0.11s",
   },
   {
     id: 5,
@@ -77,7 +77,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.20s",
+    delay: "0.14s",
   },
   {
     id: 6,
@@ -87,7 +87,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.24s",
+    delay: "0.17s",
   },
 ];
 
@@ -100,7 +100,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: -185, y: -100, rotate: -25, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.04s",
+    delay: "0.02s",
   },
   {
     id: 2,
@@ -110,7 +110,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.08s",
+    delay: "0.05s",
   },
   {
     id: 3,
@@ -120,7 +120,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-reverse",
-    delay: "0.12s",
+    delay: "0.08s",
   },
   {
     id: 4,
@@ -130,7 +130,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-wiggle",
-    delay: "0.16s",
+    delay: "0.11s",
   },
   {
     id: 5,
@@ -140,7 +140,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.20s",
+    delay: "0.14s",
   },
   {
     id: 6,
@@ -150,7 +150,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.24s",
+    delay: "0.17s",
   },
 ];
 
@@ -163,7 +163,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: -185, y: -100, rotate: -20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.04s",
+    delay: "0.02s",
   },
   {
     id: 2,
@@ -173,7 +173,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.08s",
+    delay: "0.05s",
   },
   {
     id: 3,
@@ -183,7 +183,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-reverse",
-    delay: "0.12s",
+    delay: "0.08s",
   },
   {
     id: 4,
@@ -193,7 +193,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-wiggle",
-    delay: "0.16s",
+    delay: "0.11s",
   },
   {
     id: 5,
@@ -203,7 +203,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-slow",
-    delay: "0.20s",
+    delay: "0.14s",
   },
   {
     id: 6,
@@ -213,7 +213,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
     size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
     floatClass: "animate-float-gentle",
-    delay: "0.24s",
+    delay: "0.17s",
   },
 ];
 
@@ -245,19 +245,19 @@ export default function BiteJoyPage() {
       if (targetIndex === activePlanetIndex || isTransitioningFlavour) return;
       setIsTransitioningFlavour(true);
 
-      // 1. Smoothly suck the current assets back behind the packet
+      // 1. Smoothly pull current assets back behind the packet
       setIsScattered(false);
 
-      // 2. Once they have retracted (480ms), swap flavour pack and background
+      // 2. Once retracted behind the pouch (420ms), swap flavour pack and background
       setTimeout(() => {
         setActivePlanetIndex(targetIndex);
 
-        // 3. Brief frame tick (50ms) for DOM to mount new pieces at center, then burst outward smoothly!
+        // 3. Frame tick (60ms) for DOM to mount new pieces behind packet, then burst outward from behind!
         setTimeout(() => {
           setIsScattered(true);
           setIsTransitioningFlavour(false);
-        }, 50);
-      }, 480);
+        }, 60);
+      }, 420);
     },
     [activePlanetIndex, isTransitioningFlavour]
   );
@@ -283,14 +283,14 @@ export default function BiteJoyPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [nextPlanet, prevPlanet]);
 
-  // When clicking the pouch packet directly, gracefully recall and re-burst!
+  // When clicking the pouch packet directly, gracefully recall behind and re-burst from behind!
   const triggerScatter = () => {
     if (isTransitioningFlavour) return;
     setResetScatterTrigger((prev) => prev + 1);
     setIsScattered(false);
     setTimeout(() => {
       setIsScattered(true);
-    }, 480);
+    }, 420);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {

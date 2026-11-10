@@ -462,6 +462,7 @@ export default function InteractiveScatterLayer({
   return (
     <div
       ref={containerRef}
+      style={{ perspective: "1000px" }}
       className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 overflow-visible select-none"
     >
       {pieces.map((piece) => {
@@ -486,16 +487,16 @@ export default function InteractiveScatterLayer({
             }`}
             style={{
               transform: isScattered
-                ? `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0) rotate(${rot}deg) scale(${scale})`
-                : `translate(-50%, -50%) translate3d(0px, 0px, 0) rotate(0deg) scale(0)`,
-              opacity: isScattered ? 1 : 0,
+                ? `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0px) rotate(${rot}deg) scale(${scale})`
+                : `translate(-50%, -50%) translate3d(0px, 0px, -140px) rotate(0deg) scale(0.22)`,
+              opacity: isScattered ? 1 : 0.85,
               transition: isDragging
                 ? "none"
                 : isBursting
-                ? `transform 750ms cubic-bezier(0.34, 1.35, 0.64, 1) ${piece.delay || "0s"}, opacity 550ms ease-out ${piece.delay || "0s"}`
+                ? `transform 750ms cubic-bezier(0.175, 0.885, 0.32, 1.25) ${piece.delay || "0s"}, opacity 150ms ease-out`
                 : isScattered
                 ? "none"
-                : `transform 480ms cubic-bezier(0.4, 0, 0.2, 1), opacity 380ms ease-in`,
+                : `transform 420ms cubic-bezier(0.4, 0, 0.2, 1), opacity 320ms ease-in`,
             }}
             title="Grab & throw me!"
           >
