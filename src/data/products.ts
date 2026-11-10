@@ -42,6 +42,109 @@ export interface ProductDetails {
   reviews: { name: string; rating: number; title: string; comment: string; date: string }[];
 }
 
+export interface ComboItem {
+  slug: string;
+  id: string;
+  name: string;
+  badge: string;
+  emoji: string;
+  tagline: string;
+  shortDesc: string;
+  packImage: string;
+  secondaryImage?: string;
+  includedFlavours: string[];
+  themeColor: string;
+  accentBg: string;
+  price: number;
+  originalPrice: number;
+  savingsBadge?: string;
+  rating: number;
+  reviewsCount: number;
+  packCountText: string;
+  isBestSeller?: boolean;
+}
+
+export const COMBOS: Record<string, ComboItem> = {
+  "trio-variety-pack": {
+    slug: "trio-variety-pack",
+    id: "combo-trio",
+    name: "ULTIMATE TRIO VARIETY PACK",
+    badge: "🎁 TRIO PACK (3 PACKS)",
+    emoji: "🎁",
+    tagline: "1 × Peri Peri + 1 × Cheddar Cheese + 1 × Raw Makhana",
+    shortDesc:
+      "Can’t pick just one? Taste all three signature Pop Culture flavours in one exciting box. The perfect crunch discovery kit!",
+    packImage: "/packets/peri peri.svg",
+    secondaryImage: "/packets/cheese.svg",
+    includedFlavours: [
+      "1 × Peri Peri Punch (20g)",
+      "1 × Cheddar Cheese Melt (20g)",
+      "1 × Raw Roasted Makhana (20g)",
+    ],
+    themeColor: "#D73B3A",
+    accentBg: "#ED0006",
+    price: 115,
+    originalPrice: 135,
+    savingsBadge: "BEST SELLER",
+    rating: 4.9,
+    reviewsCount: 312,
+    packCountText: "3 × 20g Pouches (60g)",
+    isBestSeller: true,
+  },
+  "party-crunch-box": {
+    slug: "party-crunch-box",
+    id: "combo-party",
+    name: "PARTY CRUNCH BUNDLE",
+    badge: "🎉 PARTY PACK (6 PACKS)",
+    emoji: "🎉",
+    tagline: "2 × Peri Peri + 2 × Cheddar Cheese + 2 × Raw Makhana",
+    shortDesc:
+      "Stock up for movie nights, late-night gaming, and guilt-free couch munching. Double the crunch for the whole crew.",
+    packImage: "/packets/cheese.svg",
+    secondaryImage: "/packets/peri peri.svg",
+    includedFlavours: [
+      "2 × Peri Peri Punch (20g)",
+      "2 × Cheddar Cheese Melt (20g)",
+      "2 × Raw Roasted Makhana (20g)",
+    ],
+    themeColor: "#FAC537",
+    accentBg: "#F79E1B",
+    price: 220,
+    originalPrice: 270,
+    savingsBadge: "SAVE 18%",
+    rating: 5.0,
+    reviewsCount: 184,
+    packCountText: "6 × 20g Pouches (120g)",
+    isBestSeller: false,
+  },
+  "mega-muncher-stash": {
+    slug: "mega-muncher-stash",
+    id: "combo-mega",
+    name: "MEGA MUNCHER 12-PACK STASH",
+    badge: "⚡ MEGA STASH (12 PACKS)",
+    emoji: "⚡",
+    tagline: "4 × Peri Peri + 4 × Cheddar Cheese + 4 × Raw Makhana",
+    shortDesc:
+      "The ultimate pantry supply for healthy homes and offices. Maximum flavour variety, bulk savings, and free express delivery.",
+    packImage: "/packets/plain.png",
+    secondaryImage: "/packets/cheese.svg",
+    includedFlavours: [
+      "4 × Peri Peri Punch (20g)",
+      "4 × Cheddar Cheese Melt (20g)",
+      "4 × Raw Roasted Makhana (20g)",
+    ],
+    themeColor: "#3CA837",
+    accentBg: "#3CA837",
+    price: 420,
+    originalPrice: 540,
+    savingsBadge: "SAVE 22%",
+    rating: 4.9,
+    reviewsCount: 96,
+    packCountText: "12 × 20g Pouches (240g)",
+    isBestSeller: false,
+  },
+};
+
 export const PRODUCTS: Record<string, ProductDetails> = {
   "peri-peri": {
     slug: "peri-peri",

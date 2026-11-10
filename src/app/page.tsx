@@ -443,6 +443,9 @@ export default function BiteJoyPage() {
             <Link href="#flavours" className="hover:text-[#D73B3A] transition-colors">
               Flavours
             </Link>
+            <Link href="/shop" className="hover:text-[#D73B3A] transition-colors">
+              Shop All
+            </Link>
             <Link href="#discover" className="hover:text-[#D73B3A] transition-colors">
               Discover
             </Link>
