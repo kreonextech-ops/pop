@@ -16,11 +16,14 @@
   --foreground: #522C28; /* Espresso */
 }
 
+html,
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: 'Lilita One', var(--font-lilita), cursive, sans-serif;
   overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
 }
 
 @keyframes wave-marquee {

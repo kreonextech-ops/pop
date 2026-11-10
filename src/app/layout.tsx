@@ -30,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lilita.variable}`}>
-      <body className="bg-bitejoy-bg text-bitejoy-text antialiased">
+    <html lang="en" className={`${lilita.variable} overflow-x-hidden`}>
+      <body className="bg-bitejoy-bg text-bitejoy-text antialiased overflow-x-hidden w-full max-w-full">
         {children}
       </body>
     </html>
