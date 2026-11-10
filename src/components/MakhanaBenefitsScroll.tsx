@@ -111,7 +111,7 @@ export default function MakhanaBenefitsScroll() {
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const step = Math.min(5, Math.floor(self.progress * 6));
-            setActiveStep(step);
+            setActiveStep((prev) => (prev !== step ? step : prev));
           },
         },
       });

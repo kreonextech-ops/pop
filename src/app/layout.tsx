@@ -16,7 +16,8 @@ const lilita = localFont({
     },
   ],
   variable: "--font-lilita",
-  display: "swap",
+  display: "block",
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -31,7 +32,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${lilita.variable} overflow-x-hidden`}>
-      <body className="bg-bitejoy-bg text-bitejoy-text antialiased overflow-x-hidden w-full max-w-full">
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/LilitaOne-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
+      <body className="bg-bitejoy-bg text-bitejoy-text antialiased overflow-x-hidden w-full max-w-full font-sans">
         {children}
       </body>
     </html>

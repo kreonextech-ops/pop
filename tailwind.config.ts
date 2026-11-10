@@ -27,9 +27,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["'Lilita One'", "var(--font-lilita)", "cursive", "sans-serif"],
-        body: ["'Lilita One'", "var(--font-lilita)", "cursive", "sans-serif"],
-        sans: ["'Lilita One'", "var(--font-lilita)", "cursive", "sans-serif"],
+        display: ["var(--font-lilita)", "'Lilita One'", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "sans-serif"],
+        body: ["var(--font-lilita)", "'Lilita One'", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "sans-serif"],
+        sans: ["var(--font-lilita)", "'Lilita One'", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "sans-serif"],
       },
     },
   },

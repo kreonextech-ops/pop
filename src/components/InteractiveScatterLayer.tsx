@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 
 export interface ScatterPieceData {
   id: number;
@@ -18,10 +18,10 @@ interface InteractiveScatterLayerProps {
   isMobile: boolean;
   isScattered: boolean;
   activeFlavourId: string;
-  onResetTrigger?: number; // increments when packet is clicked to spring back
+  onResetTrigger?: number;
 }
 
-interface PiecePhysicsState {
+interface PiecePhysics {
   id: number;
   x: number;
   y: number;
@@ -52,322 +52,210 @@ export default function InteractiveScatterLayer({
   onResetTrigger = 0,
 }: InteractiveScatterLayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Maintain physics state in a ref to avoid React render lag during 60fps animations
-  const physicsRef = useRef<Map<number, PiecePhysicsState>>(new Map());
-  // Render state triggers UI updates
-  const [renderPositions, setRenderPositions] = useState<{
-    [id: number]: { x: number; y: number; rotation: number; scale: number; isDragging: boolean };
-  }>({});
-
+  const pieceRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const physicsRef = useRef<Map<number, PiecePhysics>>(new Map());
   const pointerHistoryRef = useRef<Map<number, PointerRecord[]>>(new Map());
   const activePointerIdRef = useRef<Map<number, number>>(new Map());
   const animFrameRef = useRef<number | null>(null);
-  const isResettingRef = useRef<boolean>(false);
-  const resetProgressRef = useRef<number>(1);
-  const prevFlavourRef = useRef<string>(activeFlavourId);
-  const prevIsMobileRef = useRef<boolean>(isMobile);
-  const [isBursting, setIsBursting] = useState<boolean>(false);
-  const isBurstingRef = useRef<boolean>(false);
-  const isScatteredRef = useRef<boolean>(isScattered);
+  const isLoopRunningRef = useRef<boolean>(false);
+  const boundsRef = useRef<{ minX: number; maxX: number; minY: number; maxY: number }>({
+    minX: -550,
+    maxX: 550,
+    minY: -320,
+    maxY: 340,
+  });
 
-  useEffect(() => {
-    isScatteredRef.current = isScattered;
-  }, [isScattered]);
+  // Measure bounds once or on resize (ZERO layout thrashing in 60fps loop)
+  const updateBounds = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const section = container.closest<HTMLElement>("#flavours") || document.getElementById("flavours");
+    if (!section) return;
 
-  // Manage burst-out state when scattering starts
-  useEffect(() => {
-    if (isScattered) {
-      setIsBursting(true);
-      isBurstingRef.current = true;
-      const timer = setTimeout(() => {
-        setIsBursting(false);
-        isBurstingRef.current = false;
-      }, 550);
-      return () => clearTimeout(timer);
-    } else {
-      setIsBursting(false);
-      isBurstingRef.current = false;
-    }
-  }, [isScattered]);
+    const cRect = container.getBoundingClientRect();
+    const sRect = section.getBoundingClientRect();
+    const cX = cRect.left + cRect.width / 2;
+    const cY = cRect.top + cRect.height / 2;
+    const pad = 35;
 
-  // Initialize or re-anchor positions
-  // resetToOrigin: true when switching flavours or first mount; false to keep pieces wherever user left them
-  // smooth: true when clicking packet to trigger spring recall
-  const initPositions = useCallback(
-    (resetToOrigin = true, smooth = false) => {
-      if (resetToOrigin) {
-        physicsRef.current.clear();
-      }
-      const newMap = new Map<number, PiecePhysicsState>();
-      const newRenderState: {
-        [id: number]: { x: number; y: number; rotation: number; scale: number; isDragging: boolean };
-      } = {};
-
-      pieces.forEach((piece) => {
-        const coords = isMobile ? piece.mobile : piece.desktop;
-        const current = physicsRef.current.get(piece.id);
-
-        const originX = coords.x;
-        const originY = coords.y;
-        const originRot = coords.rotate;
-        const baseScale = coords.scale;
-
-        // Preserve current user-dragged position unless switching flavours or explicitly resetting
-        const startX = resetToOrigin ? originX : (current ? current.x : originX);
-        const startY = resetToOrigin ? originY : (current ? current.y : originY);
-        const startRot = resetToOrigin ? originRot : (current ? current.rotation : originRot);
-
-        newMap.set(piece.id, {
-          id: piece.id,
-          x: startX,
-          y: startY,
-          vx: 0,
-          vy: 0,
-          rotation: startRot,
-          vRot: 0,
-          scale: baseScale,
-          isDragging: false,
-          isThrown: false,
-          originX,
-          originY,
-          originRot,
-          baseScale,
-        });
-
-        newRenderState[piece.id] = {
-          x: startX,
-          y: startY,
-          rotation: startRot,
-          scale: baseScale,
-          isDragging: false,
-        };
-      });
-
-      physicsRef.current = newMap;
-      setRenderPositions(newRenderState);
-
-      if (smooth) {
-        isResettingRef.current = true;
-        resetProgressRef.current = 0;
-      }
-    },
-    [pieces, isMobile]
-  );
-
-  // Initial load
-  useEffect(() => {
-    initPositions(true, false);
+    boundsRef.current = {
+      minX: sRect.left - cX + pad,
+      maxX: sRect.right - cX - pad,
+      minY: sRect.top - cY + pad,
+      maxY: sRect.bottom - cY - pad,
+    };
   }, []);
 
-  // ONLY reset positions when the flavour genuinely changes or screen mode flips
   useEffect(() => {
-    if (prevFlavourRef.current !== activeFlavourId || prevIsMobileRef.current !== isMobile) {
-      prevFlavourRef.current = activeFlavourId;
-      prevIsMobileRef.current = isMobile;
-      initPositions(true, false);
-    }
-  }, [activeFlavourId, isMobile, initPositions]);
+    updateBounds();
+    window.addEventListener("resize", updateBounds, { passive: true });
+    return () => window.removeEventListener("resize", updateBounds);
+  }, [updateBounds]);
 
-  // Smooth spring back to default constellation when user clicks the packet
+  // Apply transform directly to DOM element (0 React re-renders)
+  const applyTransform = useCallback((state: PiecePhysics, isBursting = false, delay = "0s") => {
+    const el = pieceRefs.current.get(state.id);
+    if (!el) return;
+
+    if (!isScattered) {
+      el.style.transform = `translate(-50%, -50%) translate3d(0px, 0px, -140px) rotate(0deg) scale(0.22)`;
+      el.style.opacity = "0.85";
+      el.style.transition = "transform 180ms cubic-bezier(0.4, 0, 0.2, 1), opacity 150ms ease-in";
+    } else {
+      el.style.transform = `translate(-50%, -50%) translate3d(${state.x}px, ${state.y}px, 0px) rotate(${state.rotation}deg) scale(${state.scale})`;
+      el.style.opacity = "1";
+      if (state.isDragging) {
+        el.style.transition = "none";
+      } else if (isBursting) {
+        el.style.transition = `transform 450ms cubic-bezier(0.175, 0.885, 0.32, 1.25) ${delay}, opacity 80ms ease-out`;
+      } else if (state.isThrown) {
+        el.style.transition = "none";
+      } else {
+        el.style.transition = "transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+      }
+    }
+  }, [isScattered]);
+
+  // Initialize piece coordinates
+  const initPositions = useCallback((burst = false) => {
+    physicsRef.current.clear();
+    pieces.forEach((piece) => {
+      const coords = isMobile ? piece.mobile : piece.desktop;
+      const state: PiecePhysics = {
+        id: piece.id,
+        x: coords.x,
+        y: coords.y,
+        vx: 0,
+        vy: 0,
+        rotation: coords.rotate,
+        vRot: 0,
+        scale: coords.scale,
+        isDragging: false,
+        isThrown: false,
+        originX: coords.x,
+        originY: coords.y,
+        originRot: coords.rotate,
+        baseScale: coords.scale,
+      };
+      physicsRef.current.set(piece.id, state);
+      applyTransform(state, burst, piece.delay || "0s");
+    });
+  }, [pieces, isMobile, applyTransform]);
+
+  // Sync positions when props change
+  useEffect(() => {
+    initPositions(true);
+  }, [pieces, isMobile, activeFlavourId, initPositions]);
+
+  // When isScattered changes (retract or burst)
+  useEffect(() => {
+    physicsRef.current.forEach((state) => {
+      const piece = pieces.find((p) => p.id === state.id);
+      applyTransform(state, isScattered, piece?.delay || "0s");
+    });
+  }, [isScattered, pieces, applyTransform]);
+
+  // Spring back when packet is clicked directly
   useEffect(() => {
     if (onResetTrigger > 0) {
-      initPositions(false, true);
+      physicsRef.current.forEach((state) => {
+        state.x = state.originX;
+        state.y = state.originY;
+        state.rotation = state.originRot;
+        state.scale = state.baseScale;
+        state.vx = 0;
+        state.vy = 0;
+        state.vRot = 0;
+        state.isThrown = false;
+        state.isDragging = false;
+        applyTransform(state, false);
+      });
     }
-  }, [onResetTrigger, initPositions]);
+  }, [onResetTrigger, applyTransform]);
 
-  // Main 60fps Physics & Float Loop across entire #flavours section
-  useEffect(() => {
-    let lastTime = performance.now();
+  // Stop the physics loop when not needed
+  const stopLoop = useCallback(() => {
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
+    isLoopRunningRef.current = false;
+  }, []);
 
-    const loop = (currentTime: number) => {
-      const dt = Math.min((currentTime - lastTime) / 1000, 0.05); // cap delta time to 50ms
-      lastTime = currentTime;
+  // Lightweight physics loop that ONLY runs while pieces are actively flying through the air
+  const runPhysicsLoop = useCallback(() => {
+    if (isLoopRunningRef.current) return;
+    isLoopRunningRef.current = true;
 
-      const container = containerRef.current;
-      const section = container
-        ? (container.closest<HTMLElement>("#flavours") || document.getElementById("flavours"))
-        : null;
+    const tick = () => {
+      let anyThrown = false;
+      const { minX, maxX, minY, maxY } = boundsRef.current;
 
-      // Dynamic Section-Wide Boundaries relative to packet center
-      let minX = -600;
-      let maxX = 600;
-      let minY = -360;
-      let maxY = 380;
+      physicsRef.current.forEach((state) => {
+        if (!state.isThrown) return;
+        anyThrown = true;
 
-      if (container && section) {
-        const cRect = container.getBoundingClientRect();
-        const sRect = section.getBoundingClientRect();
-        const cX = cRect.left + cRect.width / 2;
-        const cY = cRect.top + cRect.height / 2;
+        state.x += state.vx;
+        state.y += state.vy;
+        state.rotation += state.vRot;
 
-        const padX = 35;
-        const padY = 35;
-        minX = (sRect.left - cX) + padX;
-        maxX = (sRect.right - cX) - padX;
-        minY = (sRect.top - cY) + padY;
-        maxY = (sRect.bottom - cY) - padY;
-      }
+        state.vx *= 0.94;
+        state.vy *= 0.94;
+        state.vRot *= 0.95;
 
-      let hasChanges = false;
-      const nextRender: {
-        [id: number]: { x: number; y: number; rotation: number; scale: number; isDragging: boolean };
-      } = {};
+        // Bounce off section walls with restitution
+        if (state.x < minX) {
+          state.x = minX;
+          state.vx = -state.vx * 0.65;
+          state.vRot *= -0.7;
+        } else if (state.x > maxX) {
+          state.x = maxX;
+          state.vx = -state.vx * 0.65;
+          state.vRot *= -0.7;
+        }
 
-      const map = physicsRef.current;
+        if (state.y < minY) {
+          state.y = minY;
+          state.vy = -state.vy * 0.65;
+          state.vRot *= -0.7;
+        } else if (state.y > maxY) {
+          state.y = maxY;
+          state.vy = -state.vy * 0.65;
+          state.vRot *= -0.7;
+        }
 
-      // While smoothly retracting behind packet (!isScatteredRef.current) or bursting outward (isBurstingRef.current),
-      // allow GPU-accelerated CSS transitions to run uninterrupted at native refresh rate
-      if (!isScatteredRef.current || isBurstingRef.current) {
-        animFrameRef.current = requestAnimationFrame(loop);
-        return;
-      }
-
-      // Handle resetting spring back to origin
-      if (isResettingRef.current) {
-        resetProgressRef.current += dt * 3.5;
-        const t = Math.min(resetProgressRef.current, 1);
-
-        map.forEach((state) => {
-          state.x = state.x + (state.originX - state.x) * Math.min(dt * 8, 0.35);
-          state.y = state.y + (state.originY - state.y) * Math.min(dt * 8, 0.35);
-          state.rotation = state.rotation + (state.originRot - state.rotation) * Math.min(dt * 8, 0.35);
-          state.scale = state.baseScale;
+        // Rest once dissipated
+        if (Math.hypot(state.vx, state.vy) < 0.22) {
+          state.isThrown = false;
           state.vx = 0;
           state.vy = 0;
           state.vRot = 0;
-          state.isThrown = false;
-
-          nextRender[state.id] = {
-            x: state.x,
-            y: state.y,
-            rotation: state.rotation,
-            scale: state.scale,
-            isDragging: false,
-          };
-        });
-
-        if (t >= 1) {
-          isResettingRef.current = false;
         }
-        hasChanges = true;
+
+        applyTransform(state, false);
+      });
+
+      if (anyThrown) {
+        animFrameRef.current = requestAnimationFrame(tick);
       } else {
-        // Standard Physics & Ambient Zero-G Float
-        map.forEach((state) => {
-          if (state.isDragging) {
-            // Dragging is updated directly in pointermove for 0-latency tracking
-            nextRender[state.id] = {
-              x: state.x,
-              y: state.y,
-              rotation: state.rotation,
-              scale: state.baseScale * 1.15,
-              isDragging: true,
-            };
-            hasChanges = true;
-            return;
-          }
-
-          if (state.isThrown) {
-            // Apply velocity & angular momentum
-            state.x += state.vx;
-            state.y += state.vy;
-            state.rotation += state.vRot;
-
-            // Air friction damping
-            state.vx *= 0.94;
-            state.vy *= 0.94;
-            state.vRot *= 0.95;
-
-            // Bounce off section boundary walls with restitution
-            if (state.x < minX) {
-              state.x = minX;
-              state.vx = -state.vx * 0.65;
-              state.vRot *= -0.7;
-            } else if (state.x > maxX) {
-              state.x = maxX;
-              state.vx = -state.vx * 0.65;
-              state.vRot *= -0.7;
-            }
-
-            if (state.y < minY) {
-              state.y = minY;
-              state.vy = -state.vy * 0.65;
-              state.vRot *= -0.7;
-            } else if (state.y > maxY) {
-              state.y = maxY;
-              state.vy = -state.vy * 0.65;
-              state.vRot *= -0.7;
-            }
-
-            // If speed has dissipated, stop throw and smoothly enter ambient floating where it landed
-            if (Math.hypot(state.vx, state.vy) < 0.22) {
-              state.isThrown = false;
-              state.vx = 0;
-              state.vy = 0;
-              state.vRot = 0;
-            }
-
-            nextRender[state.id] = {
-              x: state.x,
-              y: state.y,
-              rotation: state.rotation,
-              scale: state.baseScale,
-              isDragging: false,
-            };
-            hasChanges = true;
-          } else {
-            // Ambient organic zero-gravity drift around its current resting spot
-            const timeSec = currentTime * 0.001;
-            const seed = state.id * 1.618;
-            const driftVx = Math.sin(timeSec * 1.1 + seed) * 0.35;
-            const driftVy = Math.cos(timeSec * 0.85 + seed * 1.3) * 0.35;
-            const driftVRot = Math.sin(timeSec * 0.75 + seed) * 0.12;
-
-            state.x += driftVx;
-            state.y += driftVy;
-            state.rotation += driftVRot;
-
-            // Contain within full section boundaries
-            if (state.x < minX) state.x = minX;
-            if (state.x > maxX) state.x = maxX;
-            if (state.y < minY) state.y = minY;
-            if (state.y > maxY) state.y = maxY;
-
-            nextRender[state.id] = {
-              x: state.x,
-              y: state.y,
-              rotation: state.rotation,
-              scale: state.baseScale,
-              isDragging: false,
-            };
-            hasChanges = true;
-          }
-        });
-      }
-
-      if (hasChanges) {
-        setRenderPositions(nextRender);
-      }
-
-      animFrameRef.current = requestAnimationFrame(loop);
-    };
-
-    animFrameRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current);
+        stopLoop();
       }
     };
-  }, []);
 
-  // Pointer Down (Mouse click or finger touch)
+    animFrameRef.current = requestAnimationFrame(tick);
+  }, [applyTransform, stopLoop]);
+
+  useEffect(() => {
+    return () => stopLoop();
+  }, [stopLoop]);
+
+  // Pointer Down
   const handlePointerDown = (e: React.PointerEvent, pieceId: number) => {
     e.preventDefault();
     e.stopPropagation();
 
     const targetEl = e.currentTarget as HTMLElement;
     targetEl.setPointerCapture(e.pointerId);
-
     activePointerIdRef.current.set(pieceId, e.pointerId);
 
     const state = physicsRef.current.get(pieceId);
@@ -382,9 +270,15 @@ export default function InteractiveScatterLayer({
     pointerHistoryRef.current.set(pieceId, [
       { x: e.clientX, y: e.clientY, time: performance.now() },
     ]);
+
+    const el = pieceRefs.current.get(pieceId);
+    if (el) {
+      el.style.zIndex = "50";
+      el.style.cursor = "grabbing";
+    }
   };
 
-  // Pointer Move (Mouse drag or finger movement)
+  // Pointer Move (Zero-latency direct DOM update)
   const handlePointerMove = (e: React.PointerEvent, pieceId: number) => {
     e.stopPropagation();
     const currentPointerId = activePointerIdRef.current.get(pieceId);
@@ -399,21 +293,19 @@ export default function InteractiveScatterLayer({
     if (lastPoint) {
       const dx = e.clientX - lastPoint.x;
       const dy = e.clientY - lastPoint.y;
-
       state.x += dx;
       state.y += dy;
-      // Slight interactive tilt during drag
       state.rotation += dx * 0.15;
+      applyTransform(state, false);
     }
 
     const now = performance.now();
     history.push({ x: e.clientX, y: e.clientY, time: now });
-    // Keep last 5 points within ~100ms
     const recent = history.filter((p) => now - p.time < 120);
     pointerHistoryRef.current.set(pieceId, recent.slice(-5));
   };
 
-  // Pointer Up / Cancel (Throwing release)
+  // Pointer Up / Fling Release
   const handlePointerUp = (e: React.PointerEvent, pieceId: number) => {
     e.stopPropagation();
     const targetEl = e.currentTarget as HTMLElement;
@@ -421,18 +313,19 @@ export default function InteractiveScatterLayer({
       if (targetEl.hasPointerCapture(e.pointerId)) {
         targetEl.releasePointerCapture(e.pointerId);
       }
-    } catch {
-      // Ignore if pointer capture already ended
-    }
+    } catch {}
 
     activePointerIdRef.current.delete(pieceId);
-
     const state = physicsRef.current.get(pieceId);
     if (!state) return;
 
     state.isDragging = false;
+    const el = pieceRefs.current.get(pieceId);
+    if (el) {
+      el.style.zIndex = "20";
+      el.style.cursor = "grab";
+    }
 
-    // Calculate throw velocity from pointer history
     const history = pointerHistoryRef.current.get(pieceId) || [];
     pointerHistoryRef.current.delete(pieceId);
 
@@ -442,23 +335,20 @@ export default function InteractiveScatterLayer({
       const dt = newest.time - oldest.time;
 
       if (dt > 12) {
-        // Convert to px per frame (~16ms)
         const frameMultiplier = 16.67 / dt;
         let vx = (newest.x - oldest.x) * frameMultiplier;
         let vy = (newest.y - oldest.y) * frameMultiplier;
 
-        // Cap maximum throw speed
-        const maxThrowSpeed = 38;
+        const maxThrowSpeed = 36;
         vx = Math.max(-maxThrowSpeed, Math.min(maxThrowSpeed, vx));
         vy = Math.max(-maxThrowSpeed, Math.min(maxThrowSpeed, vy));
 
-        const speed = Math.hypot(vx, vy);
-
-        if (speed > 1.2) {
+        if (Math.hypot(vx, vy) > 1.2) {
           state.vx = vx;
           state.vy = vy;
-          state.vRot = vx * 0.45 + (Math.random() - 0.5) * 4;
+          state.vRot = vx * 0.45 + (Math.random() - 0.5) * 3;
           state.isThrown = true;
+          runPhysicsLoop();
         }
       }
     }
@@ -471,16 +361,14 @@ export default function InteractiveScatterLayer({
       className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 overflow-visible select-none"
     >
       {pieces.map((piece) => {
-        const render = renderPositions[piece.id];
-        const x = render ? render.x : isMobile ? piece.mobile.x : piece.desktop.x;
-        const y = render ? render.y : isMobile ? piece.mobile.y : piece.desktop.y;
-        const rot = render ? render.rotation : isMobile ? piece.mobile.rotate : piece.desktop.rotate;
-        const scale = render ? render.scale : isMobile ? piece.mobile.scale : piece.desktop.scale;
-        const isDragging = render ? render.isDragging : false;
-
+        const coords = isMobile ? piece.mobile : piece.desktop;
         return (
           <div
             key={`${activeFlavourId}-${piece.id}`}
+            ref={(el) => {
+              if (el) pieceRefs.current.set(piece.id, el);
+              else pieceRefs.current.delete(piece.id);
+            }}
             data-scatter-piece="true"
             onPointerDown={(e) => handlePointerDown(e, piece.id)}
             onPointerMove={(e) => handlePointerMove(e, piece.id)}
@@ -492,27 +380,20 @@ export default function InteractiveScatterLayer({
             onTouchCancel={(e) => e.stopPropagation()}
             className={`absolute left-1/2 top-1/2 ${piece.size} ${
               isScattered ? "pointer-events-auto cursor-grab active:cursor-grabbing" : "pointer-events-none"
-            } select-none touch-none transition-shadow duration-200 group ${
-              isDragging ? "z-50" : "z-20"
-            }`}
+            } select-none touch-none transition-shadow duration-200 group z-20`}
             style={{
               transform: isScattered
-                ? `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0px) rotate(${rot}deg) scale(${scale})`
+                ? `translate(-50%, -50%) translate3d(${coords.x}px, ${coords.y}px, 0px) rotate(${coords.rotate}deg) scale(${coords.scale})`
                 : `translate(-50%, -50%) translate3d(0px, 0px, -140px) rotate(0deg) scale(0.22)`,
               opacity: isScattered ? 1 : 0.85,
-              transition: isDragging
-                ? "none"
-                : isBursting
-                ? `transform 450ms cubic-bezier(0.175, 0.885, 0.32, 1.25) ${piece.delay || "0s"}, opacity 80ms ease-out`
-                : isScattered
-                ? "none"
-                : `transform 180ms cubic-bezier(0.4, 0, 0.2, 1), opacity 150ms ease-in`,
+              willChange: "transform",
             }}
             title="Grab & throw me!"
           >
+            {/* GPU-accelerated CSS float animation runs at 120fps with 0% CPU */}
             <div
-              className={`w-full h-full flex items-center justify-center transition-transform duration-150 ${
-                isDragging ? "scale-110" : "group-hover:scale-105"
+              className={`w-full h-full flex items-center justify-center transition-transform duration-150 group-hover:scale-105 ${
+                piece.floatClass || "animate-float-gentle"
               }`}
             >
               <img
@@ -522,11 +403,7 @@ export default function InteractiveScatterLayer({
                 loading="eager"
                 decoding="sync"
                 draggable={false}
-                className={`w-full h-full object-contain pointer-events-none select-none filter contrast-105 transition-all duration-200 ${
-                  isDragging
-                    ? "drop-shadow-[0_25px_35px_rgba(0,0,0,0.45)]"
-                    : "drop-shadow-[0_10px_20px_rgba(180,40,0,0.35)] group-hover:drop-shadow-[0_16px_28px_rgba(180,40,0,0.45)]"
-                }`}
+                className="w-full h-full object-contain pointer-events-none select-none filter contrast-105 transition-all duration-200 drop-shadow-[0_10px_20px_rgba(180,40,0,0.35)] group-hover:drop-shadow-[0_16px_28px_rgba(180,40,0,0.45)]"
               />
             </div>
           </div>

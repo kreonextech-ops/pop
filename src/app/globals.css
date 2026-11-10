@@ -4,7 +4,7 @@
        url('/fonts/LilitaOne-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @tailwind base;
@@ -20,7 +20,7 @@ html,
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Lilita One', var(--font-lilita), cursive, sans-serif;
+  font-family: var(--font-lilita), 'Lilita One', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
@@ -39,15 +39,21 @@ body {
 .animate-wave-marquee {
   display: flex;
   width: max-content;
-  animation: wave-marquee 25s linear infinite;
+  animation: wave-marquee 28s linear infinite;
   will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 .animate-wave-marquee-reverse {
   display: flex;
   width: max-content;
-  animation: wave-marquee-reverse 25s linear infinite;
+  animation: wave-marquee-reverse 28s linear infinite;
   will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 /* Continuous Fluid Drifting Waves */

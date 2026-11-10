@@ -496,7 +496,6 @@ export default function BiteJoyPage() {
                 {[...Array(6)].map((_, i) => (
                   <span
                     key={i}
-                    style={{ fontFamily: "'Lilita One', cursive, sans-serif" }}
                     className="font-display text-[20px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
                   >
                     THE COOLEST WAY TO SNACK BETTER <span className="text-[#FFCD3C]">✦</span>
@@ -507,7 +506,6 @@ export default function BiteJoyPage() {
                 {[...Array(6)].map((_, i) => (
                   <span
                     key={i}
-                    style={{ fontFamily: "'Lilita One', cursive, sans-serif" }}
                     className="font-display text-[20px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
                   >
                     THE COOLEST WAY TO SNACK BETTER <span className="text-[#FFCD3C]">✦</span>
@@ -734,7 +732,6 @@ export default function BiteJoyPage() {
               {[...Array(6)].map((_, i) => (
                 <span
                   key={i}
-                  style={{ fontFamily: "'Lilita One', cursive, sans-serif" }}
                   className="font-display text-[15px] sm:text-[22px] md:text-[26px] text-[#FFF8EE] tracking-[0.08em] uppercase font-bold whitespace-nowrap"
                 >
                   THE COOLEST WAY TO SNACK BETTER <span className="text-[#FFCD3C]">✦</span>
@@ -745,7 +742,6 @@ export default function BiteJoyPage() {
               {[...Array(6)].map((_, i) => (
                 <span
                   key={i}
-                  style={{ fontFamily: "'Lilita One', cursive, sans-serif" }}
                   className="font-display text-[15px] sm:text-[22px] md:text-[26px] text-[#FFF8EE] tracking-[0.08em] uppercase font-bold whitespace-nowrap"
                 >
                   THE COOLEST WAY TO SNACK BETTER <span className="text-[#FFCD3C]">✦</span>
