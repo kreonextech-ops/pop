@@ -315,16 +315,38 @@ export default function BiteJoyPage() {
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    // If the touch originated from a scatter piece, packet, or button, ignore section swipe
+    const target = e.target as HTMLElement;
+    if (
+      target.closest("[data-scatter-piece]") ||
+      target.closest("[data-packet]") ||
+      target.closest("button") ||
+      target.closest("a")
+    ) {
+      setTouchStartX(null);
+      return;
+    }
     setTouchStartX(e.touches[0].clientX);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX === null) return;
+    const target = e.target as HTMLElement;
+    if (
+      target.closest("[data-scatter-piece]") ||
+      target.closest("[data-packet]") ||
+      target.closest("button") ||
+      target.closest("a")
+    ) {
+      setTouchStartX(null);
+      return;
+    }
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchStartX - touchEndX;
-    if (diff > 40) {
+    // Require intentional swipe on background of at least 70px to switch flavours
+    if (diff > 70) {
       nextPlanet();
-    } else if (diff < -40) {
+    } else if (diff < -70) {
       prevPlanet();
     }
     setTouchStartX(null);
@@ -605,6 +627,7 @@ export default function BiteJoyPage() {
 
             {/* Central Product Packet Stack (Pre-rendered, Zero-Lag, Instant Crossfade) */}
             <div
+              data-packet="true"
               onClick={triggerScatter}
               className={`relative z-30 flex items-center justify-center h-[235px] sm:h-80 md:h-[340px] lg:h-[380px] w-56 sm:w-72 md:w-80 group cursor-pointer select-none transition-transform duration-250 ease-out animate-float-gentle ${
                 isTransitioningFlavour ? "scale-92" : "scale-100"

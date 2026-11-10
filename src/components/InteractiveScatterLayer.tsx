@@ -383,6 +383,7 @@ export default function InteractiveScatterLayer({
 
   // Pointer Move (Mouse drag or finger movement)
   const handlePointerMove = (e: React.PointerEvent, pieceId: number) => {
+    e.stopPropagation();
     const currentPointerId = activePointerIdRef.current.get(pieceId);
     if (currentPointerId !== e.pointerId) return;
 
@@ -411,6 +412,7 @@ export default function InteractiveScatterLayer({
 
   // Pointer Up / Cancel (Throwing release)
   const handlePointerUp = (e: React.PointerEvent, pieceId: number) => {
+    e.stopPropagation();
     const targetEl = e.currentTarget as HTMLElement;
     try {
       if (targetEl.hasPointerCapture(e.pointerId)) {
@@ -476,10 +478,15 @@ export default function InteractiveScatterLayer({
         return (
           <div
             key={piece.id}
+            data-scatter-piece="true"
             onPointerDown={(e) => handlePointerDown(e, piece.id)}
             onPointerMove={(e) => handlePointerMove(e, piece.id)}
             onPointerUp={(e) => handlePointerUp(e, piece.id)}
             onPointerCancel={(e) => handlePointerUp(e, piece.id)}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+            onTouchCancel={(e) => e.stopPropagation()}
             className={`absolute left-1/2 top-1/2 ${piece.size} ${
               isScattered ? "pointer-events-auto cursor-grab active:cursor-grabbing" : "pointer-events-none"
             } select-none touch-none transition-shadow duration-200 group ${
