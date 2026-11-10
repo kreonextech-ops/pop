@@ -663,66 +663,84 @@ export default function BiteJoyPage() {
         </div>
 
         {/* Flavour Details & Action Buttons */}
-        <div className="relative max-w-xl w-full mx-auto px-4 text-center mt-1 sm:mt-2 mb-1 sm:mb-2 relative z-30 shrink-0 flex flex-col items-center">
+        <div className="relative max-w-xl w-full mx-auto px-4 text-center mt-1 sm:mt-2 mb-1 sm:mb-3 relative z-30 shrink-0 flex flex-col items-center">
           
-          {/* Interactive Flavour Switcher Slider Pills */}
-          <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-1.5 z-30">
-            {flavourPlanets.map((flavour, idx) => {
-              const isActive = activePlanetIndex === idx;
-              return (
-                <button
-                  key={flavour.id}
-                  onClick={() => changeFlavour(idx)}
-                  className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1.5 ${
-                    isActive
-                      ? "bg-[#25100E] text-[#FFCD3C] shadow-lg scale-105 ring-2 ring-[#FFCD3C]"
-                      : "bg-white/85 hover:bg-white text-[#522C28] border border-[#522C28]/20 hover:scale-100"
-                  }`}
-                >
-                  <span>{flavour.badge}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div
-            className={`text-[10px] sm:text-xs font-black tracking-widest uppercase transition-colors duration-300 ${
-              activePlanetIndex === 0 ? "text-white/80" : "text-[#522C28]/80"
-            }`}
-          >
-            {currentFlavour.code}
-          </div>
+          {/* 1. Flavour Name directly below the Product Pouch */}
           <h3
-            className={`font-display text-xl sm:text-3xl md:text-4xl font-black tracking-wider uppercase mt-0.5 transition-colors duration-300 ${
+            className={`font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-wider uppercase transition-colors duration-300 ${
               activePlanetIndex === 0
-                ? "text-[#FFF8EE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
-                : "text-[#25100E] drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]"
+                ? "text-[#FFF8EE] drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]"
+                : "text-[#25100E] drop-shadow-[0_1px_3px_rgba(255,255,255,0.9)]"
             }`}
           >
             {currentFlavour.name}
           </h3>
 
-          {/* Dual Action Buttons: Buy Now & See Details */}
+          {/* 2. Dual Action Buttons: Buy Now & See Details */}
           <div className="mt-2 sm:mt-3 flex items-center justify-center gap-2 sm:gap-3 z-30 relative">
-            {/* Buy Now Button (Primary Solid) */}
+            {/* Buy Now Button (High-Contrast Theme-Adaptive Solid) */}
             <button
               onClick={() => setCartCount((c) => c + 1)}
-              style={{ backgroundColor: currentFlavour.accentBg || "#D73B3A" }}
-              className="px-4 sm:px-6 py-1.5 sm:py-2.5 rounded-full text-white font-black text-[11px] sm:text-sm uppercase tracking-wider shadow-[0_4px_14px_rgba(215,59,58,0.4)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer group"
+              className={`px-5 sm:px-7 py-2 sm:py-2.5 rounded-full font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2 cursor-pointer group ${
+                activePlanetIndex === 0
+                  ? "bg-[#25100E] text-[#FFCD3C] hover:bg-[#1A0A09] shadow-[0_6px_20px_rgba(37,16,14,0.45)] ring-2 ring-[#FFCD3C]/60"
+                  : activePlanetIndex === 1
+                  ? "bg-[#D73B3A] text-white hover:bg-[#B71C1C] shadow-[0_6px_20px_rgba(215,59,58,0.4)]"
+                  : "bg-[#25100E] text-[#FFCD3C] hover:bg-[#1A0A09] shadow-[0_6px_20px_rgba(37,16,14,0.4)] ring-2 ring-[#FFCD3C]/60"
+              }`}
             >
-              <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:scale-110" />
+              <ShoppingBag className="w-4 h-4 transition-transform group-hover:scale-110" />
               <span>Buy Now</span>
             </button>
 
-            {/* See Details Button (Secondary Outline) */}
+            {/* See Details Button (Secondary Frosted Glass Outline) */}
             <Link
               href="#details"
-              className="px-4 sm:px-6 py-1.5 sm:py-2.5 rounded-full bg-white/95 hover:bg-white text-[#25100E] border border-[#25100E]/25 hover:border-[#25100E] font-bold text-[11px] sm:text-sm uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer backdrop-blur-sm"
+              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer backdrop-blur-md ${
+                activePlanetIndex === 0
+                  ? "bg-white/20 hover:bg-white/30 text-white border border-white/40 shadow-sm"
+                  : "bg-white/90 hover:bg-white text-[#25100E] border border-[#25100E]/20"
+              }`}
             >
               <span>See Details</span>
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
             </Link>
           </div>
+
+          {/* 3. Redesigned Premium Segmented Flavour Switcher Dock */}
+          <div className="mt-3 sm:mt-4 z-30">
+            <div
+              className={`inline-flex items-center p-1 sm:p-1.5 rounded-full backdrop-blur-md transition-all duration-300 shadow-[inset_0_1px_3px_rgba(0,0,0,0.15)] ${
+                activePlanetIndex === 0
+                  ? "bg-black/25 border border-white/20"
+                  : "bg-[#25100E]/10 border border-[#25100E]/15"
+              }`}
+            >
+              {flavourPlanets.map((flavour, idx) => {
+                const isActive = activePlanetIndex === idx;
+                return (
+                  <button
+                    key={flavour.id}
+                    onClick={() => changeFlavour(idx)}
+                    className={`px-3 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1.5 select-none ${
+                      isActive
+                        ? idx === 0
+                          ? "bg-gradient-to-r from-[#D73B3A] to-[#B71C1C] text-white shadow-md scale-102 ring-2 ring-[#FFCD3C]/80"
+                          : idx === 1
+                          ? "bg-gradient-to-r from-[#2D6A4F] to-[#1B4332] text-white shadow-md scale-102 ring-2 ring-[#A7F3D0]/80"
+                          : "bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-[#25100E] shadow-md scale-102 ring-2 ring-[#25100E]/50"
+                        : activePlanetIndex === 0
+                        ? "text-white/80 hover:text-white hover:bg-white/15"
+                        : "text-[#522C28]/80 hover:text-[#25100E] hover:bg-white/60"
+                    }`}
+                  >
+                    <span>{flavour.badge}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
         </div>
 
         {/* Bottom Straight Marquee Ribbon */}
