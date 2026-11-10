@@ -30,7 +30,7 @@ import MakhanaBenefitsScroll from "@/components/MakhanaBenefitsScroll";
 
 const cheeseScatterPieces: ScatterPieceData[] = [
   {
-    id: 1,
+    id: 301,
     src: "/scatter/cheese/04_swiss_cheese_wedge.png",
     alt: "Swiss Cheese Wedge Top-Left",
     desktop: { x: -335, y: -140, rotate: -24, scale: 1.08 },
@@ -40,7 +40,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     delay: "0.01s",
   },
   {
-    id: 2,
+    id: 302,
     src: "/scatter/cheese/10_triangle_cheese_wedge.png",
     alt: "Triangle Cheese Wedge Top-Right",
     desktop: { x: 335, y: -140, rotate: 20, scale: 1.08 },
@@ -50,7 +50,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     delay: "0.02s",
   },
   {
-    id: 3,
+    id: 303,
     src: "/scatter/cheese/03_cheese_cubes.png",
     alt: "Golden Cheddar Cubes Mid-Left",
     desktop: { x: -355, y: 12, rotate: 12, scale: 1.05 },
@@ -60,7 +60,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     delay: "0.03s",
   },
   {
-    id: 4,
+    id: 304,
     src: "/scatter/cheese/09_hole_filled_cheese_block.png",
     alt: "Porous Cheese Block Mid-Right",
     desktop: { x: 355, y: 12, rotate: -12, scale: 1.05 },
@@ -70,7 +70,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     delay: "0.04s",
   },
   {
-    id: 5,
+    id: 305,
     src: "/scatter/cheese/08_crumbly_cheese_chunks.png",
     alt: "Crumbly Cheese Chunks Lower-Left",
     desktop: { x: -325, y: 165, rotate: -16, scale: 1.02 },
@@ -80,7 +80,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
     delay: "0.05s",
   },
   {
-    id: 6,
+    id: 306,
     src: "/scatter/cheese/01_melting_cheese.png",
     alt: "Melty Cheese Lower-Right",
     desktop: { x: 325, y: 165, rotate: 22, scale: 1.02 },
@@ -93,7 +93,7 @@ const cheeseScatterPieces: ScatterPieceData[] = [
 
 const periPeriScatterPieces: ScatterPieceData[] = [
   {
-    id: 1,
+    id: 101,
     src: "/scatter/peri-peri/01_single_chilli.png",
     alt: "Single Red Chilli Top-Left",
     desktop: { x: -335, y: -140, rotate: -25, scale: 1.08 },
@@ -103,7 +103,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     delay: "0.01s",
   },
   {
-    id: 2,
+    id: 102,
     src: "/scatter/peri-peri/02_sliced_chilli.png",
     alt: "Sliced Red Chilli Top-Right",
     desktop: { x: 335, y: -140, rotate: 20, scale: 1.08 },
@@ -113,7 +113,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     delay: "0.02s",
   },
   {
-    id: 3,
+    id: 103,
     src: "/scatter/peri-peri/04_flame_chilli.png",
     alt: "Flame Chilli Mid-Left",
     desktop: { x: -355, y: 12, rotate: 12, scale: 1.05 },
@@ -123,7 +123,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     delay: "0.03s",
   },
   {
-    id: 4,
+    id: 104,
     src: "/scatter/peri-peri/05_spice_splatter_chilli.png",
     alt: "Spice Splatter Chilli Mid-Right",
     desktop: { x: 355, y: 12, rotate: -12, scale: 1.05 },
@@ -133,7 +133,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     delay: "0.04s",
   },
   {
-    id: 5,
+    id: 105,
     src: "/scatter/peri-peri/06_cut_chilli.png",
     alt: "Cut Chilli Lower-Left",
     desktop: { x: -325, y: 165, rotate: -16, scale: 1.02 },
@@ -143,7 +143,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
     delay: "0.05s",
   },
   {
-    id: 6,
+    id: 106,
     src: "/scatter/peri-peri/03_crossed_chillies.png",
     alt: "Crossed Chillies Lower-Right",
     desktop: { x: 325, y: 165, rotate: 22, scale: 1.02 },
@@ -156,7 +156,7 @@ const periPeriScatterPieces: ScatterPieceData[] = [
 
 const plainScatterPieces: ScatterPieceData[] = [
   {
-    id: 1,
+    id: 201,
     src: "/scatter/plain/05_makhana_with_leaves.png",
     alt: "Makhana with Lotus Leaves Top-Left",
     desktop: { x: -335, y: -140, rotate: -20, scale: 1.08 },
@@ -166,7 +166,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     delay: "0.01s",
   },
   {
-    id: 2,
+    id: 202,
     src: "/scatter/plain/08_makhana_leaf_cluster.png",
     alt: "Makhana Leaf Cluster Top-Right",
     desktop: { x: 335, y: -140, rotate: 20, scale: 1.08 },
@@ -176,7 +176,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     delay: "0.02s",
   },
   {
-    id: 3,
+    id: 203,
     src: "/scatter/plain/03_cracked_makhana.png",
     alt: "Cracked Crunchy Makhana Mid-Left",
     desktop: { x: -355, y: 12, rotate: 12, scale: 1.05 },
@@ -186,7 +186,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     delay: "0.03s",
   },
   {
-    id: 4,
+    id: 204,
     src: "/scatter/plain/06_large_makhana_with_crumbs.png",
     alt: "Popped Makhana with Crumbs Mid-Right",
     desktop: { x: 355, y: 12, rotate: -12, scale: 1.05 },
@@ -196,7 +196,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     delay: "0.04s",
   },
   {
-    id: 5,
+    id: 205,
     src: "/scatter/plain/01_single_makhana.png",
     alt: "Single Roasted Makhana Lower-Left",
     desktop: { x: -325, y: 165, rotate: -16, scale: 1.02 },
@@ -206,7 +206,7 @@ const plainScatterPieces: ScatterPieceData[] = [
     delay: "0.05s",
   },
   {
-    id: 6,
+    id: 206,
     src: "/scatter/plain/02_three_makhana_cluster.png",
     alt: "Three Makhana Cluster Lower-Right",
     desktop: { x: 325, y: 165, rotate: 22, scale: 1.02 },
@@ -618,6 +618,7 @@ export default function BiteJoyPage() {
             
             {/* Interactive Physics, Free-Floating & Draggable/Throwable Scatter Layer */}
             <InteractiveScatterLayer
+              key={currentFlavour.id}
               pieces={currentScatterPieces}
               isMobile={isMobile}
               isScattered={isScattered}

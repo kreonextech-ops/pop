@@ -96,6 +96,9 @@ export default function InteractiveScatterLayer({
   // smooth: true when clicking packet to trigger spring recall
   const initPositions = useCallback(
     (resetToOrigin = true, smooth = false) => {
+      if (resetToOrigin) {
+        physicsRef.current.clear();
+      }
       const newMap = new Map<number, PiecePhysicsState>();
       const newRenderState: {
         [id: number]: { x: number; y: number; rotation: number; scale: number; isDragging: boolean };
@@ -477,7 +480,7 @@ export default function InteractiveScatterLayer({
 
         return (
           <div
-            key={piece.id}
+            key={`${activeFlavourId}-${piece.id}`}
             data-scatter-piece="true"
             onPointerDown={(e) => handlePointerDown(e, piece.id)}
             onPointerMove={(e) => handlePointerMove(e, piece.id)}
@@ -513,6 +516,7 @@ export default function InteractiveScatterLayer({
               }`}
             >
               <img
+                key={`${activeFlavourId}-${piece.id}-img`}
                 src={piece.src}
                 alt={piece.alt}
                 loading="eager"
