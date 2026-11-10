@@ -529,7 +529,7 @@ export default function BiteJoyPage() {
         id="flavours"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="pt-2 sm:pt-12 md:pt-14 pb-0 bg-[#FDF2E8] text-[#522C28] relative z-10 overflow-hidden select-none w-full aspect-[941/1250] sm:aspect-auto flex flex-col justify-between transition-all duration-500 ease-out"
+        className="pt-2 sm:pt-8 md:pt-10 pb-0 bg-[#FDF2E8] text-[#522C28] relative z-10 overflow-hidden select-none w-full aspect-[941/1250] sm:aspect-auto sm:min-h-[720px] flex flex-col justify-between transition-all duration-500 ease-out"
       >
         
         {/* Dynamic Product Background SVG Layer (Smooth Crossfade with Instant Pre-colored Theme Fallback) */}
@@ -579,27 +579,21 @@ export default function BiteJoyPage() {
         </div>
 
         {/* Section Header */}
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-20 pt-4 sm:pt-10 mb-2 sm:mb-4 shrink-0 transition-all duration-500 ease-out">
-          <h2
-            className={`font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-tight uppercase transition-colors duration-300 ${
-              activePlanetIndex === 0
-                ? "text-[#FFF8EE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
-                : "text-[#25100E] drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]"
-            }`}
-          >
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-20 pt-3 sm:pt-6 mb-1 sm:mb-2 shrink-0 transition-all duration-500 ease-out">
+          <h2 className="font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-tight uppercase text-[#25100E] drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
             Find Your Flavour
           </h2>
         </div>
 
         {/* Central Packet Stage with Dynamic Ingredient Scatter & Slider Controls */}
-        <div className="relative max-w-4xl w-full mx-auto px-2 sm:px-8 flex items-center justify-center h-[245px] sm:h-[330px] md:h-[370px] my-auto shrink-0 overflow-visible">
+        <div className="relative max-w-4xl w-full mx-auto px-2 sm:px-8 flex items-center justify-center h-[245px] sm:h-[320px] md:h-[350px] my-auto shrink-0 overflow-visible">
           
           {/* Slider Prev Arrow Button (Left) */}
           <button
             onClick={prevPlanet}
             aria-label="Previous Flavour"
             title="Slide to Previous Flavour"
-            className="absolute left-1 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-40 p-2 sm:p-2.5 rounded-full bg-white/90 hover:bg-white text-[#25100E] shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-[#25100E]/15 hover:scale-115 active:scale-90 transition-all cursor-pointer backdrop-blur-sm group"
+            className="absolute left-1 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-40 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white text-[#25100E] shadow-[0_4px_16px_rgba(0,0,0,0.15)] border-2 border-[#25100E]/15 hover:border-[#25100E]/40 hover:scale-110 active:scale-90 transition-all cursor-pointer backdrop-blur-sm flex items-center justify-center group"
           >
             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] transition-transform group-hover:-translate-x-0.5" />
           </button>
@@ -609,7 +603,7 @@ export default function BiteJoyPage() {
             onClick={nextPlanet}
             aria-label="Next Flavour"
             title="Slide to Next Flavour"
-            className="absolute right-1 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 p-2 sm:p-2.5 rounded-full bg-white/90 hover:bg-white text-[#25100E] shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-[#25100E]/15 hover:scale-115 active:scale-90 transition-all cursor-pointer backdrop-blur-sm group"
+            className="absolute right-1 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white text-[#25100E] shadow-[0_4px_16px_rgba(0,0,0,0.15)] border-2 border-[#25100E]/15 hover:border-[#25100E]/40 hover:scale-110 active:scale-90 transition-all cursor-pointer backdrop-blur-sm flex items-center justify-center group"
           >
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] transition-transform group-hover:translate-x-0.5" />
           </button>
@@ -662,76 +656,31 @@ export default function BiteJoyPage() {
           </div>
         </div>
 
-        {/* Flavour Details & Action Buttons */}
-        <div className="relative max-w-xl w-full mx-auto px-4 text-center mt-1 sm:mt-2 mb-1 sm:mb-3 relative z-30 shrink-0 flex flex-col items-center">
+        {/* Flavour Details, Switcher & Action Buttons */}
+        <div className="relative max-w-xl w-full mx-auto px-4 text-center mt-1 sm:mt-2 mb-2 sm:mb-4 relative z-30 shrink-0 flex flex-col items-center">
           
           {/* 1. Flavour Name directly below the Product Pouch */}
-          <h3
-            className={`font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-wider uppercase transition-colors duration-300 ${
-              activePlanetIndex === 0
-                ? "text-[#FFF8EE] drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]"
-                : "text-[#25100E] drop-shadow-[0_1px_3px_rgba(255,255,255,0.9)]"
-            }`}
-          >
+          <h3 className="font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-wider uppercase text-[#25100E] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
             {currentFlavour.name}
           </h3>
 
-          {/* 2. Dual Action Buttons: Buy Now & See Details */}
-          <div className="mt-2 sm:mt-3 flex items-center justify-center gap-2 sm:gap-3 z-30 relative">
-            {/* Buy Now Button (High-Contrast Theme-Adaptive Solid) */}
-            <button
-              onClick={() => setCartCount((c) => c + 1)}
-              className={`px-5 sm:px-7 py-2 sm:py-2.5 rounded-full font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2 cursor-pointer group ${
-                activePlanetIndex === 0
-                  ? "bg-[#25100E] text-[#FFCD3C] hover:bg-[#1A0A09] shadow-[0_6px_20px_rgba(37,16,14,0.45)] ring-2 ring-[#FFCD3C]/60"
-                  : activePlanetIndex === 1
-                  ? "bg-[#D73B3A] text-white hover:bg-[#B71C1C] shadow-[0_6px_20px_rgba(215,59,58,0.4)]"
-                  : "bg-[#25100E] text-[#FFCD3C] hover:bg-[#1A0A09] shadow-[0_6px_20px_rgba(37,16,14,0.4)] ring-2 ring-[#FFCD3C]/60"
-              }`}
-            >
-              <ShoppingBag className="w-4 h-4 transition-transform group-hover:scale-110" />
-              <span>Buy Now</span>
-            </button>
-
-            {/* See Details Button (Secondary Frosted Glass Outline) */}
-            <Link
-              href="#details"
-              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer backdrop-blur-md ${
-                activePlanetIndex === 0
-                  ? "bg-white/20 hover:bg-white/30 text-white border border-white/40 shadow-sm"
-                  : "bg-white/90 hover:bg-white text-[#25100E] border border-[#25100E]/20"
-              }`}
-            >
-              <span>See Details</span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
-            </Link>
-          </div>
-
-          {/* 3. Redesigned Premium Segmented Flavour Switcher Dock */}
-          <div className="mt-3 sm:mt-4 z-30">
-            <div
-              className={`inline-flex items-center p-1 sm:p-1.5 rounded-full backdrop-blur-md transition-all duration-300 shadow-[inset_0_1px_3px_rgba(0,0,0,0.15)] ${
-                activePlanetIndex === 0
-                  ? "bg-black/25 border border-white/20"
-                  : "bg-[#25100E]/10 border border-[#25100E]/15"
-              }`}
-            >
+          {/* 2. Premium Tactile Flavour Switcher Dock */}
+          <div className="mt-2 sm:mt-2.5 z-30">
+            <div className="inline-flex items-center p-1 sm:p-1.5 rounded-full bg-white/95 shadow-[0_4px_16px_rgba(37,16,14,0.12)] border border-[#25100E]/15 backdrop-blur-md">
               {flavourPlanets.map((flavour, idx) => {
                 const isActive = activePlanetIndex === idx;
                 return (
                   <button
                     key={flavour.id}
                     onClick={() => changeFlavour(idx)}
-                    className={`px-3 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1.5 select-none ${
+                    className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs md:text-sm font-black uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1.5 select-none ${
                       isActive
                         ? idx === 0
-                          ? "bg-gradient-to-r from-[#D73B3A] to-[#B71C1C] text-white shadow-md scale-102 ring-2 ring-[#FFCD3C]/80"
+                          ? "bg-[#E53925] text-white shadow-md scale-102 ring-2 ring-[#FFCD3C]/80"
                           : idx === 1
-                          ? "bg-gradient-to-r from-[#2D6A4F] to-[#1B4332] text-white shadow-md scale-102 ring-2 ring-[#A7F3D0]/80"
-                          : "bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-[#25100E] shadow-md scale-102 ring-2 ring-[#25100E]/50"
-                        : activePlanetIndex === 0
-                        ? "text-white/80 hover:text-white hover:bg-white/15"
-                        : "text-[#522C28]/80 hover:text-[#25100E] hover:bg-white/60"
+                          ? "bg-[#2D6A4F] text-white shadow-md scale-102 ring-2 ring-[#52B788]/60"
+                          : "bg-[#F79E1B] text-[#25100E] shadow-md scale-102 ring-2 ring-[#25100E]/30"
+                        : "text-[#522C28] hover:bg-[#FFF3E3] hover:text-[#25100E]"
                     }`}
                   >
                     <span>{flavour.badge}</span>
@@ -739,6 +688,33 @@ export default function BiteJoyPage() {
                 );
               })}
             </div>
+          </div>
+
+          {/* 3. Dual Action Buttons: Buy Now & See Details */}
+          <div className="mt-2.5 sm:mt-3 flex items-center justify-center gap-2 sm:gap-3 z-30 relative">
+            {/* Buy Now Button (High-Contrast Theme-Adaptive Solid) */}
+            <button
+              onClick={() => setCartCount((c) => c + 1)}
+              className={`px-5 sm:px-7 py-2 sm:py-2.5 rounded-full font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2 cursor-pointer group ${
+                activePlanetIndex === 0
+                  ? "bg-[#25100E] text-[#FFCD3C] hover:bg-[#1A0A09] shadow-[0_6px_20px_rgba(37,16,14,0.35)] ring-2 ring-[#FFCD3C]/60"
+                  : activePlanetIndex === 1
+                  ? "bg-[#D73B3A] text-white hover:bg-[#B71C1C] shadow-[0_6px_20px_rgba(215,59,58,0.35)]"
+                  : "bg-[#25100E] text-[#FFCD3C] hover:bg-[#1A0A09] shadow-[0_6px_20px_rgba(37,16,14,0.35)] ring-2 ring-[#FFCD3C]/60"
+              }`}
+            >
+              <ShoppingBag className="w-4 h-4 transition-transform group-hover:scale-110" />
+              <span>Buy Now</span>
+            </button>
+
+            {/* See Details Button (Solid Crisp White) */}
+            <Link
+              href="#details"
+              className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer bg-white hover:bg-[#FFF8EE] text-[#25100E] border-2 border-[#25100E]/20 hover:border-[#25100E]"
+            >
+              <span>See Details</span>
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+            </Link>
           </div>
 
         </div>
