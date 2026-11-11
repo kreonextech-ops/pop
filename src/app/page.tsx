@@ -417,7 +417,7 @@ export default function BiteJoyPage() {
   const currentFlavour = flavourPlanets[activePlanetIndex] || flavourPlanets[0];
 
   return (
-    <div className="min-h-screen bg-[#FFF8EE] text-[#522C28] font-sans antialiased overflow-x-hidden selection:bg-[#D73B3A] selection:text-white relative">
+    <div className="min-h-screen bg-[#FFF8EE] text-[#522C28] font-sans antialiased overflow-x-clip selection:bg-[#D73B3A] selection:text-white relative">
       
       {/* =========================================================================
           TOP NAVBAR

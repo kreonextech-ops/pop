@@ -128,8 +128,8 @@ export default function Navbar() {
   };
 
   return (
-    <header className="w-full bg-[#FFF8EE]/95 sticky top-0 z-50 backdrop-blur-md border-b border-[#522C28]/10">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
+    <header className="w-full sticky top-0 z-50 px-2.5 sm:px-5 pt-2.5 pb-1 pointer-events-none">
+      <div className="pointer-events-auto max-w-6xl mx-auto px-4 sm:px-6 py-2.5 rounded-2xl bg-gradient-to-b from-white/70 via-[#FFF8EE]/55 to-[#FFF8EE]/45 backdrop-blur-xl backdrop-saturate-150 border border-white/80 ring-1 ring-[#522C28]/10 shadow-[0_8px_32px_rgba(82,44,40,0.12)] flex items-center justify-between gap-3 transition-all">
         {/* Left: Mobile hamburger + Brand Logo */}
         <div className="flex items-center gap-2.5">
           <button
@@ -173,7 +173,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setSearchOpen((v) => !v)}
-            className="p-2 rounded-full hover:bg-[#522C28]/5 hover:text-[#D73B3A] transition-colors cursor-pointer"
+            className="p-2 rounded-full bg-white/55 hover:bg-white/85 border border-white/70 hover:text-[#D73B3A] backdrop-blur-md transition-all cursor-pointer shadow-2xs"
             aria-label="Search Products"
             title="Search flavours & combos"
           >
@@ -189,10 +189,10 @@ export default function Navbar() {
                   setAccountOpen((v) => !v);
                   setMenuError(null);
                 }}
-                className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border shadow-xs transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border backdrop-blur-md shadow-xs transition-all cursor-pointer ${
                   accountOpen || pathname === "/account"
-                    ? "bg-[#25100E] text-[#FAC537] border-[#25100E]"
-                    : "bg-white border-[#522C28]/15 hover:border-[#D73B3A] text-[#522C28]"
+                    ? "bg-[#25100E]/90 text-[#FAC537] border-[#25100E]"
+                    : "bg-white/65 hover:bg-white/90 border-white/80 ring-1 ring-[#522C28]/10 hover:border-[#D73B3A] text-[#522C28]"
                 }`}
                 title="Open Profile & Orders Menu"
                 aria-expanded={accountOpen}
@@ -220,10 +220,10 @@ export default function Navbar() {
                   setAccountOpen((v) => !v);
                   setMenuError(null);
                 }}
-                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-extrabold transition-all shadow-xs cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border backdrop-blur-md text-xs font-extrabold transition-all shadow-xs cursor-pointer ${
                   accountOpen
-                    ? "bg-[#25100E] text-[#FAC537] border-[#25100E]"
-                    : "bg-white border-[#522C28]/15 hover:border-[#D73B3A] hover:text-[#D73B3A] text-[#522C28]"
+                    ? "bg-[#25100E]/90 text-[#FAC537] border-[#25100E]"
+                    : "bg-white/65 hover:bg-white/90 border-white/80 ring-1 ring-[#522C28]/10 hover:border-[#D73B3A] hover:text-[#D73B3A] text-[#522C28]"
                 }`}
                 title="Customer Sign In & Profile"
                 aria-expanded={accountOpen}
@@ -236,10 +236,10 @@ export default function Navbar() {
 
             {/* Floating Corner Dropdown */}
             {accountOpen && (
-              <div className="absolute right-0 mt-2.5 w-72 rounded-2xl bg-white border-2 border-[#522C28]/15 shadow-2xl overflow-hidden z-[60]">
+              <div className="absolute right-0 mt-3 w-72 rounded-2xl bg-white/85 backdrop-blur-xl backdrop-saturate-150 border border-white/80 ring-1 ring-[#522C28]/15 shadow-[0_16px_40px_rgba(82,44,40,0.18)] overflow-hidden z-[60]">
                 {user ? (
                   <>
-                    <div className="px-4 py-3.5 bg-[#FFF8EE] border-b border-[#522C28]/10">
+                    <div className="px-4 py-3.5 bg-[#FFF8EE]/75 border-b border-[#522C28]/10">
                       <p className="text-[10px] font-black uppercase tracking-wider text-[#D73B3A] truncate">
                         {user.email || user.fullName}
                       </p>
@@ -401,7 +401,7 @@ export default function Navbar() {
 
       {/* Expandable Search Bar & Live Results */}
       {searchOpen && (
-        <div className="border-t border-[#522C28]/10 bg-white/95 backdrop-blur-md">
+        <div className="pointer-events-auto max-w-6xl mx-auto mt-2 rounded-2xl border border-white/80 ring-1 ring-[#522C28]/10 bg-[#FFF8EE]/80 backdrop-blur-xl backdrop-saturate-150 shadow-[0_12px_36px_rgba(82,44,40,0.14)]">
           <div className="max-w-3xl mx-auto px-4 py-3.5">
             <div className="relative flex items-center">
               <Search className="w-4 h-4 text-[#522C28]/50 absolute left-3.5" />
@@ -468,7 +468,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-[#522C28]/10 bg-[#FFF8EE] px-4 py-4 space-y-2 shadow-lg">
+        <div className="md:hidden pointer-events-auto max-w-6xl mx-auto mt-2 rounded-2xl border border-white/80 ring-1 ring-[#522C28]/10 bg-[#FFF8EE]/85 backdrop-blur-xl backdrop-saturate-150 px-4 py-4 space-y-2 shadow-[0_12px_36px_rgba(82,44,40,0.16)]">
           {navLinks.map((item) => (
             <Link
               key={item.href}
