@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Sparkles, LogIn, UserPlus, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/components/AuthContext";
+import { getSupabaseBrowser } from "@/lib/supabaseBrowser";
 
 function LoginForm() {
   const router = useRouter();
@@ -19,7 +20,38 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      setError("Google Sign-In requires Supabase NEXT_PUBLIC_SUPABASE_URL & ANON_KEY.");
+      return;
+    }
+
+    setGoogleLoading(true);
+    try {
+      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+        nextUrl
+      )}`;
+      const { error: oauthErr } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo,
+          queryParams: { prompt: "select_account" },
+        },
+      });
+      if (oauthErr) {
+        setError(oauthErr.message);
+        setGoogleLoading(false);
+      }
+    } catch {
+      setError("Failed launching Google Sign-In.");
+      setGoogleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,6 +97,46 @@ function LoginForm() {
             ? "Sign in to view orders, Fox Runner high scores, and Crunch Points."
             : "Create your account for 50 free Crunch Points & Fox Runner rewards."}
         </p>
+      </div>
+
+      {/* Google OAuth Button */}
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={googleLoading || loading}
+        className="w-full py-3 px-4 rounded-full bg-white hover:bg-[#FFF8EE] text-[#25100E] border-2 border-[#522C28]/15 hover:border-[#D73B3A] font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xs transition-all cursor-pointer mb-4"
+      >
+        {googleLoading ? (
+          <Loader2 className="w-4 h-4 animate-spin text-[#D73B3A]" />
+        ) : (
+          <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="#4285F4"
+              d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"
+            />
+          </svg>
+        )}
+        <span>Continue with Google</span>
+      </button>
+
+      <div className="relative flex items-center justify-center my-4">
+        <div className="border-t border-[#522C28]/15 w-full" />
+        <span className="bg-white px-3 text-[10px] font-black uppercase text-[#522C28]/50 tracking-widest">
+          or use email
+        </span>
+        <div className="border-t border-[#522C28]/15 w-full" />
       </div>
 
       {/* Mode Switch Tabs */}

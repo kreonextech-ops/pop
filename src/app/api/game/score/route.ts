@@ -3,11 +3,29 @@ import { getCurrentUser, sanitizeUser } from "@/lib/customerAuth";
 import { readStore, writeStore } from "@/lib/store";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
-export async function GET() {
-  const user = await getCurrentUser();
-  const store = readStore();
+async function buildLeaderboard(localUsers: ReturnType<typeof readStore>["users"]) {
+  if (isSupabaseConfigured()) {
+    const sbAdmin = getSupabaseAdmin();
+    if (sbAdmin) {
+      const { data: profs } = await sbAdmin
+        .from("profiles")
+        .select("id, full_name, email, game_high_score, total_runs")
+        .gt("game_high_score", 0)
+        .order("game_high_score", { ascending: false })
+        .limit(10);
+      if (profs && profs.length > 0) {
+        return profs.map((u, idx) => ({
+          rank: idx + 1,
+          id: u.id,
+          name: u.full_name || (u.email ? u.email.split("@")[0] : "Snacker"),
+          highScore: Number(u.game_high_score) || 0,
+          totalRuns: Number(u.total_runs) || 0,
+        }));
+      }
+    }
+  }
 
-  const leaderboard = [...store.users]
+  return [...localUsers]
     .filter((u) => u.gameHighScore > 0)
     .sort((a, b) => b.gameHighScore - a.gameHighScore)
     .slice(0, 10)
@@ -18,6 +36,12 @@ export async function GET() {
       highScore: u.gameHighScore,
       totalRuns: u.totalRuns,
     }));
+}
+
+export async function GET() {
+  const user = await getCurrentUser();
+  const store = readStore();
+  const leaderboard = await buildLeaderboard(store.users);
 
   return NextResponse.json({
     user: user ? sanitizeUser(user) : null,
@@ -42,9 +66,10 @@ export async function POST(req: NextRequest) {
     const pointsEarned = Math.min(100, Math.floor(distance / 25));
 
     const store = readStore();
-    const idx = store.users.findIndex((u) => u.id === user.id);
+    let idx = store.users.findIndex((u) => u.id === user.id);
     if (idx === -1) {
-      return NextResponse.json({ error: "User not found." }, { status: 404 });
+      store.users.push(user);
+      idx = store.users.length - 1;
     }
 
     const current = store.users[idx];
@@ -103,17 +128,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const leaderboard = [...store.users]
-      .filter((u) => u.gameHighScore > 0)
-      .sort((a, b) => b.gameHighScore - a.gameHighScore)
-      .slice(0, 10)
-      .map((u, idxRank) => ({
-        rank: idxRank + 1,
-        id: u.id,
-        name: u.fullName || u.email.split("@")[0],
-        highScore: u.gameHighScore,
-        totalRuns: u.totalRuns,
-      }));
+    const leaderboard = await buildLeaderboard(store.users);
 
     return NextResponse.json({
       ok: true,

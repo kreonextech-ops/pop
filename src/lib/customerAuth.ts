@@ -81,10 +81,10 @@ export async function getCurrentUser(): Promise<StoreUser | null> {
   if (!uid) return null;
 
   const store = readStore();
-  const localUser = store.users.find((u) => u.id === uid);
-  if (localUser) return localUser;
+  const localIdx = store.users.findIndex((u) => u.id === uid);
+  const localUser = localIdx >= 0 ? store.users[localIdx] : undefined;
 
-  // If Supabase is configured and profile exists in Supabase but not local cache:
+  // When Supabase is configured, pull authoritative profile stats (handles Google OAuth & Vercel serverless)
   if (isSupabaseConfigured()) {
     const sbAdmin = getSupabaseAdmin();
     if (sbAdmin) {
@@ -97,27 +97,31 @@ export async function getCurrentUser(): Promise<StoreUser | null> {
         const now = new Date().toISOString();
         const hydrated: StoreUser = {
           id: prof.id,
-          email: prof.email || "",
-          fullName: prof.full_name || "Pop Culture Snacker",
-          phone: prof.phone || "",
+          email: prof.email || localUser?.email || "",
+          fullName: prof.full_name || localUser?.fullName || "Pop Culture Snacker",
+          phone: prof.phone || localUser?.phone || "",
           role: prof.role === "admin" ? "admin" : "customer",
           loyaltyPoints: Number(prof.loyalty_points) || 0,
           gameHighScore: Number(prof.game_high_score) || 0,
           totalRuns: Number(prof.total_runs) || 0,
           totalDistance: Number(prof.total_distance) || 0,
-          savedAddress: prof.saved_address || null,
-          passwordHash: "",
-          createdAt: prof.created_at || now,
+          savedAddress: prof.saved_address || localUser?.savedAddress || null,
+          passwordHash: localUser?.passwordHash || "",
+          createdAt: prof.created_at || localUser?.createdAt || now,
           updatedAt: prof.updated_at || now,
         };
-        store.users.push(hydrated);
+        if (localIdx >= 0) {
+          store.users[localIdx] = hydrated;
+        } else {
+          store.users.push(hydrated);
+        }
         writeStore(store);
         return hydrated;
       }
     }
   }
 
-  return null;
+  return localUser || null;
 }
 
 export async function registerUser(params: {
