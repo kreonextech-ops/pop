@@ -1,18 +1,18 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, Sparkles, LogIn, UserPlus, ArrowRight } from "lucide-react";
+import { Loader2, Sparkles, LogIn, UserPlus, ArrowRight, ExternalLink } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/components/AuthContext";
-import { getSupabaseBrowser } from "@/lib/supabaseBrowser";
+import { getSupabaseBrowserAsync } from "@/lib/supabaseBrowser";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextUrl = searchParams.get("next") || "/account";
-  const { refreshUser } = useAuth();
+  const { user, loading: authLoading, refreshUser } = useAuth();
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [fullName, setFullName] = useState("");
@@ -21,34 +21,75 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [oauthFallbackUrl, setOauthFallbackUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace(nextUrl);
+    }
+  }, [authLoading, user, router, nextUrl]);
 
   const handleGoogleSignIn = async () => {
     setError(null);
-    const supabase = getSupabaseBrowser();
-    if (!supabase) {
-      setError("Google Sign-In requires Supabase NEXT_PUBLIC_SUPABASE_URL & ANON_KEY.");
-      return;
-    }
-
+    setOauthFallbackUrl(null);
     setGoogleLoading(true);
+
     try {
+      const supabase = await getSupabaseBrowserAsync();
+      if (!supabase) {
+        setError(
+          "Google Sign-In needs NEXT_PUBLIC_SUPABASE_URL & NEXT_PUBLIC_SUPABASE_ANON_KEY configured."
+        );
+        setGoogleLoading(false);
+        return;
+      }
+
       const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
         nextUrl
       )}`;
-      const { error: oauthErr } = await supabase.auth.signInWithOAuth({
+      const { data, error: oauthErr } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo,
+          skipBrowserRedirect: true,
           queryParams: { prompt: "select_account" },
         },
       });
+
       if (oauthErr) {
         setError(oauthErr.message);
         setGoogleLoading(false);
+        return;
       }
-    } catch {
-      setError("Failed launching Google Sign-In.");
+
+      const targetUrl = data?.url;
+      if (!targetUrl) {
+        setError("Supabase did not return a Google login URL. Check Auth Providers -> Google.");
+        setGoogleLoading(false);
+        return;
+      }
+
+      setOauthFallbackUrl(targetUrl);
+
+      // Google blocks embedding accounts.google.com inside an iframe (X-Frame-Options: DENY)
+      const inIframe = window.self !== window.top;
+      if (inIframe) {
+        try {
+          if (window.top) {
+            window.top.location.href = targetUrl;
+            return;
+          }
+        } catch {
+          window.open(targetUrl, "_blank", "noopener,noreferrer");
+          setGoogleLoading(false);
+          return;
+        }
+      }
+
+      window.location.assign(targetUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed launching Google Sign-In.");
       setGoogleLoading(false);
     }
   };
@@ -128,8 +169,31 @@ function LoginForm() {
             />
           </svg>
         )}
-        <span>Continue with Google</span>
+        <span>{googleLoading ? "Connecting to Google..." : "Continue with Google"}</span>
       </button>
+
+      {oauthFallbackUrl && (
+        <div className="mb-3 p-3 rounded-xl bg-[#FFF8EE] border border-[#FAC537] text-center space-y-1.5">
+          <p className="text-[11px] font-bold text-[#522C28]/80">
+            Redirecting to Google Sign-In... if your browser didn&apos;t open automatically:
+          </p>
+          <a
+            href={oauthFallbackUrl}
+            target="_top"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs font-black text-[#D73B3A] hover:underline"
+          >
+            <span>Open Google Sign-In</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-bold text-red-700">
+          {error}
+        </div>
+      )}
 
       <div className="relative flex items-center justify-center my-4">
         <div className="border-t border-[#522C28]/15 w-full" />

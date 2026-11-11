@@ -147,6 +147,12 @@ function CheckoutStatusContent() {
               </button>
             )}
             <Link
+              href="/account"
+              className="px-5 py-2.5 rounded-full bg-[#FAC537] text-[#522C28] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+            >
+              <span>My Orders Dashboard</span>
+            </Link>
+            <Link
               href="/shop"
               className="px-6 py-3 rounded-full bg-[#25100E] text-[#FAC537] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md"
             >

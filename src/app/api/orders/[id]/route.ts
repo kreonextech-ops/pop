@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readStore, writeStore, appendWebhookLog } from "@/lib/store";
 import { callShiprocketApi } from "@/lib/shiprocket";
+import { getOrderFromSupabase, syncOrderToSupabase } from "@/lib/supabaseOrders";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,7 @@ export async function GET(
 ) {
   const { id } = await context.params;
   const store = readStore();
-  let order = store.orders.find((o) => o.order_id === id);
+  let order = store.orders.find((o) => o.order_id === id) || (await getOrderFromSupabase(id)) || undefined;
 
   // If still INITIATED and Shiprocket keys exist, poll Shiprocket Order Details API as failsafe
   if (
@@ -60,6 +61,7 @@ export async function GET(
         summary: `Synced order ${id} -> ${order.status}`,
       });
       writeStore(store);
+      await syncOrderToSupabase(order);
     }
   }
 

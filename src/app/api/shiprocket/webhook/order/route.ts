@@ -7,6 +7,12 @@ import {
 } from "@/lib/store";
 import { verifyHmacBase64 } from "@/lib/shiprocket";
 import { sendOrderConfirmationEmails } from "@/lib/email";
+import {
+  getOrderFromSupabase,
+  syncOrderToSupabase,
+  syncProfilePointsToSupabase,
+} from "@/lib/supabaseOrders";
+import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +53,8 @@ export async function POST(req: Request) {
 
   const now = new Date().toISOString();
   const existingIdx = store.orders.findIndex((o) => o.order_id === orderId);
-  const existing = existingIdx >= 0 ? store.orders[existingIdx] : undefined;
+  const existing =
+    existingIdx >= 0 ? store.orders[existingIdx] : await getOrderFromSupabase(orderId);
 
   const incomingCartData = (payload.cart_data as StoreOrder["cart_data"]) ||
     existing?.cart_data || { items: [] };
@@ -146,8 +153,34 @@ export async function POST(req: Request) {
   });
 
   writeStore(store);
+  await syncOrderToSupabase(merged);
 
   if (nextStatus === "SUCCESS" && !wasSuccess) {
+    if (merged.user_id) {
+      const earned = Math.floor((merged.total_amount_payable ?? 0) / 20);
+      const redeemed = merged.loyalty_points_applied ?? 0;
+      const uIdx = store.users.findIndex((u) => u.id === merged.user_id);
+      if (uIdx !== -1) {
+        const nextPts = Math.max(0, store.users[uIdx].loyaltyPoints - redeemed + earned);
+        store.users[uIdx].loyaltyPoints = nextPts;
+        store.users[uIdx].updatedAt = now;
+        writeStore(store);
+        await syncProfilePointsToSupabase(merged.user_id, nextPts);
+      } else if (isSupabaseConfigured()) {
+        const sbAdmin = getSupabaseAdmin();
+        if (sbAdmin) {
+          const { data: prof } = await sbAdmin
+            .from("profiles")
+            .select("loyalty_points")
+            .eq("id", merged.user_id)
+            .maybeSingle();
+          if (prof) {
+            const nextPts = Math.max(0, (Number(prof.loyalty_points) || 0) - redeemed + earned);
+            await syncProfilePointsToSupabase(merged.user_id, nextPts);
+          }
+        }
+      }
+    }
     await sendOrderConfirmationEmails(merged);
   }
 

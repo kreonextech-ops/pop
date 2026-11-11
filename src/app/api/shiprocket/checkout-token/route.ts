@@ -10,6 +10,10 @@ import {
 import { callShiprocketApi, getShiprocketAssets } from "@/lib/shiprocket";
 import { getCurrentUser } from "@/lib/customerAuth";
 import { sendOrderConfirmationEmails } from "@/lib/email";
+import {
+  syncOrderToSupabase,
+  syncProfilePointsToSupabase,
+} from "@/lib/supabaseOrders";
 
 export const dynamic = "force-dynamic";
 
@@ -196,6 +200,8 @@ export async function POST(req: Request) {
     const newOrder: StoreOrder = {
       order_id: srOrderId,
       user_id: currentUser?.id || null,
+      email: currentUser?.email || body.customer?.email || null,
+      phone: currentUser?.phone || body.customer?.phone || null,
       status: "INITIATED",
       subtotal_price: computedSubtotal,
       total_discount: discountAmt,
@@ -218,6 +224,7 @@ export async function POST(req: Request) {
 
     store.orders.unshift(newOrder);
     writeStore(store);
+    await syncOrderToSupabase(newOrder);
 
     return NextResponse.json({
       ok: true,
@@ -300,16 +307,14 @@ export async function POST(req: Request) {
 
     // Deduct redeemed Crunch Points and credit cashback reward (1 pt per ₹20 spent)
     if (currentUser) {
+      const earned = Math.floor(payableAmount / 20);
+      const nextPts = Math.max(0, currentUser.loyaltyPoints - pointsRedeemed + earned);
       const uIdx = store.users.findIndex((u) => u.id === currentUser.id);
       if (uIdx !== -1) {
-        const earned = Math.floor(payableAmount / 20);
-        const nextPts = Math.max(
-          0,
-          store.users[uIdx].loyaltyPoints - pointsRedeemed + earned
-        );
         store.users[uIdx].loyaltyPoints = nextPts;
         store.users[uIdx].updatedAt = now;
       }
+      await syncProfilePointsToSupabase(currentUser.id, nextPts);
     }
   }
 
@@ -323,6 +328,7 @@ export async function POST(req: Request) {
     summary: `Demo checkout order ${demoOrderId} created (${demoStatus}) for ₹${payableAmount}`,
   });
   writeStore(store);
+  await syncOrderToSupabase(demoOrder);
 
   if (demoStatus === "SUCCESS") {
     await sendOrderConfirmationEmails(demoOrder);
