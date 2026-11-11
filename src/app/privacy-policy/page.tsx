@@ -43,7 +43,10 @@ export default function PrivacyPolicyPage() {
             <p>
               Account data, order summaries, and saved preferences are stored securely using encrypted
               HTTP-only sessions and Postgres storage. To request data deletion or correction, reach
-              out through our <a href="/contact" className="text-[#D73B3A] font-bold underline">Contact Us</a> page.
+              out through our{" "}
+              <a href="/contact" className="text-[#D73B3A] font-bold underline">Contact Us</a> page,
+              email <a href="mailto:contact@snackpopculture.com" className="text-[#D73B3A] font-bold underline">contact@snackpopculture.com</a>,
+              or call <a href="tel:+919002388080" className="font-bold text-[#25100E]">+91 9002388080</a>.
             </p>
           </section>
         </div>

@@ -1412,7 +1412,7 @@ export default function AdminPage() {
                       onChange={(e) =>
                         setSettingsForm({ ...settingsForm, sellerDomain: e.target.value })
                       }
-                      placeholder="popculture.in"
+                      placeholder="snackpopculture.com"
                       className="w-full px-3.5 py-2.5 rounded-xl border border-[#522C28]/20 bg-[#FFF8EE] text-xs font-bold"
                     />
                   </div>
@@ -1473,7 +1473,7 @@ export default function AdminPage() {
                         onChange={(e) =>
                           setSettingsForm({ ...settingsForm, adminNotifyEmail: e.target.value })
                         }
-                        placeholder="owner@popculture.in"
+                        placeholder="contact@snackpopculture.com"
                         className="w-full px-3.5 py-2.5 rounded-xl border border-[#522C28]/20 bg-[#FFF8EE] text-xs font-bold"
                       />
                     </div>

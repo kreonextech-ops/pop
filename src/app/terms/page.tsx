@@ -42,7 +42,11 @@ export default function TermsPage() {
             <p>
               Our foxnuts (makhana) are slow-roasted in small batches using clean, food-grade
               ingredients. Please inspect packaging seals upon delivery and contact support within 48
-              hours for any transit damage.
+              hours for any transit damage at{" "}
+              <a href="mailto:contact@snackpopculture.com" className="text-[#D73B3A] font-bold underline">
+                contact@snackpopculture.com
+              </a>{" "}
+              or <a href="tel:+919002388080" className="font-bold text-[#25100E]">+91 9002388080</a>.
             </p>
           </section>
         </div>

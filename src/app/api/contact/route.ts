@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
 
     const store = readStore();
     const cfg = getGmailConfig(store.settings.gmailUser);
-    const targetEmail = store.settings.adminNotifyEmail || cfg.adminNotifyEmail || "care@popculture.in";
+    const targetEmail =
+      store.settings.adminNotifyEmail || cfg.adminNotifyEmail || "contact@snackpopculture.com";
 
     const mailRes = await sendMail({
       to: targetEmail,

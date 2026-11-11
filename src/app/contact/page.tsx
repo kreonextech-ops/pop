@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Send, Loader2, CheckCircle2, Mail, MapPin, Clock } from "lucide-react";
+import { Send, Loader2, CheckCircle2, Mail, Phone, MapPin, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/components/AuthContext";
 
@@ -61,9 +61,24 @@ export default function ContactPage() {
               <Mail className="w-5 h-5 text-[#D73B3A] shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-black text-sm text-[#25100E]">Email Support</h3>
-                <p className="text-xs font-semibold text-[#522C28]/75 mt-0.5">
-                  care@popculture.in
-                </p>
+                <a
+                  href="mailto:contact@snackpopculture.com"
+                  className="text-xs font-semibold text-[#D73B3A] hover:underline mt-0.5 block"
+                >
+                  contact@snackpopculture.com
+                </a>
+              </div>
+            </div>
+            <div className="bg-white rounded-3xl border border-[#522C28]/15 p-5 shadow-xs flex items-start gap-3">
+              <Phone className="w-5 h-5 text-[#D73B3A] shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-black text-sm text-[#25100E]">Phone / WhatsApp</h3>
+                <a
+                  href="tel:+919002388080"
+                  className="text-xs font-semibold text-[#522C28]/85 hover:text-[#D73B3A] mt-0.5 block"
+                >
+                  +91 90023 88080
+                </a>
               </div>
             </div>
             <div className="bg-white rounded-3xl border border-[#522C28]/15 p-5 shadow-xs flex items-start gap-3">
