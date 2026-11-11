@@ -100,18 +100,18 @@ export default function InteractiveScatterLayer({
     if (!isScattered) {
       el.style.transform = `translate(-50%, -50%) translate3d(0px, 0px, -140px) rotate(0deg) scale(0.22)`;
       el.style.opacity = "0.85";
-      el.style.transition = "transform 180ms cubic-bezier(0.4, 0, 0.2, 1), opacity 150ms ease-in";
+      el.style.transition = "transform 130ms cubic-bezier(0.4, 0, 0.2, 1), opacity 100ms ease-in";
     } else {
       el.style.transform = `translate(-50%, -50%) translate3d(${state.x}px, ${state.y}px, 0px) rotate(${state.rotation}deg) scale(${state.scale})`;
       el.style.opacity = "1";
       if (state.isDragging) {
         el.style.transition = "none";
       } else if (isBursting) {
-        el.style.transition = `transform 450ms cubic-bezier(0.175, 0.885, 0.32, 1.25) ${delay}, opacity 80ms ease-out`;
+        el.style.transition = `transform 260ms cubic-bezier(0.175, 0.885, 0.32, 1.2) ${delay}, opacity 60ms ease-out`;
       } else if (state.isThrown) {
         el.style.transition = "none";
       } else {
-        el.style.transition = "transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+        el.style.transition = "transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1)";
       }
     }
   }, [isScattered]);
@@ -392,7 +392,7 @@ export default function InteractiveScatterLayer({
           >
             {/* GPU-accelerated CSS float animation runs at 120fps with 0% CPU */}
             <div
-              className={`w-full h-full flex items-center justify-center transition-transform duration-150 group-hover:scale-105 ${
+              className={`w-full h-full flex items-center justify-center transition-transform duration-150 group-hover:scale-105 will-change-transform ${
                 piece.floatClass || "animate-float-gentle"
               }`}
             >
@@ -400,10 +400,10 @@ export default function InteractiveScatterLayer({
                 key={`${activeFlavourId}-${piece.id}-img`}
                 src={piece.src}
                 alt={piece.alt}
-                loading="eager"
-                decoding="sync"
+                loading="lazy"
+                decoding="async"
                 draggable={false}
-                className="w-full h-full object-contain pointer-events-none select-none filter contrast-105 transition-all duration-200 drop-shadow-[0_10px_20px_rgba(180,40,0,0.35)] group-hover:drop-shadow-[0_16px_28px_rgba(180,40,0,0.45)]"
+                className="w-full h-full object-contain pointer-events-none select-none drop-shadow-md"
               />
             </div>
           </div>

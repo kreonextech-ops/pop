@@ -22,7 +22,7 @@ export default function ShippingReturnsPage() {
             <p>
               Orders confirmed before 2:00 PM IST ship the same business day from our roasting
               facility via Shiprocket courier partners. Typical delivery takes 2–4 business days in
-              metro cities and 4–6 days pan-India. Free shipping applies on orders above ₹299.
+              metro cities and 4–6 days pan-India. Free delivery applies on orders above ₹699+.
             </p>
           </section>
 

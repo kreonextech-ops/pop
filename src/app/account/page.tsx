@@ -164,7 +164,7 @@ function AccountDashboardContent() {
           slug: "peri-peri",
           name: item.name || "Pop Culture Makhana",
           variantLabel: "Standard Pack",
-          price: Number(item.price) || 40,
+          price: Number(item.price) || 149,
           image: "/packets/peri peri.svg",
         },
         Math.max(1, Number(item.quantity) || 1),

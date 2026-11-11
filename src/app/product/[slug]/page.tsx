@@ -61,7 +61,7 @@ export default function ProductDetailPage() {
             } else {
               const template = Object.values(PRODUCTS)[0];
               const v0 = found.variants[0];
-              const singlePrice = v0 ? parseFloat(v0.price) : 40;
+              const singlePrice = v0 ? parseFloat(v0.price) : 149;
               const singleOrig = v0 ? parseFloat(v0.compare_at_price) || singlePrice : singlePrice;
               setDynamicProduct({
                 ...template,
@@ -85,20 +85,20 @@ export default function ProductDetailPage() {
                 packImage: found.image || "/packets/peri peri.svg",
                 pricing: {
                   single: {
-                    label: v0?.title || "1 Pouch (20g)",
-                    count: "20g",
+                    label: v0?.title || "1 Pouch (60g)",
+                    count: "60g Pouch",
                     price: singlePrice,
                     originalPrice: singleOrig,
                   },
                   trio: {
                     label: found.variants[1]?.title || "Pack of 3",
-                    count: "60g",
+                    count: "3 × 60g (180g)",
                     price: found.variants[1] ? parseFloat(found.variants[1].price) : singlePrice * 3,
                     originalPrice: singleOrig * 3,
                   },
                   party: {
                     label: found.variants[2]?.title || "Pack of 6",
-                    count: "120g",
+                    count: "6 × 60g (360g)",
                     price: found.variants[2] ? parseFloat(found.variants[2].price) : singlePrice * 6,
                     originalPrice: singleOrig * 6,
                   },
@@ -115,7 +115,7 @@ export default function ProductDetailPage() {
   const product: ProductDetails | undefined = dynamicProduct || undefined;
 
   // Selected pack option: 'single' | 'trio' | 'party'
-  const [selectedPack, setSelectedPack] = useState<"single" | "trio" | "party">("trio");
+  const [selectedPack, setSelectedPack] = useState<"single" | "trio" | "party">("single");
   const [quantity, setQuantity] = useState(1);
   const [addedToast, setAddedToast] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -334,7 +334,7 @@ export default function ProductDetailPage() {
                     Select Pack Size:
                   </span>
                   <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    Free shipping over ₹299
+                    Free delivery above ₹699+
                   </span>
                 </div>
 

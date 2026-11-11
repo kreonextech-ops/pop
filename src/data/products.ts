@@ -140,7 +140,7 @@ export const COMBOS: Record<string, ComboItem> = {
     tagline: "4 × Peri Peri + 4 × Cheddar Cheese + 4 × Raw Makhana",
     shortDesc:
       "The ultimate pantry supply for healthy homes and offices. Maximum flavour variety, bulk savings, and free express delivery.",
-    packImage: "/packets/plain.png",
+    packImage: "/packets/raw-makhana-pouch.png",
     secondaryImage: "/packets/cheese.svg",
     includedFlavours: [
       "4 × Peri Peri Punch (20g)",
@@ -187,7 +187,7 @@ export const PRODUCTS: Record<string, ProductDetails> = {
     accentBg: "#ED0006", // Accent Vibrant Red
     gradient: "from-[#D73B3A] via-[#ED0006] to-[#522C28]",
     packImage: "/packets/peri peri.svg",
-    bgSvg: "/product-bg/peri-peri.svg",
+    bgSvg: "/product-bg/peri-peri.webp",
     accentColor: "#FAC537", // Accent Warm Yellow
     servingSize: "20g",
     borderAccentColor: "#F97316", // Vibrant Orange as seen in packaging
@@ -211,9 +211,9 @@ export const PRODUCTS: Record<string, ProductDetails> = {
       { label: "Sodium", amount: "600mg", dailyValue: "6.0%", isBold: true },
     ],
     pricing: {
-      single: { label: "1 Pouch", count: "20g Pouch", price: 40, originalPrice: 45 },
-      trio: { label: "Pack of 3", count: "3 × 20g (60g)", price: 115, originalPrice: 135, badge: "MOST POPULAR" },
-      party: { label: "Pack of 6", count: "6 × 20g (120g)", price: 220, originalPrice: 270, badge: "SAVE 18%" },
+      single: { label: "1 Pouch", count: "60g Pouch", price: 149, originalPrice: 175 },
+      trio: { label: "Pack of 3", count: "3 × 60g (180g)", price: 429, originalPrice: 525, badge: "MOST POPULAR" },
+      party: { label: "Pack of 6", count: "6 × 60g (360g)", price: 829, originalPrice: 1050, badge: "SAVE 21%" },
     },
     faqs: [
       {
@@ -274,7 +274,7 @@ export const PRODUCTS: Record<string, ProductDetails> = {
     accentBg: "#F79E1B",
     gradient: "from-[#FAC537] via-[#F79E1B] to-[#522C28]",
     packImage: "/packets/cheese.svg",
-    bgSvg: "/product-bg/cheese.svg",
+    bgSvg: "/product-bg/cheese.webp",
     accentColor: "#522C28", // Espresso
     servingSize: "20g",
     borderAccentColor: "#A855F7", // Purple Accent as seen in packaging image
@@ -298,9 +298,9 @@ export const PRODUCTS: Record<string, ProductDetails> = {
       { label: "Sodium", amount: "290mg", dailyValue: "2.90%", isBold: true },
     ],
     pricing: {
-      single: { label: "1 Pouch", count: "20g Pouch", price: 40, originalPrice: 45 },
-      trio: { label: "Pack of 3", count: "3 × 20g (60g)", price: 115, originalPrice: 135, badge: "MOST POPULAR" },
-      party: { label: "Pack of 6", count: "6 × 20g (120g)", price: 220, originalPrice: 270, badge: "SAVE 18%" },
+      single: { label: "1 Pouch", count: "60g Pouch", price: 149, originalPrice: 175 },
+      trio: { label: "Pack of 3", count: "3 × 60g (180g)", price: 429, originalPrice: 525, badge: "MOST POPULAR" },
+      party: { label: "Pack of 6", count: "6 × 60g (360g)", price: 829, originalPrice: 1050, badge: "SAVE 21%" },
     },
     faqs: [
       {
@@ -334,6 +334,94 @@ export const PRODUCTS: Record<string, ProductDetails> = {
     ],
   },
 
+  "pink-salt": {
+    slug: "pink-salt",
+    id: "pinksalt",
+    numericId: 100007,
+    variantIds: { single: 10000701, trio: 10000702, party: 10000703 },
+    name: "HIMALAYAN PINK SALT",
+    badge: "🧂 PINK SALT",
+    emoji: "🧂",
+    tagline: "Crisp, Mineral-Rich & Effortlessly Savoury",
+    shortDesc:
+      "Handpicked jumbo foxnuts slow-roasted in rice bran & olive oil and dusted with pure Himalayan pink rock salt. Clean, mineral-rich crunch made for everyday snacking.",
+    flavorProfile: {
+      crunch: 5,
+      spice: 0,
+      tangy: 1,
+      cheesiness: 0,
+    },
+    keyBenefits: [
+      "Pure Himalayan Rock Salt",
+      "Slow-Roasted, Never Fried",
+      "0.0g Added Sugar & 0.0g Trans Fat",
+      "Gluten-Free & Mineral Rich",
+    ],
+    themeColor: "#E1366C",
+    accentBg: "#E1366C",
+    gradient: "from-[#F05A89] via-[#E1366C] to-[#522C28]",
+    packImage: "/packets/pink-salt-pouch.png",
+    bgSvg: "/product-bg/pink-salt.webp",
+    accentColor: "#FAC537",
+    servingSize: "25g",
+    borderAccentColor: "#F97316",
+    ingredients:
+      "Foxnut (Makhana) , Edible Vegetable Oil (Rice Bran Oil, Olive Oil), Rock Salt",
+    allergen: "MAY CONTAIN NUTS.",
+    disclaimer:
+      "*Approximate Values. Guideline Daily Amount according to \"Recommended Dietary Allowance\" for average adult per day (2000 kcal Diet) as per FSSR (Labelling & Display) 2020. ^% Daily Values are based on a 2000 kcal diet.",
+    nutrition: [
+      { label: "Energy", amount: "510 kcal", dailyValue: "6.4%", isBold: true },
+      { label: "Protein", amount: "7.8g", isBold: true },
+      { label: "Carbohydrates", amount: "68.0g", isBold: true },
+      { label: "Total Sugar", amount: "0.5g", isIndent: true },
+      { label: "Added Sugar", amount: "0.0g", dailyValue: "0.0%", isIndent: true },
+      { label: "Dietary Fibre", amount: "11.2g", isIndent: true },
+      { label: "Total Fat", amount: "22.5g", dailyValue: "8.4%", isBold: true },
+      { label: "Saturated Fat", amount: "9.2g", dailyValue: "10.3%", isIndent: true },
+      { label: "M.U.F.A.", amount: "10.0g", isIndent: true },
+      { label: "P.U.F.A.", amount: "7.0g", isIndent: true },
+      { label: "Trans Fat", amount: "0.0g", isBold: true },
+      { label: "Cholesterol", amount: "0.0mg", isBold: true },
+      { label: "Sodium", amount: "315.0mg", dailyValue: "3.9%", isBold: true },
+    ],
+    pricing: {
+      single: { label: "1 Pouch", count: "60g Pouch", price: 149, originalPrice: 175 },
+      trio: { label: "Pack of 3", count: "3 × 60g (180g)", price: 429, originalPrice: 525, badge: "MOST POPULAR" },
+      party: { label: "Pack of 6", count: "6 × 60g (360g)", price: 829, originalPrice: 1050, badge: "SAVE 21%" },
+    },
+    faqs: [
+      {
+        q: "What kind of salt is used in Pink Salt Makhana?",
+        a: "We use pure Himalayan Pink Rock Salt gently tossed with slow-roasted jumbo foxnuts for a clean, balanced savoury finish.",
+      },
+      {
+        q: "Is there any added sugar or trans fat?",
+        a: "Zero! It contains 0.0g Added Sugar, 0.0g Trans Fat, and 0.0mg Cholesterol per our nutritional panel.",
+      },
+      {
+        q: "Is it suitable for daily guilt-free snacking?",
+        a: "Yes — packed with 11.2g of dietary fibre and 7.8g protein per 100g, it keeps hunger away cleanly.",
+      },
+    ],
+    reviews: [
+      {
+        name: "Meera N.",
+        rating: 5,
+        title: "So clean and addictive!",
+        comment: "Just the right amount of pink salt with an insane crunch. My new go-to desk snack.",
+        date: "3 days ago",
+      },
+      {
+        name: "Kabir S.",
+        rating: 5,
+        title: "Light, airy & zero heaviness",
+        comment: "Love that there is 0g added sugar and authentic rock salt taste.",
+        date: "1 week ago",
+      },
+    ],
+  },
+
   "raw-makhana": {
     slug: "raw-makhana",
     id: "plain",
@@ -360,8 +448,8 @@ export const PRODUCTS: Record<string, ProductDetails> = {
     themeColor: "#3CA837", // Accent Kelly Green
     accentBg: "#3CA837",
     gradient: "from-[#93BF56] via-[#3CA837] to-[#522C28]",
-    packImage: "/packets/plain.png",
-    bgSvg: "/product-bg/plain.svg",
+    packImage: "/packets/raw-makhana-pouch.png",
+    bgSvg: "/product-bg/plain.webp",
     accentColor: "#93BF56", // Accent Lime Green
     servingSize: "20g",
     borderAccentColor: "#10B981", // Fresh Green Accent
@@ -385,9 +473,9 @@ export const PRODUCTS: Record<string, ProductDetails> = {
       { label: "Sodium", amount: "120mg", dailyValue: "1.20%", isBold: true },
     ],
     pricing: {
-      single: { label: "1 Pouch", count: "20g Pouch", price: 35, originalPrice: 40 },
-      trio: { label: "Pack of 3", count: "3 × 20g (60g)", price: 100, originalPrice: 120, badge: "BEST VALUE" },
-      party: { label: "Pack of 6", count: "6 × 20g (120g)", price: 195, originalPrice: 240, badge: "SAVE 19%" },
+      single: { label: "1 Pouch", count: "60g Pouch", price: 149, originalPrice: 175 },
+      trio: { label: "Pack of 3", count: "3 × 60g (180g)", price: 429, originalPrice: 525, badge: "BEST VALUE" },
+      party: { label: "Pack of 6", count: "6 × 60g (360g)", price: 829, originalPrice: 1050, badge: "SAVE 21%" },
     },
     faqs: [
       {

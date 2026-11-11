@@ -55,6 +55,25 @@ export default function MakhanaBenefitsScroll() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
+    const bindLenis = () => {
+      const lenis = window.__lenis;
+      if (lenis) {
+        lenis.on("scroll", ScrollTrigger.update);
+        return () => lenis.off("scroll", ScrollTrigger.update);
+      }
+      return undefined;
+    };
+
+    let unbindLenis = bindLenis();
+    const onLenisReady = () => {
+      unbindLenis?.();
+      unbindLenis = bindLenis();
+    };
+    if (!unbindLenis) {
+      window.addEventListener("lenis:ready", onLenisReady);
+    }
 
     const container = containerRef.current;
     const pinSection = pinSectionRef.current;
@@ -106,7 +125,7 @@ export default function MakhanaBenefitsScroll() {
           end: "+=2600",
           pin: pinSection,
           pinSpacing: true,
-          scrub: 0.8,
+          scrub: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
@@ -122,22 +141,22 @@ export default function MakhanaBenefitsScroll() {
       if (bgDesktopRef.current) {
         tl.to(
           bgDesktopRef.current,
-          { scale: 1.04, transformOrigin: "bottom center", ease: "none" },
+          { scale: 1.04, transformOrigin: "bottom center", ease: "none", force3D: true },
           0
         );
       }
       if (bgMobileRef.current) {
         tl.to(
           bgMobileRef.current,
-          { scale: 1.03, transformOrigin: "bottom center", ease: "none" },
+          { scale: 1.03, transformOrigin: "bottom center", ease: "none", force3D: true },
           0
         );
       }
       if (cloud1Ref.current) {
-        tl.to(cloud1Ref.current, { x: 70, ease: "none" }, 0);
+        tl.to(cloud1Ref.current, { x: 70, ease: "none", force3D: true }, 0);
       }
       if (cloud2Ref.current) {
-        tl.to(cloud2Ref.current, { x: -85, ease: "none" }, 0);
+        tl.to(cloud2Ref.current, { x: -85, ease: "none", force3D: true }, 0);
       }
 
       // Step-by-step sequential transitions with autoAlpha
@@ -158,6 +177,7 @@ export default function MakhanaBenefitsScroll() {
               autoAlpha: 0,
               duration: 0.5,
               ease: "power2.inOut",
+              force3D: true,
             },
             timePos
           );
@@ -171,6 +191,7 @@ export default function MakhanaBenefitsScroll() {
                 autoAlpha: 0,
                 duration: 0.5,
                 ease: "power2.inOut",
+                force3D: true,
               },
               timePos
             );
@@ -185,6 +206,7 @@ export default function MakhanaBenefitsScroll() {
               autoAlpha: 1,
               duration: 0.55,
               ease: "back.out(1.2)",
+              force3D: true,
             },
             timePos + 0.3
           );
@@ -199,6 +221,7 @@ export default function MakhanaBenefitsScroll() {
                 autoAlpha: 1,
                 duration: 0.55,
                 ease: "back.out(1.3)",
+                force3D: true,
               },
               timePos + 0.3
             );
@@ -219,6 +242,8 @@ export default function MakhanaBenefitsScroll() {
     }, container);
 
     return () => {
+      window.removeEventListener("lenis:ready", onLenisReady);
+      unbindLenis?.();
       ctx.revert();
     };
   }, []);
@@ -245,48 +270,52 @@ export default function MakhanaBenefitsScroll() {
       {/* Pinned Viewport Container (GSAP locks this smoothly into the viewport) */}
       <div
         ref={pinSectionRef}
-        className="relative w-full h-screen overflow-hidden flex flex-col justify-between"
+        className="relative w-full h-screen overflow-hidden flex flex-col justify-between [contain:layout_paint]"
       >
         {/* Layer 1: Desert Dune Background Art */}
         <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
           {/* Desktop Panoramic Dunes */}
           <img
             ref={bgDesktopRef}
-            src="/scroll/scroll.png"
+            src="/scroll/scroll.webp"
             alt="Makhana Landscape Desert Dunes Desktop"
-            className="hidden md:block w-full h-full object-cover object-bottom"
+            loading="lazy"
+            decoding="async"
+            className="hidden md:block w-full h-full object-cover object-bottom will-change-transform"
           />
 
           {/* Mobile Vertical Dunes */}
           <img
             ref={bgMobileRef}
-            src="/scroll/mobile scroll.png"
+            src="/scroll/mobile scroll.webp"
             alt="Makhana Landscape Desert Dunes Mobile"
-            className="block md:hidden w-full h-full object-cover object-bottom"
+            loading="lazy"
+            decoding="async"
+            className="block md:hidden w-full h-full object-cover object-bottom will-change-transform"
           />
 
           {/* Parallax Floating Clouds */}
           <div
             ref={cloud1Ref}
-            className="absolute top-10 left-10 sm:left-24 w-32 sm:w-48 h-12 bg-white/40 rounded-full blur-[1px] pointer-events-none"
+            className="absolute top-10 left-10 sm:left-24 w-32 sm:w-48 h-12 bg-white/40 rounded-full pointer-events-none will-change-transform"
           />
           <div
             ref={cloud2Ref}
-            className="absolute top-24 right-10 sm:right-28 w-36 sm:w-60 h-14 bg-white/35 rounded-full blur-[1px] pointer-events-none"
+            className="absolute top-24 right-10 sm:right-28 w-36 sm:w-60 h-14 bg-white/35 rounded-full pointer-events-none will-change-transform"
           />
         </div>
 
         {/* Layer 2: Top Header Bar with Live Step Progress */}
         <div className="relative z-30 pt-4 sm:pt-6 px-4 sm:px-8 max-w-5xl w-full mx-auto flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-[#D8661E]/20 text-[#D8661E] text-[10px] sm:text-xs font-black tracking-wider uppercase shadow-xs backdrop-blur-md">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 border border-[#D8661E]/20 text-[#D8661E] text-[10px] sm:text-xs font-black tracking-wider uppercase shadow-xs">
               <Sparkles className="w-3.5 h-3.5 text-[#E88938]" />
               <span>THE SUPERFOOD BLUEPRINT</span>
             </span>
           </div>
 
           {/* Step Pill */}
-          <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full border border-[#2B120E]/15 shadow-xs">
+          <div className="flex items-center gap-1.5 bg-white/95 px-3 py-1 rounded-full border border-[#2B120E]/15 shadow-xs">
             <span className="text-[10px] sm:text-xs font-bold text-[#2B120E]/60 uppercase">
               Step
             </span>
@@ -305,78 +334,90 @@ export default function MakhanaBenefitsScroll() {
           
           {/* Left Column: Stack of 6 Hero Makhana Visuals */}
           <div className="relative w-44 sm:w-60 md:w-72 h-44 sm:h-60 md:h-72 flex items-center justify-center shrink-0">
-            {/* Ambient Radial Aura */}
-            <div className="absolute w-44 sm:w-60 md:w-72 h-44 sm:h-60 md:h-72 rounded-full bg-gradient-to-tr from-[#FFD59E]/40 via-[#FFE7C4]/50 to-white/70 blur-2xl pointer-events-none" />
+            {/* Ambient Radial Aura (pure gradient, zero blur pass) */}
+            <div className="absolute w-44 sm:w-60 md:w-72 h-44 sm:h-60 md:h-72 rounded-full bg-[radial-gradient(circle,rgba(255,213,158,0.55)_0%,rgba(255,231,196,0.32)_45%,transparent_72%)] pointer-events-none" />
 
             {/* Visual 0: Gluten-Free Single Cloud Pop */}
             <div
               ref={makhana0Ref}
-              className="absolute inset-0 flex items-center justify-center select-none"
+              className="absolute inset-0 flex items-center justify-center select-none will-change-transform"
             >
               <img
                 src="/scroll/asset/01_single_makhana.png"
                 alt="Floating Single Cloud Makhana"
-                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain filter drop-shadow-[0_16px_28px_rgba(180,60,0,0.30)] animate-float-gentle"
+                loading="lazy"
+                decoding="async"
+                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain drop-shadow-md"
               />
             </div>
 
             {/* Visual 1: Weight Management Macro Pop with Crumbs */}
             <div
               ref={makhana1Ref}
-              className="absolute inset-0 flex items-center justify-center select-none"
+              className="absolute inset-0 flex items-center justify-center select-none will-change-transform"
             >
               <img
                 src="/scroll/asset/06_large_makhana_with_crumbs.png"
                 alt="Macro Crunchy Makhana with Crumbs"
-                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain filter drop-shadow-[0_18px_32px_rgba(180,60,0,0.35)]"
+                loading="lazy"
+                decoding="async"
+                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain drop-shadow-md"
               />
             </div>
 
             {/* Visual 2: Low GI Cracked Makhana Core */}
             <div
               ref={makhana2Ref}
-              className="absolute inset-0 flex items-center justify-center select-none"
+              className="absolute inset-0 flex items-center justify-center select-none will-change-transform"
             >
               <img
                 src="/scroll/asset/03_cracked_makhana.png"
                 alt="Cracked Crunchy Makhana Core"
-                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain filter drop-shadow-[0_18px_32px_rgba(180,60,0,0.35)]"
+                loading="lazy"
+                decoding="async"
+                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain drop-shadow-md"
               />
             </div>
 
             {/* Visual 3: Heart Health Three Lotus Pop Cluster */}
             <div
               ref={makhana3Ref}
-              className="absolute inset-0 flex items-center justify-center select-none"
+              className="absolute inset-0 flex items-center justify-center select-none will-change-transform"
             >
               <img
                 src="/scroll/asset/02_three_makhana_cluster.png"
                 alt="Three Makhana Cluster Orbiting"
-                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain filter drop-shadow-[0_18px_32px_rgba(180,60,0,0.35)]"
+                loading="lazy"
+                decoding="async"
+                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain drop-shadow-md"
               />
             </div>
 
             {/* Visual 4: Anti-Aging Lotus Leaf Cluster */}
             <div
               ref={makhana4Ref}
-              className="absolute inset-0 flex items-center justify-center select-none"
+              className="absolute inset-0 flex items-center justify-center select-none will-change-transform"
             >
               <img
                 src="/scroll/asset/08_makhana_leaf_cluster.png"
                 alt="Lotus Leaf and Makhana Cluster"
-                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain filter drop-shadow-[0_18px_32px_rgba(180,60,0,0.35)]"
+                loading="lazy"
+                decoding="async"
+                className="max-h-[160px] sm:max-h-[210px] md:max-h-[250px] w-auto object-contain drop-shadow-md"
               />
             </div>
 
             {/* Visual 5: Grand Finale Overflowing Bowl */}
             <div
               ref={makhana5Ref}
-              className="absolute inset-0 flex items-center justify-center select-none"
+              className="absolute inset-0 flex items-center justify-center select-none will-change-transform"
             >
               <img
                 src="/scroll/asset/04_makhana_bowl.png"
                 alt="Giant Overflowing Bowl of Makhana"
-                className="max-h-[180px] sm:max-h-[240px] md:max-h-[290px] w-auto object-contain filter drop-shadow-[0_22px_36px_rgba(180,60,0,0.40)] scale-105"
+                loading="lazy"
+                decoding="async"
+                className="max-h-[180px] sm:max-h-[240px] md:max-h-[290px] w-auto object-contain drop-shadow-lg scale-105"
               />
             </div>
           </div>
@@ -387,7 +428,7 @@ export default function MakhanaBenefitsScroll() {
             {/* Card 0: Naturally 100% Gluten-Free */}
             <div
               ref={card0Ref}
-              className="absolute inset-0 flex flex-col justify-center bg-white/90 backdrop-blur-md border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left"
+              className="absolute inset-0 flex flex-col justify-center bg-white/95 border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left will-change-transform"
             >
               <div className="flex items-center justify-center md:justify-start gap-2 mb-1.5">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-[#E8F5E9] text-[#2E7D32] border border-[#2E7D32]/25">
@@ -421,7 +462,7 @@ export default function MakhanaBenefitsScroll() {
             {/* Card 1: Weight Management & Satiety */}
             <div
               ref={card1Ref}
-              className="absolute inset-0 flex flex-col justify-center bg-white/90 backdrop-blur-md border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left"
+              className="absolute inset-0 flex flex-col justify-center bg-white/95 border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left will-change-transform"
             >
               <div className="flex items-center justify-center md:justify-start gap-2 mb-1.5">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-[#FFF3E0] text-[#D8661E] border border-[#D8661E]/25">
@@ -455,7 +496,7 @@ export default function MakhanaBenefitsScroll() {
             {/* Card 2: Blood Sugar Friendly (Low GI ~22) */}
             <div
               ref={card2Ref}
-              className="absolute inset-0 flex flex-col justify-center bg-white/90 backdrop-blur-md border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left"
+              className="absolute inset-0 flex flex-col justify-center bg-white/95 border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left will-change-transform"
             >
               <div className="flex items-center justify-center md:justify-start gap-2 mb-1.5">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-[#E3F2FD] text-[#1976D2] border border-[#1976D2]/25">
@@ -489,7 +530,7 @@ export default function MakhanaBenefitsScroll() {
             {/* Card 3: Heart Health & Zero Cholesterol */}
             <div
               ref={card3Ref}
-              className="absolute inset-0 flex flex-col justify-center bg-white/90 backdrop-blur-md border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left"
+              className="absolute inset-0 flex flex-col justify-center bg-white/95 border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left will-change-transform"
             >
               <div className="flex items-center justify-center md:justify-start gap-2 mb-1.5">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-[#FCE4EC] text-[#C2185B] border border-[#C2185B]/25">
@@ -523,7 +564,7 @@ export default function MakhanaBenefitsScroll() {
             {/* Card 4: Anti-Aging Antioxidants */}
             <div
               ref={card4Ref}
-              className="absolute inset-0 flex flex-col justify-center bg-white/90 backdrop-blur-md border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left"
+              className="absolute inset-0 flex flex-col justify-center bg-white/95 border border-white/80 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_14px_30px_rgba(0,0,0,0.06)] text-center md:text-left will-change-transform"
             >
               <div className="flex items-center justify-center md:justify-start gap-2 mb-1.5">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-[#F3E5F5] text-[#7B1FA2] border border-[#7B1FA2]/25">
@@ -557,7 +598,7 @@ export default function MakhanaBenefitsScroll() {
             {/* Card 5: The Grand Finale Bowl */}
             <div
               ref={card5Ref}
-              className="absolute inset-0 flex flex-col justify-center bg-white/95 backdrop-blur-md border border-[#D8661E]/30 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_16px_35px_rgba(216,102,30,0.15)] text-center md:text-left"
+              className="absolute inset-0 flex flex-col justify-center bg-white/95 border border-[#D8661E]/30 p-4 sm:p-6 md:p-7 rounded-3xl shadow-[0_16px_35px_rgba(216,102,30,0.15)] text-center md:text-left will-change-transform"
             >
               <div className="flex items-center justify-center md:justify-start gap-2 mb-1.5">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-[#FFF3E0] text-[#E65100] border border-[#E65100]/25">
@@ -597,13 +638,13 @@ export default function MakhanaBenefitsScroll() {
             onClick={() => scrollToStep(Math.max(0, activeStep - 1))}
             disabled={activeStep === 0}
             aria-label="Previous Benefit"
-            className="p-2 sm:p-2.5 rounded-full bg-white/90 border border-[#2B120E]/15 text-[#2B120E] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white shadow-xs transition-all cursor-pointer backdrop-blur-md"
+            className="p-2 sm:p-2.5 rounded-full bg-white/95 border border-[#2B120E]/15 text-[#2B120E] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white shadow-xs transition-[transform,opacity,background-color] cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
           </button>
 
           {/* Stepper Dots */}
-          <div className="flex items-center gap-2 bg-white/85 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#2B120E]/15 shadow-xs">
+          <div className="flex items-center gap-2 bg-white/95 px-3.5 py-1.5 rounded-full border border-[#2B120E]/15 shadow-xs">
             {stepMeta.map((s, idx) => {
               const isActive = activeStep === idx;
               return (
@@ -612,7 +653,7 @@ export default function MakhanaBenefitsScroll() {
                   onClick={() => scrollToStep(idx)}
                   aria-label={`Jump to ${s.label}`}
                   title={`${s.num} ${s.label}`}
-                  className={`transition-all duration-300 rounded-full cursor-pointer flex items-center justify-center ${
+                  className={`transition-[width,background-color] duration-300 rounded-full cursor-pointer flex items-center justify-center ${
                     isActive
                       ? "w-6 sm:w-7 h-2 sm:h-2.5 bg-[#D8661E] shadow-xs"
                       : "w-2 sm:w-2.5 h-2 sm:h-2.5 bg-[#2B120E]/25 hover:bg-[#2B120E]/50"
@@ -627,7 +668,7 @@ export default function MakhanaBenefitsScroll() {
             onClick={() => scrollToStep(Math.min(5, activeStep + 1))}
             disabled={activeStep === 5}
             aria-label="Next Benefit"
-            className="p-2 sm:p-2.5 rounded-full bg-white/90 border border-[#2B120E]/15 text-[#2B120E] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white shadow-xs transition-all cursor-pointer backdrop-blur-md"
+            className="p-2 sm:p-2.5 rounded-full bg-white/95 border border-[#2B120E]/15 text-[#2B120E] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white shadow-xs transition-[transform,opacity,background-color] cursor-pointer"
           >
             <ChevronRight className="w-4 h-4 stroke-[2.5]" />
           </button>

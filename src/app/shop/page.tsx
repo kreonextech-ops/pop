@@ -71,7 +71,7 @@ export default function ShopPage() {
     }),
     ...extraStoreFlavours.map((sp) => {
       const v0 = sp.variants[0];
-      const price = v0 ? parseFloat(v0.price) : 40;
+      const price = v0 ? parseFloat(v0.price) : 149;
       const orig = v0 ? parseFloat(v0.compare_at_price) : price;
       return {
         ...Object.values(PRODUCTS)[0],
@@ -92,9 +92,9 @@ export default function ShopPage() {
         accentBg: sp.accentBg,
         packImage: sp.image,
         pricing: {
-          single: { label: v0?.title || "1 Pouch (20g)", count: "20g", price, originalPrice: orig },
-          trio: { label: "Pack of 3", count: "60g", price: price * 3, originalPrice: orig * 3 },
-          party: { label: "Pack of 6", count: "120g", price: price * 6, originalPrice: orig * 6 },
+          single: { label: v0?.title || "1 Pouch (60g)", count: "60g Pouch", price, originalPrice: orig },
+          trio: { label: "Pack of 3", count: "3 × 60g (180g)", price: price * 3, originalPrice: orig * 3 },
+          party: { label: "Pack of 6", count: "6 × 60g (360g)", price: price * 6, originalPrice: orig * 6 },
         },
       };
     }),
@@ -210,7 +210,7 @@ export default function ShopPage() {
               <span className="text-[#3CA837]">✔</span> 0g Trans Fat & Gluten Free
             </span>
             <span className="flex items-center gap-1.5 bg-white/80 px-3 py-1 rounded-full border border-[#522C28]/10 shadow-2xs">
-              <span className="text-[#3CA837]">✔</span> Free Shipping Over ₹299
+              <span className="text-[#3CA837]">✔</span> Free Delivery Above ₹699+
             </span>
             <span className="flex items-center gap-1.5 bg-white/80 px-3 py-1 rounded-full border border-[#522C28]/10 shadow-2xs">
               <span className="text-[#3CA837]">✔</span> Ships within 24 Hours
@@ -535,7 +535,7 @@ export default function ShopPage() {
                             </span>
                           </div>
                           <span className="text-[10px] text-[#522C28]/70 font-semibold">
-                            Single 20g (Or get 3-pack for ₹{product.pricing.trio.price})
+                            {product.pricing.single.count} (Or get 3-pack for ₹{product.pricing.trio.price})
                           </span>
                         </div>
                       </div>
@@ -620,7 +620,12 @@ export default function ShopPage() {
               className="h-52 w-auto object-contain drop-shadow-2xl z-10"
             />
             <img
-              src="/packets/plain.png"
+              src="/packets/pink-salt-pouch.png"
+              alt=""
+              className="h-48 w-auto object-contain drop-shadow-2xl rotate-3"
+            />
+            <img
+              src="/packets/raw-makhana-pouch.png"
               alt=""
               className="h-44 w-auto object-contain drop-shadow-2xl rotate-6"
             />

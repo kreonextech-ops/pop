@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/CartContext";
 import { AuthProvider } from "@/components/AuthContext";
 import CartDrawer from "@/components/CartDrawer";
+import LenisProvider from "@/components/LenisProvider";
 
 const lilita = localFont({
   src: [
@@ -14,14 +15,9 @@ const lilita = localFont({
       weight: "400",
       style: "normal",
     },
-    {
-      path: "../../public/fonts/LilitaOne-Regular.ttf",
-      weight: "400",
-      style: "normal",
-    },
   ],
   variable: "--font-lilita",
-  display: "block",
+  display: "swap",
   preload: true,
 });
 
@@ -43,24 +39,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lilita.variable} ${manrope.variable} overflow-x-hidden`}>
-      <head>
-        <link
-          rel="preload"
-          href="/fonts/LilitaOne-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-      </head>
-      <body className="bg-bitejoy-bg text-bitejoy-text antialiased overflow-x-hidden w-full max-w-full font-sans">
-        <AuthProvider>
-          <CartProvider>
-            {children}
-            <Footer />
-            <CartDrawer />
-          </CartProvider>
-        </AuthProvider>
+    <html lang="en" className={`${lilita.variable} ${manrope.variable} overflow-x-clip`}>
+      <body className="bg-bitejoy-bg text-bitejoy-text antialiased overflow-x-clip w-full max-w-full font-sans">
+        <LenisProvider>
+          <AuthProvider>
+            <CartProvider>
+              {children}
+              <Footer />
+              <CartDrawer />
+            </CartProvider>
+          </AuthProvider>
+        </LenisProvider>
       </body>
     </html>
   );

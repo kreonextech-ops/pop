@@ -37,6 +37,24 @@ interface SearchProduct {
   variants: { price: string }[];
 }
 
+const CRYSTAL_NAV = {
+  header:
+    "bg-gradient-to-b from-white/85 via-[#FFF8EE]/76 to-[#F5E7DA]/74 backdrop-blur-md border-b border-[#D73B3A]/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_6px_24px_rgba(82,44,40,0.09)]",
+  glossOverlay:
+    "bg-gradient-to-b from-white/60 via-white/15 to-transparent",
+  logoWrap: "",
+  navText: "text-[#522C28]",
+  navHover: "hover:text-[#D73B3A]",
+  navActive: "text-[#D73B3A] underline decoration-[#FAC537] decoration-2 underline-offset-4",
+  iconBtn:
+    "bg-white/60 hover:bg-white/90 border-white/80 text-[#522C28] hover:text-[#D73B3A]",
+  pillIdle:
+    "bg-white/65 hover:bg-white/95 border-[#522C28]/15 text-[#522C28] hover:border-[#D73B3A]",
+  pillActive: "bg-[#25100E] text-[#FAC537] border-[#25100E]",
+  cartBtn: "bg-[#D73B3A] hover:bg-[#FB0008] text-white",
+  cartBadge: "bg-[#FAC537] text-[#522C28] border-[#522C28]",
+};
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -46,18 +64,61 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [isNavVisible, setIsNavVisible] = useState(true);
   const [googleBusy, setGoogleBusy] = useState(false);
   const [menuError, setMenuError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [catalog, setCatalog] = useState<SearchProduct[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+  const lastScrollYRef = useRef(0);
+
+  const t = CRYSTAL_NAV;
 
   useEffect(() => {
     setMobileOpen(false);
     setSearchOpen(false);
     setAccountOpen(false);
+    setIsNavVisible(true);
   }, [pathname]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    lastScrollYRef.current = Math.max(0, window.scrollY || 0);
+    let rafId: number | null = null;
+
+    const updateVisibility = () => {
+      rafId = null;
+      const currentY = Math.max(0, window.scrollY || 0);
+      if (currentY <= 40) {
+        setIsNavVisible((prev) => (prev ? prev : true));
+        lastScrollYRef.current = currentY;
+        return;
+      }
+
+      const diff = currentY - lastScrollYRef.current;
+      if (Math.abs(diff) < 6) return;
+
+      if (diff > 0 && currentY > 72) {
+        setIsNavVisible((prev) => (prev ? false : prev));
+      } else if (diff < 0) {
+        setIsNavVisible((prev) => (prev ? prev : true));
+      }
+      lastScrollYRef.current = currentY;
+    };
+
+    const handleScroll = () => {
+      if (rafId === null) {
+        rafId = window.requestAnimationFrame(updateVisibility);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   useEffect(() => {
     if (!accountOpen) return;
@@ -127,112 +188,125 @@ export default function Navbar() {
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
+  const showNavbar = isNavVisible || mobileOpen || searchOpen || accountOpen;
+
   return (
-    <header className="w-full sticky top-0 z-50 px-2.5 sm:px-5 pt-2.5 pb-1 pointer-events-none">
-      <div className="pointer-events-auto max-w-6xl mx-auto px-4 sm:px-6 py-2.5 rounded-2xl bg-gradient-to-b from-white/70 via-[#FFF8EE]/55 to-[#FFF8EE]/45 backdrop-blur-xl backdrop-saturate-150 border border-white/80 ring-1 ring-[#522C28]/10 shadow-[0_8px_32px_rgba(82,44,40,0.12)] flex items-center justify-between gap-3 transition-all">
-        {/* Left: Mobile hamburger + Brand Logo */}
-        <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden p-2 rounded-xl text-[#522C28] hover:bg-[#522C28]/5 transition-colors"
-            aria-label="Toggle Menu"
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+    <header
+      className={`w-full sticky top-0 z-50 transition-[transform,opacity] duration-300 ease-out will-change-transform ${t.header} ${
+        showNavbar
+          ? "translate-y-0 opacity-100"
+          : "-translate-y-full opacity-0 pointer-events-none"
+      }`}
+    >
+        {/* Top half glossy specular sheen */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-x-0 top-0 h-1/2 ${t.glossOverlay}`}
+        />
 
-          <Link href="/" className="flex items-center group shrink-0">
-            <img
-              src="/pop-culture-logo.svg"
-              alt="Pop Culture"
-              className="h-9 sm:h-11 w-auto object-contain group-hover:scale-105 transition-transform"
-            />
-          </Link>
-        </div>
-
-        {/* Center: Desktop Nav Links */}
-        <nav className="hidden md:flex items-center space-x-6 lg:space-x-7 font-bold text-xs lg:text-sm text-[#522C28]">
-          {navLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`transition-colors whitespace-nowrap ${
-                isActive(item.href)
-                  ? "text-[#D73B3A] underline decoration-[#FAC537] decoration-2 underline-offset-4"
-                  : "hover:text-[#D73B3A]"
-              }`}
+        <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-3">
+          {/* Left: Mobile hamburger + Brand Logo */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1 md:flex-initial overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              className={`md:hidden p-1.5 sm:p-2 rounded-xl border shrink-0 transition-colors ${t.iconBtn}`}
+              aria-label="Toggle Menu"
             >
-              {item.label}
+              {mobileOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5" />}
+            </button>
+
+            <Link
+              href="/"
+              className={`flex items-center group min-w-0 max-w-full transition-transform hover:scale-[1.03] ${t.logoWrap}`}
+            >
+              <img
+                src="/pop-culture-logo.svg"
+                alt="Pop Culture"
+                className="w-[84px] min-[360px]:w-[104px] sm:w-auto sm:h-9 md:h-10 h-auto max-w-full object-contain object-left"
+              />
             </Link>
-          ))}
-        </nav>
+          </div>
 
-        {/* Right: Search, Account / Login, Admin, Cart */}
-        <div className="flex items-center gap-2 sm:gap-3 text-[#522C28]">
-          {/* Live Search Button */}
-          <button
-            type="button"
-            onClick={() => setSearchOpen((v) => !v)}
-            className="p-2 rounded-full bg-white/55 hover:bg-white/85 border border-white/70 hover:text-[#D73B3A] backdrop-blur-md transition-all cursor-pointer shadow-2xs"
-            aria-label="Search Products"
-            title="Search flavours & combos"
+          {/* Center: Desktop Nav Links */}
+          <nav
+            className={`hidden md:flex items-center space-x-6 lg:space-x-7 font-bold text-xs lg:text-sm ${t.navText}`}
           >
-            <Search className="w-4 h-4 stroke-[2.5]" />
-          </button>
+            {navLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`transition-colors whitespace-nowrap ${
+                  isActive(item.href) ? t.navActive : t.navHover
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-          {/* Top-Right Corner Customer Profile & Login Menu */}
-          <div className="relative" ref={accountMenuRef}>
-            {!loading && user ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setAccountOpen((v) => !v);
-                  setMenuError(null);
-                }}
-                className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border backdrop-blur-md shadow-xs transition-all cursor-pointer ${
-                  accountOpen || pathname === "/account"
-                    ? "bg-[#25100E]/90 text-[#FAC537] border-[#25100E]"
-                    : "bg-white/65 hover:bg-white/90 border-white/80 ring-1 ring-[#522C28]/10 hover:border-[#D73B3A] text-[#522C28]"
-                }`}
-                title="Open Profile & Orders Menu"
-                aria-expanded={accountOpen}
-              >
-                <span className="w-6 h-6 rounded-full bg-[#FAC537] text-[#522C28] font-black text-[11px] flex items-center justify-center uppercase border border-[#522C28]/20">
-                  {(user.fullName || user.email).charAt(0)}
-                </span>
-                <span className="hidden sm:inline text-xs font-extrabold max-w-[96px] truncate">
-                  {user.fullName.split(" ")[0]}
-                </span>
-                <span className="inline-flex items-center gap-0.5 bg-[#FFF8EE] text-[#D73B3A] px-1.5 py-0.5 rounded-full text-[10px] font-black border border-[#FAC537]">
-                  <Coins className="w-3 h-3" />
-                  {user.loyaltyPoints}
-                </span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform ${
-                    accountOpen ? "rotate-180" : ""
+          {/* Right: Search, Account / Login, Admin, Cart */}
+          <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
+            {/* Live Search Button */}
+            <button
+              type="button"
+              onClick={() => setSearchOpen((v) => !v)}
+              className={`p-1.5 sm:p-2 rounded-full border backdrop-blur-md transition-all cursor-pointer shadow-2xs ${t.iconBtn}`}
+              aria-label="Search Products"
+              title="Search flavours & combos"
+            >
+              <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+            </button>
+
+            {/* Top-Right Corner Customer Profile & Login Menu */}
+            <div className="relative" ref={accountMenuRef}>
+              {!loading && user ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAccountOpen((v) => !v);
+                    setMenuError(null);
+                  }}
+                  className={`inline-flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-full border backdrop-blur-md shadow-xs transition-all cursor-pointer ${
+                    accountOpen || pathname === "/account" ? t.pillActive : t.pillIdle
                   }`}
-                />
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setAccountOpen((v) => !v);
-                  setMenuError(null);
-                }}
-                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border backdrop-blur-md text-xs font-extrabold transition-all shadow-xs cursor-pointer ${
-                  accountOpen
-                    ? "bg-[#25100E]/90 text-[#FAC537] border-[#25100E]"
-                    : "bg-white/65 hover:bg-white/90 border-white/80 ring-1 ring-[#522C28]/10 hover:border-[#D73B3A] hover:text-[#D73B3A] text-[#522C28]"
-                }`}
-                title="Customer Sign In & Profile"
-                aria-expanded={accountOpen}
-              >
-                <User className="w-4 h-4 stroke-[2.3]" />
-                <span className="hidden sm:inline">Sign In</span>
-                <ChevronDown className="w-3 h-3 opacity-70" />
-              </button>
-            )}
+                  title="Open Profile & Orders Menu"
+                  aria-expanded={accountOpen}
+                >
+                  <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#FAC537] text-[#522C28] font-black text-[10px] sm:text-[11px] flex items-center justify-center uppercase border border-[#522C28]/20">
+                    {(user.fullName || user.email).charAt(0)}
+                  </span>
+                  <span className="hidden sm:inline text-xs font-extrabold max-w-[96px] truncate">
+                    {user.fullName.split(" ")[0]}
+                  </span>
+                  <span className="hidden sm:inline-flex items-center gap-0.5 bg-[#FFF8EE] text-[#D73B3A] px-1.5 py-0.5 rounded-full text-[10px] font-black border border-[#FAC537]">
+                    <Coins className="w-3 h-3" />
+                    {user.loyaltyPoints}
+                  </span>
+                  <ChevronDown
+                    className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${
+                      accountOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAccountOpen((v) => !v);
+                    setMenuError(null);
+                  }}
+                  className={`inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-full border backdrop-blur-md text-xs font-extrabold transition-all shadow-xs cursor-pointer ${
+                    accountOpen ? t.pillActive : t.pillIdle
+                  }`}
+                  title="Customer Sign In & Profile"
+                  aria-expanded={accountOpen}
+                >
+                  <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.3]" />
+                  <span className="hidden sm:inline">Sign In</span>
+                  <ChevronDown className="w-3 h-3 opacity-70" />
+                </button>
+              )}
 
             {/* Floating Corner Dropdown */}
             {accountOpen && (
@@ -367,14 +441,12 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Admin Console shortcut */}
+          {/* Admin Console shortcut (hidden on < sm; available in mobile drawer) */}
           <Link
             href="/admin"
             title={user?.role === "admin" ? "Store Admin Console" : "Admin Login"}
-            className={`p-2 rounded-full transition-colors ${
-              pathname === "/admin"
-                ? "bg-[#522C28] text-[#FAC537]"
-                : "hover:bg-[#522C28]/5 text-[#522C28]/70 hover:text-[#D73B3A]"
+            className={`hidden sm:inline-flex p-2 rounded-full border transition-colors ${
+              pathname === "/admin" ? t.pillActive : t.iconBtn
             }`}
             aria-label="Admin Panel"
           >
@@ -385,14 +457,16 @@ export default function Navbar() {
           <button
             type="button"
             onClick={openCart}
-            className="relative px-3 py-2 rounded-full bg-[#D73B3A] text-white hover:bg-[#FB0008] transition-all shadow-sm cursor-pointer inline-flex items-center gap-1.5"
+            className={`relative px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-all shadow-sm cursor-pointer inline-flex items-center gap-1.5 ${t.cartBtn}`}
             aria-label="Open Cart"
           >
             <ShoppingBag className="w-3.5 h-3.5 stroke-[2.5]" />
             <span className="hidden sm:inline text-[11px] font-black uppercase tracking-wide">
               Cart
             </span>
-            <span className="min-w-[18px] h-[18px] px-1 bg-[#FAC537] text-[#522C28] text-[10px] font-black rounded-full flex items-center justify-center border border-[#522C28]">
+            <span
+              className={`min-w-[18px] h-[18px] px-1 text-[10px] font-black rounded-full flex items-center justify-center border ${t.cartBadge}`}
+            >
               {totalCount}
             </span>
           </button>
@@ -401,7 +475,7 @@ export default function Navbar() {
 
       {/* Expandable Search Bar & Live Results */}
       {searchOpen && (
-        <div className="pointer-events-auto max-w-6xl mx-auto mt-2 rounded-2xl border border-white/80 ring-1 ring-[#522C28]/10 bg-[#FFF8EE]/80 backdrop-blur-xl backdrop-saturate-150 shadow-[0_12px_36px_rgba(82,44,40,0.14)]">
+        <div className="relative z-20 border-t border-[#522C28]/10 bg-white/90 backdrop-blur-xl text-[#522C28] shadow-lg">
           <div className="max-w-3xl mx-auto px-4 py-3.5">
             <div className="relative flex items-center">
               <Search className="w-4 h-4 text-[#522C28]/50 absolute left-3.5" />
@@ -468,7 +542,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       {mobileOpen && (
-        <div className="md:hidden pointer-events-auto max-w-6xl mx-auto mt-2 rounded-2xl border border-white/80 ring-1 ring-[#522C28]/10 bg-[#FFF8EE]/85 backdrop-blur-xl backdrop-saturate-150 px-4 py-4 space-y-2 shadow-[0_12px_36px_rgba(82,44,40,0.16)]">
+        <div className="md:hidden relative z-20 border-t border-[#522C28]/10 bg-[#FFF8EE]/95 backdrop-blur-xl text-[#522C28] px-4 py-4 space-y-2 shadow-lg">
           {navLinks.map((item) => (
             <Link
               key={item.href}

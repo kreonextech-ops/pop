@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   Heart,
   Star,
@@ -17,12 +18,20 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import DiscoverFoxGame from "@/components/DiscoverFoxGame";
+import HeroMakhanaPhysics from "@/components/HeroMakhanaPhysics";
 import InteractiveScatterLayer, { ScatterPieceData } from "@/components/InteractiveScatterLayer";
-import MakhanaBenefitsScroll from "@/components/MakhanaBenefitsScroll";
 import Navbar from "@/components/Navbar";
 import { useCart } from "@/components/CartContext";
 import { PRODUCTS } from "@/data/products";
+
+const MakhanaBenefitsScroll = dynamic(
+  () => import("@/components/MakhanaBenefitsScroll"),
+  { ssr: true }
+);
+const DiscoverFoxGame = dynamic(
+  () => import("@/components/DiscoverFoxGame"),
+  { ssr: true }
+);
 
 const cheeseScatterPieces: ScatterPieceData[] = [
   {
@@ -213,78 +222,163 @@ const plainScatterPieces: ScatterPieceData[] = [
   },
 ];
 
+const pinkSaltScatterPieces: ScatterPieceData[] = [
+  {
+    id: 401,
+    src: "/scatter/pink-salt/01_salt_bowl.png",
+    alt: "Pink Salt Bowl Top-Left",
+    desktop: { x: -335, y: -140, rotate: -20, scale: 1.08 },
+    mobile: { x: -185, y: -100, rotate: -20, scale: 0.78 },
+    size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
+    floatClass: "animate-scatter-wander-1",
+    delay: "0.01s",
+  },
+  {
+    id: 402,
+    src: "/scatter/pink-salt/03_large_pink_salt_crystals.png",
+    alt: "Large Pink Salt Crystals Top-Right",
+    desktop: { x: 335, y: -140, rotate: 20, scale: 1.08 },
+    mobile: { x: 185, y: -100, rotate: 20, scale: 0.78 },
+    size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
+    floatClass: "animate-scatter-wander-2",
+    delay: "0.02s",
+  },
+  {
+    id: 403,
+    src: "/scatter/pink-salt/05_salt_crystal_pile_with_leaves.png",
+    alt: "Pink Salt Crystal Pile Mid-Left",
+    desktop: { x: -355, y: 12, rotate: 12, scale: 1.05 },
+    mobile: { x: -198, y: 10, rotate: 12, scale: 0.76 },
+    size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
+    floatClass: "animate-scatter-wander-3",
+    delay: "0.03s",
+  },
+  {
+    id: 404,
+    src: "/scatter/pink-salt/06_pink_salt_grinder.png",
+    alt: "Pink Salt Grinder Mid-Right",
+    desktop: { x: 355, y: 12, rotate: -12, scale: 1.05 },
+    mobile: { x: 198, y: 10, rotate: -12, scale: 0.76 },
+    size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
+    floatClass: "animate-scatter-wander-4",
+    delay: "0.04s",
+  },
+  {
+    id: 405,
+    src: "/scatter/pink-salt/09_raw_himalayan_salt_chunks.png",
+    alt: "Raw Himalayan Salt Chunks Lower-Left",
+    desktop: { x: -325, y: 165, rotate: -16, scale: 1.02 },
+    mobile: { x: -182, y: 125, rotate: -16, scale: 0.74 },
+    size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
+    floatClass: "animate-scatter-wander-5",
+    delay: "0.05s",
+  },
+  {
+    id: 406,
+    src: "/scatter/pink-salt/02_wooden_salt_scoop.png",
+    alt: "Wooden Salt Scoop Lower-Right",
+    desktop: { x: 325, y: 165, rotate: 22, scale: 1.02 },
+    mobile: { x: 182, y: 125, rotate: 22, scale: 0.74 },
+    size: "w-16 h-16 sm:w-22 sm:h-22 md:w-26 md:h-26",
+    floatClass: "animate-scatter-wander-6",
+    delay: "0.06s",
+  },
+];
+
 export default function BiteJoyPage() {
+  const heroStageRef = useRef<HTMLDivElement | null>(null);
   const [favorites, setFavorites] = useState<number[]>([]);
   const { totalCount, openCart, addItem } = useCart();
   const [activePlanetIndex, setActivePlanetIndex] = useState(0); // 0 = Peri Peri Punch, 2 = Cheese Blast
-  const [isScattered, setIsScattered] = useState(false);
+  const [isScattered, setIsScattered] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [resetScatterTrigger, setResetScatterTrigger] = useState(0);
   const [isTransitioningFlavour, setIsTransitioningFlavour] = useState(false);
 
   useEffect(() => {
+    const mobileViewport = window.innerWidth < 640;
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    // Eagerly preload all flavour packets, backgrounds, and scatter piece textures into browser cache
-    const allAssetUrls = [
+    // Defer secondary flavour assets until browser is idle so Hero hydrates & paints instantaneously
+    const deferredAssets = [
       "/packets/peri peri.svg",
+      mobileViewport ? "/product-bg/mobile-peri-peri.webp" : "/product-bg/peri-peri.webp",
       "/packets/cheese.svg",
-      "/packets/plain.png",
-      "/product-bg/peri-peri.svg",
-      "/product-bg/mobile-peri-peri.svg",
-      "/product-bg/cheese.svg",
-      "/product-bg/mobile-cheese.svg",
-      "/product-bg/plain.svg",
-      "/product-bg/mobile-plain.svg",
-      ...cheeseScatterPieces.map((p) => p.src),
+      "/packets/pink-salt-pouch.png",
+      "/packets/raw-makhana-pouch.png",
+      mobileViewport ? "/product-bg/mobile-cheese.webp" : "/product-bg/cheese.webp",
+      mobileViewport ? "/product-bg/mobile-pink-salt.webp" : "/product-bg/pink-salt.webp",
+      mobileViewport ? "/product-bg/mobile-plain.webp" : "/product-bg/plain.webp",
       ...periPeriScatterPieces.map((p) => p.src),
+      ...cheeseScatterPieces.map((p) => p.src),
+      ...pinkSaltScatterPieces.map((p) => p.src),
       ...plainScatterPieces.map((p) => p.src),
     ];
-    allAssetUrls.forEach((url) => {
-      const img = new Image();
-      img.src = url;
-    });
 
-    // Initial smooth burst delay after page mounts
-    const timer = setTimeout(() => setIsScattered(true), 250);
+    let idleHandle: number | null = null;
+    let fallbackTimeout: ReturnType<typeof setTimeout> | null = null;
+    const preloadDeferred = () => {
+      deferredAssets.forEach((url) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.src = url;
+      });
+    };
+
+    const winWithIdle = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    if (typeof winWithIdle.requestIdleCallback === "function") {
+      idleHandle = winWithIdle.requestIdleCallback(preloadDeferred, { timeout: 1400 });
+    } else {
+      fallbackTimeout = setTimeout(preloadDeferred, 650);
+    }
+
     return () => {
       window.removeEventListener("resize", handleResize);
-      clearTimeout(timer);
+      if (idleHandle !== null && typeof winWithIdle.cancelIdleCallback === "function") {
+        winWithIdle.cancelIdleCallback(idleHandle);
+      }
+      if (fallbackTimeout !== null) {
+        clearTimeout(fallbackTimeout);
+      }
     };
   }, []);
 
-  // Orchestrate the snappy retract & burst lifecycle during flavour switching
+  // Orchestrate crisp ultra-snappy retract & burst lifecycle during flavour switching
   const changeFlavour = useCallback(
     (targetIndex: number) => {
       if (targetIndex === activePlanetIndex || isTransitioningFlavour) return;
       setIsTransitioningFlavour(true);
 
-      // 1. Snappy pull current assets back behind the packet (180ms)
+      // 1. Snappy pull current assets back behind the packet (120ms)
       setIsScattered(false);
 
-      // 2. Once retracted behind the pouch (180ms), swap flavour pack and background
+      // 2. Once retracted behind the pouch (120ms), swap flavour pack and background
       setTimeout(() => {
         setActivePlanetIndex(targetIndex);
 
-        // 3. Ultra-short frame tick (30ms), then burst outward immediately from behind!
-        setTimeout(() => {
+        // 3. Immediate next frame burst outward
+        requestAnimationFrame(() => {
           setIsScattered(true);
           setIsTransitioningFlavour(false);
-        }, 30);
-      }, 180);
+        });
+      }, 120);
     },
     [activePlanetIndex, isTransitioningFlavour]
   );
 
   const nextPlanet = useCallback(() => {
-    changeFlavour((activePlanetIndex + 1) % 3);
+    changeFlavour((activePlanetIndex + 1) % 4);
   }, [changeFlavour, activePlanetIndex]);
 
   const prevPlanet = useCallback(() => {
-    changeFlavour((activePlanetIndex - 1 + 3) % 3);
+    changeFlavour((activePlanetIndex - 1 + 4) % 4);
   }, [changeFlavour, activePlanetIndex]);
 
   // Keyboard navigation for slider (Left / Right arrow keys)
@@ -348,24 +442,26 @@ export default function BiteJoyPage() {
     setTouchStartX(null);
   };
 
-  const currentScatterPieces =
-    activePlanetIndex === 0
-      ? periPeriScatterPieces
-      : activePlanetIndex === 1
-      ? plainScatterPieces
-      : cheeseScatterPieces;
+  const scatterByFlavour = [
+    periPeriScatterPieces,
+    cheeseScatterPieces,
+    pinkSaltScatterPieces,
+    plainScatterPieces,
+  ];
+  const currentScatterPieces = scatterByFlavour[activePlanetIndex] || periPeriScatterPieces;
 
   const flavourPlanets = [
     {
       id: "periperi",
       slug: "peri-peri",
-      code: "01 / 03",
+      code: "01 / 04",
       name: "PERI PERI",
       tagline: "",
       description: "",
       packImage: "/packets/peri peri.svg",
-      bgSvg: "/product-bg/peri-peri.svg",
-      bgMobileSvg: "/product-bg/mobile-peri-peri.svg",
+      bgSvg: "/product-bg/peri-peri.webp",
+      bgMobileSvg: "/product-bg/mobile-peri-peri.webp",
+      themeBg: "#E53925",
       themeColor: "#D73B3A",
       planetGradient: "radial-gradient(circle at 35% 30%, #FF6B6B 0%, #D73B3A 55%, #7A1211 100%)",
       glowColor: "rgba(215, 59, 58, 0.45)",
@@ -373,36 +469,55 @@ export default function BiteJoyPage() {
       accentBg: "#FB0008",
     },
     {
-      id: "plain",
-      slug: "raw-makhana",
-      code: "02 / 03",
-      name: "RAW MAKHANA",
-      tagline: "",
-      description: "",
-      packImage: "/packets/plain.png",
-      bgSvg: "/product-bg/plain.svg",
-      bgMobileSvg: "/product-bg/mobile-plain.svg",
-      themeColor: "#2D6A4F",
-      planetGradient: "radial-gradient(circle at 35% 30%, #D8F3DC 0%, #52B788 55%, #1B4332 100%)",
-      glowColor: "rgba(45, 106, 79, 0.45)",
-      badge: "🌱 RAW MAKHANA",
-      accentBg: "#2D6A4F",
-    },
-    {
       id: "cheddar",
       slug: "cheddar-cheese",
-      code: "03 / 03",
+      code: "02 / 04",
       name: "CHEDDAR CHEESE",
       tagline: "",
       description: "",
       packImage: "/packets/cheese.svg",
-      bgSvg: "/product-bg/cheese.svg",
-      bgMobileSvg: "/product-bg/mobile-cheese.svg",
+      bgSvg: "/product-bg/cheese.webp",
+      bgMobileSvg: "/product-bg/mobile-cheese.webp",
+      themeBg: "#F79E1B",
       themeColor: "#FFCD3C",
       planetGradient: "radial-gradient(circle at 35% 30%, #FFE082 0%, #F37D20 55%, #8C3900 100%)",
       glowColor: "rgba(255, 205, 60, 0.45)",
       badge: "🧀 CHEDDAR CHEESE",
       accentBg: "#F37D20",
+    },
+    {
+      id: "pinksalt",
+      slug: "pink-salt",
+      code: "03 / 04",
+      name: "HIMALAYAN PINK SALT",
+      tagline: "",
+      description: "",
+      packImage: "/packets/pink-salt-pouch.png",
+      bgSvg: "/product-bg/pink-salt.webp",
+      bgMobileSvg: "/product-bg/mobile-pink-salt.webp",
+      themeBg: "#FFF3F5",
+      themeColor: "#E1366C",
+      planetGradient: "radial-gradient(circle at 35% 30%, #FFB3C7 0%, #E1366C 55%, #7A1238 100%)",
+      glowColor: "rgba(225, 54, 108, 0.45)",
+      badge: "🧂 PINK SALT",
+      accentBg: "#E1366C",
+    },
+    {
+      id: "plain",
+      slug: "raw-makhana",
+      code: "04 / 04",
+      name: "RAW MAKHANA",
+      tagline: "",
+      description: "",
+      packImage: "/packets/raw-makhana-pouch.png",
+      bgSvg: "/product-bg/plain.webp",
+      bgMobileSvg: "/product-bg/mobile-plain.webp",
+      themeBg: "#FFF3E3",
+      themeColor: "#2D6A4F",
+      planetGradient: "radial-gradient(circle at 35% 30%, #D8F3DC 0%, #52B788 55%, #1B4332 100%)",
+      glowColor: "rgba(45, 106, 79, 0.45)",
+      badge: "🌱 RAW MAKHANA",
+      accentBg: "#2D6A4F",
     },
   ];
 
@@ -425,34 +540,176 @@ export default function BiteJoyPage() {
       <Navbar />
 
       {/* =========================================================================
-          HERO SECTION WITH CANVA-INSPIRED CURVED ARCH MARQUEE & RECLINING FOX
+          HERO SECTION WITH MINIMAL CTAs, 4 CASCADING PACKETS, FOX & GRAVITY MAKHANA
           ========================================================================= */}
-      <section className="relative w-full min-h-[calc(100vh-72px)] bg-[#F9F3EA] flex flex-col justify-between">
-        {/* Top breathing room */}
-        <div className="w-full pt-2 sm:pt-4" />
+      <section className="relative w-full sm:min-h-[calc(100svh-72px)] bg-[#F9F3EA] flex flex-col justify-between [contain:layout_paint]">
+        {/* Interactive Stage above the Red Marquee (Floor sits directly on top of the marquee) */}
+        <div
+          ref={heroStageRef}
+          className="relative flex-1 w-full flex flex-col justify-center overflow-hidden"
+        >
+          {/* Main Hero Grid: Minimal Copy/CTAs (Left) + Canva-Style Stack + Front-Left Fox (Right) */}
+          <div className="relative z-20 w-full max-w-[1440px] mx-auto px-3 sm:px-8 lg:px-14 flex-1 flex flex-col lg:flex-row items-center justify-start sm:justify-evenly lg:justify-between gap-2 sm:gap-8 lg:gap-6 pt-3 sm:pt-6 lg:pt-6 pointer-events-none">
+            {/* Left Column: Minimal Brand Copy & Dual CTAs (Ultra-concise on mobile, rich on desktop) */}
+            <div className="w-full lg:w-[42%] flex flex-col items-center lg:items-start text-center lg:text-left lg:py-8 pointer-events-none">
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white border border-[#C92328]/20 text-[#C92328] text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-xs mb-1.5 sm:mb-3">
+                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                <span className="sm:hidden">Makhana • ₹149</span>
+                <span className="hidden sm:inline">Slow-Roasted Makhana • ₹149</span>
+              </span>
 
-        {/* Hero Stage Container holding Reclining Fox & Straight Marquee */}
-        <div className="relative w-full mt-auto flex flex-col items-center justify-end">
-          
-          {/* Sunglasses Fox With Sweeping Tail - Lounging directly on top of the straight marquee */}
-          <div className="relative z-30 w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 flex justify-end -mb-3 sm:-mb-5 md:-mb-6 pointer-events-none">
-            <div className="w-full flex justify-center lg:justify-end pr-0 lg:pr-6 xl:pr-10">
-              <img
-                src="/Sunglasses Fox With Sweeping Tail.png"
-                alt="Sunglasses Fox With Sweeping Tail"
-                className="w-auto h-auto max-w-[94vw] sm:max-w-[88vw] md:max-w-[80vw] lg:max-w-[72vw] xl:max-w-[940px] max-h-[46vh] sm:max-h-[50vh] md:max-h-[54vh] lg:max-h-[58vh] xl:max-h-[500px] object-contain drop-shadow-2xl select-none pointer-events-auto transition-transform duration-500 hover:scale-[1.01]"
-              />
+              <h1 className="font-display text-[32px] min-[360px]:text-4xl sm:text-5xl lg:text-[54px] xl:text-[64px] leading-[0.94] sm:leading-[0.96] tracking-tight uppercase text-[#25100E]">
+                SNACK BETTER.{" "}
+                <span className="block font-display text-[#C92328]">POP LOUDER.</span>
+              </h1>
+
+              <p className="hidden sm:block mt-3 text-base text-[#522C28]/85 font-semibold max-w-md">
+                Crisp gluten-free lotus seeds in 4 bold flavours — light crunch, zero guilt.
+              </p>
+
+              {/* Hero CTAs (z-40 keeps buttons always clickable above falling makhana) */}
+              <div
+                style={{ zIndex: 40 }}
+                className="relative mt-2.5 sm:mt-5 flex flex-nowrap sm:flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-3 pointer-events-auto"
+              >
+                <Link
+                  href="/shop"
+                  className="px-4 sm:px-7 py-2 sm:py-3 rounded-full bg-[#C92328] hover:bg-[#A5151C] text-[#FFF8EE] font-black text-[11px] sm:text-sm uppercase tracking-wider shadow-[0_8px_22px_rgba(201,35,40,0.32)] hover:scale-105 active:scale-95 transition-transform flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap"
+                >
+                  <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="sm:hidden">Shop Now</span>
+                  <span className="hidden sm:inline">Shop All Snacks</span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    document.getElementById("flavours")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="px-3.5 sm:px-6 py-2 sm:py-3 rounded-full bg-white hover:bg-[#FFF8EE] text-[#25100E] border-2 border-[#25100E]/15 hover:border-[#25100E]/40 font-black text-[11px] sm:text-sm uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-transform flex items-center gap-1 sm:gap-1.5 cursor-pointer whitespace-nowrap"
+                >
+                  <span className="sm:hidden">Flavours</span>
+                  <span className="hidden sm:inline">Explore Flavours</span>
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+                </button>
+              </div>
+
+              <p className="hidden sm:block mt-4 text-xs font-bold text-[#522C28]/70 tracking-wide uppercase">
+                100% Roasted • 67% Less Fat • Free Delivery Above ₹699+
+              </p>
+            </div>
+
+            {/* Right Column: Tight Canva Stack Completely Inside Bounds + Compact Fox at Bottom-Left */}
+            <div className="relative w-full lg:w-[58%] flex items-end justify-center lg:justify-end self-end lg:mt-auto pt-1 sm:pt-4 lg:pt-8 pb-6 sm:pb-9 lg:pb-8">
+              <div className="relative flex items-end justify-center max-w-full pr-1 sm:pr-3 lg:pr-4">
+                {/* Base Flow Container: All 4 Pouches stay 100% inside right viewport edge with even visual heights */}
+                <div className="relative z-10 flex items-end justify-center pointer-events-none">
+                  {/* 1. Front-Left: Cheddar Cheese */}
+                  <button
+                    type="button"
+                    aria-label="Preview Cheddar Cheese"
+                    onClick={() => {
+                      setActivePlanetIndex(1);
+                      document.getElementById("flavours")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="relative z-40 pointer-events-auto cursor-pointer translate-y-[4px] -rotate-[7deg] hover:-translate-y-2 transition-transform duration-200 origin-bottom shrink-0 will-change-transform"
+                  >
+                    <img
+                      src="/packets/cheese.svg"
+                      alt="Cheddar Cheese Makhana Pouch"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="h-[132px] sm:h-[195px] md:h-[235px] lg:h-[268px] xl:h-[306px] w-auto object-contain select-none"
+                    />
+                  </button>
+
+                  {/* 2. Tucked Behind Cheese & Pink Salt: Peri Peri Punch (wider spacing keeps "PERI PERI" readable) */}
+                  <button
+                    type="button"
+                    aria-label="Preview Peri Peri Punch"
+                    onClick={() => {
+                      setActivePlanetIndex(0);
+                      document.getElementById("flavours")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="relative z-20 pointer-events-auto cursor-pointer -ml-[22px] sm:-ml-[34px] md:-ml-[42px] lg:-ml-[48px] xl:-ml-[54px] translate-y-[2px] -rotate-[1deg] hover:-translate-y-3 transition-transform duration-200 origin-bottom shrink-0 will-change-transform"
+                  >
+                    <img
+                      src="/packets/peri peri.svg"
+                      alt="Peri Peri Makhana Pouch"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="h-[130px] sm:h-[192px] md:h-[232px] lg:h-[264px] xl:h-[302px] w-auto object-contain select-none"
+                    />
+                  </button>
+
+                  {/* 3. Front Center-Right: Himalayan Pink Salt (visually height-matched to Cheese & Peri Peri) */}
+                  <button
+                    type="button"
+                    aria-label="Preview Himalayan Pink Salt"
+                    onClick={() => {
+                      setActivePlanetIndex(2);
+                      document.getElementById("flavours")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="relative z-30 pointer-events-auto cursor-pointer -ml-[24px] sm:-ml-[36px] md:-ml-[44px] lg:-ml-[50px] xl:-ml-[56px] -translate-y-[3px] sm:-translate-y-[5px] rotate-[4deg] hover:-translate-y-4 transition-transform duration-200 origin-bottom shrink-0 will-change-transform"
+                  >
+                    <img
+                      src="/packets/pink-salt-pouch.png"
+                      alt="Himalayan Pink Salt Makhana Pouch"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="h-[128px] sm:h-[188px] md:h-[226px] lg:h-[258px] xl:h-[296px] w-auto object-contain select-none"
+                    />
+                  </button>
+
+                  {/* 4. Back-Right: Raw Makhana (100% visible inside viewport) */}
+                  <button
+                    type="button"
+                    aria-label="Preview Raw Makhana"
+                    onClick={() => {
+                      setActivePlanetIndex(3);
+                      document.getElementById("flavours")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="relative z-10 pointer-events-auto cursor-pointer -ml-[26px] sm:-ml-[38px] md:-ml-[46px] lg:-ml-[52px] xl:-ml-[58px] translate-y-[3px] rotate-[9deg] hover:-translate-y-2 transition-transform duration-200 origin-bottom shrink-0 will-change-transform"
+                  >
+                    <img
+                      src="/packets/raw-makhana-pouch.png"
+                      alt="Raw Makhana Pouch"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="h-[128px] sm:h-[188px] md:h-[226px] lg:h-[258px] xl:h-[296px] w-auto object-contain select-none"
+                    />
+                  </button>
+                </div>
+
+                {/* Compact Sunglasses Fox perched at bottom-front-left (leaves Pink Salt fox & Raw Makhana completely clear!) */}
+                <img
+                  src="/Sunglasses Fox With Sweeping Tail.png"
+                  alt="Sunglasses Fox With Sweeping Tail"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="pointer-events-none select-none absolute -bottom-6 sm:-bottom-9 md:-bottom-10 -left-2 sm:-left-7 md:-left-9 lg:-left-12 z-20 w-[124px] sm:w-[190px] md:w-[220px] lg:w-[235px] xl:w-[265px] h-auto object-contain"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Top Straight Marquee Ribbon */}
-          <div className="relative z-20 w-full bg-gradient-to-r from-[#C92328] via-[#E23E3E] to-[#C92328] border-t-2 border-[#FFF8EE]/40 border-b-2 border-[#1A0A09]/20 shadow-lg py-3 sm:py-3.5 md:py-4 overflow-hidden select-none">
+          {/* Gravity-Driven + Finger/Gyro-Interactive Makhana Layer (Rendered AFTER grid at z-35 across full width) */}
+          <HeroMakhanaPhysics containerRef={heroStageRef} />
+        </div>
+
+        {/* Top Straight Marquee Ribbon (Acts as Hero Physics Floor) */}
+        <div className="relative z-30 w-full bg-gradient-to-r from-[#C92328] via-[#E23E3E] to-[#C92328] border-t-2 border-[#FFF8EE]/40 border-b-2 border-[#1A0A09]/20 shadow-lg py-2 sm:py-3.5 md:py-4 overflow-hidden select-none">
             <div className="flex w-max animate-wave-marquee">
               <div className="flex shrink-0 items-center gap-6 pr-6">
                 {[...Array(6)].map((_, i) => (
                   <span
                     key={i}
-                    className="font-display text-[20px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
+                    className="font-display text-[15px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
                   >
                     THE COOLEST WAY TO SNACK BETTER <span className="text-[#FFCD3C]">✦</span>
                   </span>
@@ -462,7 +719,7 @@ export default function BiteJoyPage() {
                 {[...Array(6)].map((_, i) => (
                   <span
                     key={i}
-                    className="font-display text-[20px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
+                    className="font-display text-[15px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
                   >
                     THE COOLEST WAY TO SNACK BETTER <span className="text-[#FFCD3C]">✦</span>
                   </span>
@@ -470,8 +727,6 @@ export default function BiteJoyPage() {
               </div>
             </div>
           </div>
-
-        </div>
       </section>
 
 
@@ -485,48 +740,26 @@ export default function BiteJoyPage() {
         id="flavours"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="pt-2 sm:pt-8 md:pt-10 pb-0 bg-[#FDF2E8] text-[#522C28] relative z-10 overflow-hidden select-none w-full aspect-[941/1250] sm:aspect-auto sm:min-h-[720px] flex flex-col justify-between transition-all duration-500 ease-out"
+        className="pt-2 sm:pt-8 md:pt-10 pb-0 bg-[#FDF2E8] text-[#522C28] relative z-10 overflow-hidden select-none w-full aspect-[941/1250] sm:aspect-auto sm:min-h-[720px] flex flex-col justify-between [contain:layout_paint]"
       >
         
-        {/* Dynamic Product Background SVG Layer (Smooth Crossfade with Instant Pre-colored Theme Fallback) */}
+        {/* Dynamic Product Background Layer (Smooth Crossfade with Instant Pre-colored Theme Fallback) */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
-          {[
-            {
-              id: "periperi",
-              themeBg: "#E53925", // Peri Peri Red
-              desktopSvg: "/product-bg/peri-peri.svg",
-              mobileSvg: "/product-bg/mobile-peri-peri.svg",
-              active: activePlanetIndex === 0,
-            },
-            {
-              id: "plain",
-              themeBg: "#FFF3E3", // Warm Plain Cream
-              desktopSvg: "/product-bg/plain.svg",
-              mobileSvg: "/product-bg/mobile-plain.svg",
-              active: activePlanetIndex === 1,
-            },
-            {
-              id: "cheese",
-              themeBg: "#F79E1B", // Cheddar Golden Cheese
-              desktopSvg: "/product-bg/cheese.svg",
-              mobileSvg: "/product-bg/mobile-cheese.svg",
-              active: activePlanetIndex === 2,
-            },
-          ].map((bg) => (
+          {flavourPlanets.map((bg, idx) => (
             <div
               key={bg.id}
               style={{ backgroundColor: bg.themeBg }}
-              className={`absolute inset-0 w-full h-full transition-opacity duration-300 ease-in-out ${
-                bg.active ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+              className={`absolute inset-0 w-full h-full transition-opacity duration-300 ease-in-out will-change-[opacity] ${
+                activePlanetIndex === idx ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
               }`}
             >
               <picture className="w-full h-full block">
-                <source media="(max-width: 640px)" srcSet={bg.mobileSvg} />
+                <source media="(max-width: 640px)" srcSet={bg.bgMobileSvg} />
                 <img
-                  src={bg.desktopSvg}
+                  src={bg.bgSvg}
                   alt=""
-                  loading="eager"
-                  decoding="sync"
+                  loading={activePlanetIndex === idx ? "eager" : "lazy"}
+                  decoding="async"
                   className="w-full h-full object-fill sm:object-cover object-center"
                 />
               </picture>
@@ -535,7 +768,7 @@ export default function BiteJoyPage() {
         </div>
 
         {/* Section Header */}
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-20 pt-3 sm:pt-6 mb-1 sm:mb-2 shrink-0 transition-all duration-500 ease-out">
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-20 pt-3 sm:pt-6 mb-1 sm:mb-2 shrink-0">
           <h2 className="font-display text-2xl sm:text-4xl md:text-5xl font-black tracking-tight uppercase text-[#25100E] drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
             Find Your Flavour
           </h2>
@@ -549,7 +782,7 @@ export default function BiteJoyPage() {
             onClick={prevPlanet}
             aria-label="Previous Flavour"
             title="Slide to Previous Flavour"
-            className="absolute left-1 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-40 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white text-[#25100E] shadow-[0_4px_16px_rgba(0,0,0,0.15)] border-2 border-[#25100E]/15 hover:border-[#25100E]/40 hover:scale-110 active:scale-90 transition-all cursor-pointer backdrop-blur-sm flex items-center justify-center group"
+            className="absolute left-1 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-40 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white text-[#25100E] shadow-[0_4px_16px_rgba(0,0,0,0.15)] border-2 border-[#25100E]/15 hover:border-[#25100E]/40 hover:scale-110 active:scale-90 transition-[transform,border-color,background-color] cursor-pointer flex items-center justify-center group"
           >
             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] transition-transform group-hover:-translate-x-0.5" />
           </button>
@@ -559,7 +792,7 @@ export default function BiteJoyPage() {
             onClick={nextPlanet}
             aria-label="Next Flavour"
             title="Slide to Next Flavour"
-            className="absolute right-1 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white text-[#25100E] shadow-[0_4px_16px_rgba(0,0,0,0.15)] border-2 border-[#25100E]/15 hover:border-[#25100E]/40 hover:scale-110 active:scale-90 transition-all cursor-pointer backdrop-blur-sm flex items-center justify-center group"
+            className="absolute right-1 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white text-[#25100E] shadow-[0_4px_16px_rgba(0,0,0,0.15)] border-2 border-[#25100E]/15 hover:border-[#25100E]/40 hover:scale-110 active:scale-90 transition-[transform,border-color,background-color] cursor-pointer flex items-center justify-center group"
           >
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] transition-transform group-hover:translate-x-0.5" />
           </button>
@@ -591,7 +824,7 @@ export default function BiteJoyPage() {
                 return (
                   <div
                     key={flavour.id}
-                    className={`absolute inset-0 flex items-center justify-center transition-all duration-250 ease-out ${
+                    className={`absolute inset-0 flex items-center justify-center transition-[transform,opacity] duration-250 ease-out will-change-[transform,opacity] ${
                       isActive
                         ? "opacity-100 scale-100 z-10 pointer-events-auto"
                         : "opacity-0 scale-90 z-0 pointer-events-none"
@@ -600,9 +833,9 @@ export default function BiteJoyPage() {
                     <img
                       src={flavour.packImage}
                       alt={flavour.name}
-                      loading="eager"
-                      decoding="sync"
-                      className="h-full w-auto max-w-full object-contain drop-shadow-[0_20px_35px_rgba(120,40,0,0.35)] transition-transform duration-200 group-hover:scale-105 group-active:scale-95 pointer-events-auto"
+                      loading={isActive ? "eager" : "lazy"}
+                      decoding="async"
+                      className="h-full w-auto max-w-full object-contain drop-shadow-xl transition-transform duration-200 group-hover:scale-105 group-active:scale-95 pointer-events-auto"
                     />
                   </div>
                 );
@@ -628,20 +861,24 @@ export default function BiteJoyPage() {
 
           {/* 2. Premium Tactile Flavour Switcher Dock */}
           <div className="mt-2 sm:mt-2.5 z-30">
-            <div className="inline-flex items-center p-1 sm:p-1.5 rounded-full bg-white/95 shadow-[0_4px_16px_rgba(37,16,14,0.12)] border border-[#25100E]/15 backdrop-blur-md">
+            <div className="inline-flex flex-wrap justify-center items-center gap-1 p-1 sm:p-1.5 rounded-2xl sm:rounded-full bg-white/95 shadow-[0_4px_16px_rgba(37,16,14,0.12)] border border-[#25100E]/15">
               {flavourPlanets.map((flavour, idx) => {
                 const isActive = activePlanetIndex === idx;
+                const activeClasses =
+                  flavour.id === "periperi"
+                    ? "bg-[#E53925] text-white shadow-md scale-102 ring-2 ring-[#FFCD3C]/80"
+                    : flavour.id === "cheddar"
+                    ? "bg-[#F79E1B] text-[#25100E] shadow-md scale-102 ring-2 ring-[#25100E]/30"
+                    : flavour.id === "pinksalt"
+                    ? "bg-[#E1366C] text-white shadow-md scale-102 ring-2 ring-[#FFCD3C]/70"
+                    : "bg-[#2D6A4F] text-white shadow-md scale-102 ring-2 ring-[#52B788]/60";
                 return (
                   <button
                     key={flavour.id}
                     onClick={() => changeFlavour(idx)}
-                    className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs md:text-sm font-black uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1.5 select-none ${
+                    className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs md:text-sm font-black uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1.5 select-none whitespace-nowrap ${
                       isActive
-                        ? idx === 0
-                          ? "bg-[#E53925] text-white shadow-md scale-102 ring-2 ring-[#FFCD3C]/80"
-                          : idx === 1
-                          ? "bg-[#2D6A4F] text-white shadow-md scale-102 ring-2 ring-[#52B788]/60"
-                          : "bg-[#F79E1B] text-[#25100E] shadow-md scale-102 ring-2 ring-[#25100E]/30"
+                        ? activeClasses
                         : "text-[#522C28] hover:bg-[#FFF3E3] hover:text-[#25100E]"
                     }`}
                   >
@@ -673,10 +910,10 @@ export default function BiteJoyPage() {
                 );
               }}
               className={`px-5 sm:px-7 py-2 sm:py-2.5 rounded-full font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2 cursor-pointer group ${
-                activePlanetIndex === 0
-                  ? "bg-[#25100E] text-[#FFCD3C] hover:bg-[#1A0A09] shadow-[0_6px_20px_rgba(37,16,14,0.35)] ring-2 ring-[#FFCD3C]/60"
-                  : activePlanetIndex === 1
+                currentFlavour.id === "plain"
                   ? "bg-[#D73B3A] text-white hover:bg-[#B71C1C] shadow-[0_6px_20px_rgba(215,59,58,0.35)]"
+                  : currentFlavour.id === "pinksalt"
+                  ? "bg-[#E1366C] text-white hover:bg-[#C22255] shadow-[0_6px_20px_rgba(225,54,108,0.35)] ring-2 ring-white/70"
                   : "bg-[#25100E] text-[#FFCD3C] hover:bg-[#1A0A09] shadow-[0_6px_20px_rgba(37,16,14,0.35)] ring-2 ring-[#FFCD3C]/60"
               }`}
             >
@@ -697,7 +934,7 @@ export default function BiteJoyPage() {
         </div>
 
         {/* Bottom Straight Marquee Ribbon */}
-        <div className="relative z-30 w-full bg-gradient-to-r from-[#C92328] via-[#E23E3E] to-[#C92328] border-t-2 border-[#FFF8EE]/40 border-b-2 border-[#1A0A09]/20 shadow-lg py-2 sm:py-3 md:py-3.5 overflow-hidden select-none mt-auto shrink-0 transition-all duration-500 ease-out">
+        <div className="relative z-30 w-full bg-gradient-to-r from-[#C92328] via-[#E23E3E] to-[#C92328] border-t-2 border-[#FFF8EE]/40 border-b-2 border-[#1A0A09]/20 shadow-lg py-2 sm:py-3 md:py-3.5 overflow-hidden select-none mt-auto shrink-0 [contain:layout_paint]">
           <div className="flex w-max animate-wave-marquee-reverse">
             <div className="flex shrink-0 items-center gap-6 pr-6">
               {[...Array(6)].map((_, i) => (

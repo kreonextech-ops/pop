@@ -27,6 +27,8 @@ export default function Footer() {
               <img
                 src="/footer/Pop Culture Primary Logo.png"
                 alt="Pop Culture Primary Logo"
+                loading="lazy"
+                decoding="async"
                 className="h-20 md:h-22 lg:h-24 w-auto object-contain"
               />
             </Link>
@@ -49,6 +51,8 @@ export default function Footer() {
             <img
               src="/footer/fox-in-bowl.png"
               alt="Relaxed Fox in Snack Bowl"
+              loading="lazy"
+              decoding="async"
               className="w-60 lg:w-72 xl:w-80 h-auto object-contain drop-shadow-sm select-none"
             />
           </div>
@@ -143,6 +147,8 @@ export default function Footer() {
           <img
             src="/footer/strip.svg"
             alt="Wavy Red Snack Banner"
+            loading="lazy"
+            decoding="async"
             className="w-full h-auto min-h-[100px] block pointer-events-none"
           />
 
@@ -223,6 +229,8 @@ export default function Footer() {
                 <img
                   src="/footer/Pop Culture Primary Logo.png"
                   alt="Pop Culture Primary Logo"
+                  loading="lazy"
+                  decoding="async"
                   className="h-13 sm:h-14 w-auto object-contain drop-shadow-xs"
                 />
               </Link>
@@ -245,6 +253,8 @@ export default function Footer() {
               <img
                 src="/footer/fox-in-bowl.png"
                 alt="Relaxed Fox in Snack Bowl"
+                loading="lazy"
+                decoding="async"
                 className="w-32 sm:w-40 h-auto object-contain drop-shadow-sm select-none"
               />
 
@@ -374,6 +384,8 @@ export default function Footer() {
           <img
             src="/footer/strip.svg"
             alt="Wavy Red Snack Banner"
+            loading="lazy"
+            decoding="async"
             className="w-full h-auto min-h-[60px] sm:min-h-[75px] block pointer-events-none"
           />
 

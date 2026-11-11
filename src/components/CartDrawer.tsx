@@ -14,6 +14,7 @@ import {
   Tag,
   Loader2,
   Coins,
+  Truck,
 } from "lucide-react";
 import { useCart } from "./CartContext";
 import { useAuth } from "./AuthContext";
@@ -86,29 +87,59 @@ export default function CartDrawer() {
   }, [user]);
 
   useEffect(() => {
-    fetch("/api/shiprocket/config")
-      .then((r) => r.json())
-      .then((data: ShiprocketPublicConfig) => {
-        setConfig(data);
+    let loaded = false;
+    let idleId: number | null = null;
+    let timerId: ReturnType<typeof setTimeout> | null = null;
 
-        // Inject Shiprocket Checkout CSS & JS once
-        if (data.checkoutCssUrl && !document.querySelector(`link[href="${data.checkoutCssUrl}"]`)) {
-          const link = document.createElement("link");
-          link.rel = "stylesheet";
-          link.href = data.checkoutCssUrl;
-          document.head.appendChild(link);
-        }
-        if (data.checkoutScriptUrl && !document.querySelector(`script[src="${data.checkoutScriptUrl}"]`)) {
-          const script = document.createElement("script");
-          script.src = data.checkoutScriptUrl;
-          script.async = true;
-          document.body.appendChild(script);
-        }
-      })
-      .catch(() => {
-        // silent fallback
-      });
-  }, []);
+    const loadShiprocket = () => {
+      if (loaded) return;
+      loaded = true;
+      fetch("/api/shiprocket/config")
+        .then((r) => r.json())
+        .then((data: ShiprocketPublicConfig) => {
+          setConfig(data);
+
+          // Inject Shiprocket Checkout CSS & JS once
+          if (data.checkoutCssUrl && !document.querySelector(`link[href="${data.checkoutCssUrl}"]`)) {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = data.checkoutCssUrl;
+            document.head.appendChild(link);
+          }
+          if (data.checkoutScriptUrl && !document.querySelector(`script[src="${data.checkoutScriptUrl}"]`)) {
+            const script = document.createElement("script");
+            script.src = data.checkoutScriptUrl;
+            script.async = true;
+            document.body.appendChild(script);
+          }
+        })
+        .catch(() => {
+          // silent fallback
+        });
+    };
+
+    if (isCartOpen) {
+      loadShiprocket();
+      return;
+    }
+
+    const winWithIdle = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (typeof winWithIdle.requestIdleCallback === "function") {
+      idleId = winWithIdle.requestIdleCallback(loadShiprocket, { timeout: 3500 });
+    } else {
+      timerId = setTimeout(loadShiprocket, 2600);
+    }
+
+    return () => {
+      if (idleId !== null && typeof winWithIdle.cancelIdleCallback === "function") {
+        winWithIdle.cancelIdleCallback(idleId);
+      }
+      if (timerId !== null) clearTimeout(timerId);
+    };
+  }, [isCartOpen]);
 
   const handleApplyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
@@ -292,8 +323,38 @@ export default function CartDrawer() {
           </button>
         </div>
 
+        {/* Free Delivery Progress Bar (Above ₹699+) */}
+        {items.length > 0 && (
+          <div className="px-5 py-2.5 bg-[#FFF3E3] border-b border-[#522C28]/10">
+            <div className="flex items-center justify-between text-[11px] font-black text-[#25100E]">
+              <span className="flex items-center gap-1.5">
+                <Truck className="w-3.5 h-3.5 text-[#3CA837]" />
+                {subtotal > 699 ? (
+                  <span className="text-[#2D6A4F]">You&apos;ve unlocked FREE delivery!</span>
+                ) : (
+                  <span>
+                    Add ₹{700 - subtotal} more for{" "}
+                    <span className="text-[#D73B3A]">FREE delivery</span> above ₹699+
+                  </span>
+                )}
+              </span>
+              <span className="text-[10px] font-bold text-[#522C28]/70">
+                {Math.min(100, Math.round((subtotal / 700) * 100))}%
+              </span>
+            </div>
+            <div className="mt-1.5 h-1.5 w-full rounded-full bg-[#522C28]/10 overflow-hidden">
+              <div
+                style={{ width: `${Math.min(100, Math.round((subtotal / 700) * 100))}%` }}
+                className={`h-full rounded-full transition-all duration-300 ${
+                  subtotal > 699 ? "bg-[#3CA837]" : "bg-[#D73B3A]"
+                }`}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto p-5 space-y-4">
           {items.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center py-12">
               <div className="w-20 h-20 rounded-full bg-[#FAECE7] flex items-center justify-center text-4xl mb-4">

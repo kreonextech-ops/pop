@@ -62,16 +62,44 @@ export default function DiscoverFoxGame() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
+  const scoreLoadedRef = useRef(false);
+
   useEffect(() => {
-    fetch("/api/game/score")
-      .then((r) => r.json())
-      .then((d) => {
-        if (Array.isArray(d.leaderboard)) setLeaderboard(d.leaderboard);
-        if (d.user?.gameHighScore) {
-          setHighScore((prev) => Math.max(prev, Number(d.user.gameHighScore) || 0));
+    const loadScore = () => {
+      scoreLoadedRef.current = true;
+      fetch("/api/game/score")
+        .then((r) => r.json())
+        .then((d) => {
+          if (Array.isArray(d.leaderboard)) setLeaderboard(d.leaderboard);
+          if (d.user?.gameHighScore) {
+            setHighScore((prev) => Math.max(prev, Number(d.user.gameHighScore) || 0));
+          }
+        })
+        .catch(() => {});
+    };
+
+    if (scoreLoadedRef.current) {
+      loadScore();
+      return;
+    }
+
+    const arenaEl = arenaRef.current;
+    if (!arenaEl || typeof IntersectionObserver === "undefined") {
+      const t = setTimeout(loadScore, 2200);
+      return () => clearTimeout(t);
+    }
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          io.disconnect();
+          loadScore();
         }
-      })
-      .catch(() => {});
+      },
+      { rootMargin: "600px" }
+    );
+    io.observe(arenaEl);
+    return () => io.disconnect();
   }, [user?.id]);
 
   // Landscape Arcade Mobile Mode
@@ -672,7 +700,7 @@ export default function DiscoverFoxGame() {
       className={`${
         isLandscapeMode
           ? "fixed z-[9999] inset-0 w-screen h-screen flex flex-col justify-between select-none cursor-pointer overflow-hidden touch-none"
-          : "relative w-full min-h-[440px] sm:min-h-[580px] flex flex-col justify-between select-none cursor-pointer overflow-hidden"
+          : "relative w-full min-h-[440px] sm:min-h-[580px] flex flex-col justify-between select-none cursor-pointer overflow-hidden [contain:layout_paint]"
       } bg-gradient-to-b ${skyThemeClasses[skyTheme]} transition-colors duration-700`}
       style={
         isRotatedPortrait
@@ -856,7 +884,7 @@ export default function DiscoverFoxGame() {
           {/* CELESTIAL */}
           {skyTheme !== "night" ? (
             <div className="absolute top-4 sm:top-6 right-8 sm:right-28 z-1 flex items-center justify-center pointer-events-none">
-              <div className="absolute w-24 sm:w-36 h-24 sm:h-36 rounded-full bg-[#FFCD3C]/35 blur-2xl animate-pulse" />
+              <div className="absolute w-24 sm:w-36 h-24 sm:h-36 rounded-full bg-[radial-gradient(circle,rgba(255,205,60,0.45)_0%,rgba(255,205,60,0.16)_50%,transparent_72%)] pointer-events-none" />
               <svg viewBox="0 0 100 100" className="w-16 sm:w-28 h-16 sm:h-28 animate-sun-spin opacity-85" fill="none">
                 <circle cx="50" cy="50" r="22" fill="#FFCD3C" />
                 <circle cx="50" cy="50" r="18" fill="#FFE072" />
@@ -867,7 +895,7 @@ export default function DiscoverFoxGame() {
             </div>
           ) : (
             <div className="absolute top-4 sm:top-6 right-10 sm:right-32 z-1 flex items-center justify-center pointer-events-none">
-              <div className="absolute w-20 sm:w-28 h-20 sm:h-28 rounded-full bg-[#FFEAA7]/25 blur-xl" />
+              <div className="absolute w-20 sm:w-28 h-20 sm:h-28 rounded-full bg-[radial-gradient(circle,rgba(255,234,167,0.38)_0%,rgba(255,234,167,0.12)_50%,transparent_72%)] pointer-events-none" />
               <svg viewBox="0 0 100 100" className="w-14 sm:w-20 h-14 sm:h-20 text-[#FFEAA7]" fill="currentColor">
                 <path d="M 50 15 A 35 35 0 1 0 85 50 A 28 28 0 1 1 50 15 Z" />
               </svg>
@@ -938,6 +966,8 @@ export default function DiscoverFoxGame() {
               }}
               src="/fox/obstacles/samosa.png"
               alt="Samosa"
+              loading="lazy"
+              decoding="async"
               className={`object-contain object-bottom pointer-events-none ${
                 isLandscapeMode
                   ? "w-16 sm:w-20 h-16 sm:h-20"
@@ -953,6 +983,8 @@ export default function DiscoverFoxGame() {
               }}
               src="/fox/obstacles/jalebi.png"
               alt="Jalebi"
+              loading="lazy"
+              decoding="async"
               className={`object-contain object-bottom pointer-events-none ${
                 isLandscapeMode
                   ? "w-16 sm:w-20 h-16 sm:h-20"
@@ -992,6 +1024,8 @@ export default function DiscoverFoxGame() {
               }}
               src={sprite.src}
               alt={sprite.id}
+              loading="lazy"
+              decoding="async"
               className="absolute bottom-0 w-full h-full object-contain object-bottom will-change-transform"
               style={{ display: sprite.id === "run-0" ? "block" : "none" }}
             />

@@ -57,11 +57,11 @@ export default function AdminPage() {
     emoji: "🌶️",
     image: "/packets/peri peri.svg",
     isCombo: false,
-    price: "40",
-    compareAtPrice: "45",
+    price: "149",
+    compareAtPrice: "175",
     sku: "",
     quantity: "100",
-    grams: "20",
+    grams: "60",
   });
   const [newCollectionTitle, setNewCollectionTitle] = useState("");
   const [variantEdits, setVariantEdits] = useState<
@@ -371,11 +371,11 @@ export default function AdminPage() {
         emoji: "🌶️",
         image: "/packets/peri peri.svg",
         isCombo: false,
-        price: "40",
-        compareAtPrice: "45",
+        price: "149",
+        compareAtPrice: "175",
         sku: "",
         quantity: "100",
-        grams: "20",
+        grams: "60",
       });
       fetchOverview();
     } else {
@@ -1058,7 +1058,7 @@ export default function AdminPage() {
                       >
                         Save Variants
                       </button>
-                      {prod.id > 100006 && (
+                      {prod.id > 100007 && (
                         <button
                           onClick={() => handleDeleteProduct(prod)}
                           className="p-1.5 rounded-full text-red-600 hover:bg-red-50 cursor-pointer"
@@ -1869,11 +1869,12 @@ export default function AdminPage() {
                   />
                 </label>
               </div>
-              <div className="flex gap-2 mt-1.5">
+              <div className="flex flex-wrap gap-2 mt-1.5">
                 {[
                   { label: "Peri Peri", path: "/packets/peri peri.svg" },
                   { label: "Cheese", path: "/packets/cheese.svg" },
-                  { label: "Raw", path: "/packets/plain.png" },
+                  { label: "Pink Salt", path: "/packets/pink-salt-pouch.png" },
+                  { label: "Raw", path: "/packets/raw-makhana-pouch.png" },
                 ].map((preset) => (
                   <button
                     key={preset.path}

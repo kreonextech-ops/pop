@@ -67,7 +67,7 @@ export async function POST(req: Request) {
   const normalizedItems = items.map((item) => {
     const vidStr = String(item.variant_id);
     let matchedName = item.name || "Pop Culture Makhana";
-    let matchedPrice = typeof item.price === "number" ? item.price : 40;
+    let matchedPrice = typeof item.price === "number" ? item.price : 149;
     let matchedImage = item.image_url || "/packets/peri peri.svg";
 
     for (const p of store.products) {
