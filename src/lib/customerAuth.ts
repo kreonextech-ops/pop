@@ -29,13 +29,41 @@ export function verifyPassword(password: string, stored: string): boolean {
   return crypto.timingSafeEqual(a, b);
 }
 
-export function createUserSessionToken(userId: string): string {
-  const payload = JSON.stringify({
-    uid: userId,
+export interface SessionPayload {
+  uid: string;
+  email?: string;
+  fullName?: string;
+  phone?: string;
+  role?: "customer" | "admin";
+  loyaltyPoints?: number;
+  iat: number;
+  exp: number;
+}
+
+export function createUserSessionToken(
+  userOrId:
+    | string
+    | {
+        id: string;
+        email?: string;
+        fullName?: string;
+        phone?: string;
+        role?: "customer" | "admin";
+        loyaltyPoints?: number;
+      }
+): string {
+  const info = typeof userOrId === "string" ? { id: userOrId } : userOrId;
+  const payload: SessionPayload = {
+    uid: info.id,
+    email: info.email,
+    fullName: info.fullName,
+    phone: info.phone,
+    role: info.role,
+    loyaltyPoints: info.loyaltyPoints,
     iat: Date.now(),
     exp: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
-  });
-  const encoded = Buffer.from(payload, "utf8").toString("base64url");
+  };
+  const encoded = Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
   const sig = crypto
     .createHmac("sha256", getSessionSecret())
     .update(encoded)
@@ -43,7 +71,7 @@ export function createUserSessionToken(userId: string): string {
   return `${encoded}.${sig}`;
 }
 
-export function verifyUserSessionToken(token: string | undefined): string | null {
+export function verifyUserSessionPayload(token: string | undefined): SessionPayload | null {
   if (!token) return null;
   const [encoded, sig] = token.split(".");
   if (!encoded || !sig) return null;
@@ -56,15 +84,18 @@ export function verifyUserSessionToken(token: string | undefined): string | null
     const a = Buffer.from(sig, "utf8");
     const b = Buffer.from(expected, "utf8");
     if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
-    const decoded = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8")) as {
-      uid?: string;
-      exp?: number;
-    };
+    const decoded = JSON.parse(
+      Buffer.from(encoded, "base64url").toString("utf8")
+    ) as Partial<SessionPayload>;
     if (!decoded.uid || !decoded.exp || Date.now() > decoded.exp) return null;
-    return decoded.uid;
+    return decoded as SessionPayload;
   } catch {
     return null;
   }
+}
+
+export function verifyUserSessionToken(token: string | undefined): string | null {
+  return verifyUserSessionPayload(token)?.uid || null;
 }
 
 export type PublicUser = Omit<StoreUser, "passwordHash">;
@@ -77,8 +108,9 @@ export function sanitizeUser(u: StoreUser): PublicUser {
 export async function getCurrentUser(): Promise<StoreUser | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(USER_COOKIE_NAME)?.value;
-  const uid = verifyUserSessionToken(token);
-  if (!uid) return null;
+  const session = verifyUserSessionPayload(token);
+  if (!session?.uid) return null;
+  const uid = session.uid;
 
   const store = readStore();
   const localIdx = store.users.findIndex((u) => u.id === uid);
@@ -97,9 +129,13 @@ export async function getCurrentUser(): Promise<StoreUser | null> {
         const now = new Date().toISOString();
         const hydrated: StoreUser = {
           id: prof.id,
-          email: prof.email || localUser?.email || "",
-          fullName: prof.full_name || localUser?.fullName || "Pop Culture Snacker",
-          phone: prof.phone || localUser?.phone || "",
+          email: prof.email || localUser?.email || session.email || "",
+          fullName:
+            prof.full_name ||
+            localUser?.fullName ||
+            session.fullName ||
+            "Pop Culture Snacker",
+          phone: prof.phone || localUser?.phone || session.phone || "",
           role: prof.role === "admin" ? "admin" : "customer",
           loyaltyPoints: Number(prof.loyalty_points) || 0,
           gameHighScore: Number(prof.game_high_score) || 0,
@@ -121,7 +157,29 @@ export async function getCurrentUser(): Promise<StoreUser | null> {
     }
   }
 
-  return localUser || null;
+  if (localUser) return localUser;
+
+  // Stateless serverless fallback from verified HMAC cookie payload when /tmp or service role isn't populated yet
+  if (session.email || session.fullName) {
+    const now = new Date().toISOString();
+    return {
+      id: uid,
+      email: session.email || "",
+      fullName: session.fullName || "Pop Culture Snacker",
+      phone: session.phone || "",
+      role: session.role === "admin" ? "admin" : "customer",
+      loyaltyPoints: session.loyaltyPoints ?? 50,
+      gameHighScore: 0,
+      totalRuns: 0,
+      totalDistance: 0,
+      savedAddress: null,
+      passwordHash: "",
+      createdAt: now,
+      updatedAt: now,
+    };
+  }
+
+  return null;
 }
 
 export async function registerUser(params: {

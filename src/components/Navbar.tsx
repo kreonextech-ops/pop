@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Search,
   ShoppingBag,
@@ -13,9 +13,17 @@ import {
   ShieldCheck,
   Sparkles,
   LogIn,
+  LogOut,
+  Package,
+  UserCircle2,
+  LayoutDashboard,
+  Gamepad2,
+  ChevronDown,
+  Loader2,
 } from "lucide-react";
 import { useCart } from "./CartContext";
 import { useAuth } from "./AuthContext";
+import { startGoogleOAuth } from "@/lib/supabaseBrowser";
 
 interface SearchProduct {
   id: number;
@@ -31,19 +39,53 @@ interface SearchProduct {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { totalCount, openCart } = useCart();
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const [menuError, setMenuError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [catalog, setCatalog] = useState<SearchProduct[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMobileOpen(false);
     setSearchOpen(false);
+    setAccountOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!accountOpen) return;
+    const handleOutside = (e: MouseEvent) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [accountOpen]);
+
+  const handleCornerGoogleLogin = async () => {
+    setMenuError(null);
+    setGoogleBusy(true);
+    try {
+      const res = await startGoogleOAuth(pathname && pathname !== "/login" ? pathname : "/account");
+      if (!res.ok) {
+        setMenuError(res.error || "Unable to start Google Sign-In.");
+        setGoogleBusy(false);
+      } else if (!res.navigated) {
+        setGoogleBusy(false);
+      }
+    } catch {
+      setMenuError("Failed launching Google Sign-In.");
+      setGoogleBusy(false);
+    }
+  };
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -138,37 +180,192 @@ export default function Navbar() {
             <Search className="w-4 h-4 stroke-[2.5]" />
           </button>
 
-          {/* Customer Account / Login */}
-          {!loading && user ? (
-            <Link
-              href="/account"
-              className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full border shadow-xs transition-all ${
-                pathname === "/account"
-                  ? "bg-[#25100E] text-[#FAC537] border-[#25100E]"
-                  : "bg-white border-[#522C28]/15 hover:border-[#D73B3A]"
-              }`}
-              title="My Customer Dashboard (Orders, Points & Profile)"
-            >
-              <span className="w-5 h-5 rounded-full bg-[#FAC537] text-[#522C28] font-black text-[10px] flex items-center justify-center uppercase">
-                {(user.fullName || user.email).charAt(0)}
-              </span>
-              <span className="hidden sm:inline text-xs font-extrabold max-w-[110px] truncate">
-                Dashboard
-              </span>
-              <span className="inline-flex items-center gap-0.5 bg-[#FFF8EE] text-[#D73B3A] px-1.5 py-0.5 rounded-full text-[10px] font-black border border-[#FAC537]">
-                <Coins className="w-3 h-3" />
-                {user.loyaltyPoints}
-              </span>
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#522C28]/15 hover:border-[#D73B3A] hover:text-[#D73B3A] text-xs font-extrabold transition-all shadow-xs"
-            >
-              <LogIn className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Sign In</span>
-            </Link>
-          )}
+          {/* Top-Right Corner Customer Profile & Login Menu */}
+          <div className="relative" ref={accountMenuRef}>
+            {!loading && user ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setAccountOpen((v) => !v);
+                  setMenuError(null);
+                }}
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full border shadow-xs transition-all cursor-pointer ${
+                  accountOpen || pathname === "/account"
+                    ? "bg-[#25100E] text-[#FAC537] border-[#25100E]"
+                    : "bg-white border-[#522C28]/15 hover:border-[#D73B3A] text-[#522C28]"
+                }`}
+                title="Open Profile & Orders Menu"
+                aria-expanded={accountOpen}
+              >
+                <span className="w-6 h-6 rounded-full bg-[#FAC537] text-[#522C28] font-black text-[11px] flex items-center justify-center uppercase border border-[#522C28]/20">
+                  {(user.fullName || user.email).charAt(0)}
+                </span>
+                <span className="hidden sm:inline text-xs font-extrabold max-w-[96px] truncate">
+                  {user.fullName.split(" ")[0]}
+                </span>
+                <span className="inline-flex items-center gap-0.5 bg-[#FFF8EE] text-[#D73B3A] px-1.5 py-0.5 rounded-full text-[10px] font-black border border-[#FAC537]">
+                  <Coins className="w-3 h-3" />
+                  {user.loyaltyPoints}
+                </span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    accountOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setAccountOpen((v) => !v);
+                  setMenuError(null);
+                }}
+                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-extrabold transition-all shadow-xs cursor-pointer ${
+                  accountOpen
+                    ? "bg-[#25100E] text-[#FAC537] border-[#25100E]"
+                    : "bg-white border-[#522C28]/15 hover:border-[#D73B3A] hover:text-[#D73B3A] text-[#522C28]"
+                }`}
+                title="Customer Sign In & Profile"
+                aria-expanded={accountOpen}
+              >
+                <User className="w-4 h-4 stroke-[2.3]" />
+                <span className="hidden sm:inline">Sign In</span>
+                <ChevronDown className="w-3 h-3 opacity-70" />
+              </button>
+            )}
+
+            {/* Floating Corner Dropdown */}
+            {accountOpen && (
+              <div className="absolute right-0 mt-2.5 w-72 rounded-2xl bg-white border-2 border-[#522C28]/15 shadow-2xl overflow-hidden z-[60]">
+                {user ? (
+                  <>
+                    <div className="px-4 py-3.5 bg-[#FFF8EE] border-b border-[#522C28]/10">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-[#D73B3A] truncate">
+                        {user.email || user.fullName}
+                      </p>
+                      <p className="text-sm font-black text-[#25100E] truncate mt-0.5">
+                        {user.fullName}
+                      </p>
+                      <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAC537]/30 border border-[#FAC537] text-[11px] font-black text-[#522C28]">
+                        <Coins className="w-3.5 h-3.5 text-[#D73B3A]" />
+                        <span>{user.loyaltyPoints} Crunch Points (₹{user.loyaltyPoints})</span>
+                      </div>
+                    </div>
+
+                    <div className="py-1.5 text-xs font-bold text-[#522C28]">
+                      <Link
+                        href="/account?tab=overview"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#FFF8EE] hover:text-[#D73B3A] transition-colors"
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-[#D73B3A]" />
+                        <span>Customer Dashboard</span>
+                      </Link>
+                      <Link
+                        href="/account?tab=profile"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#FFF8EE] hover:text-[#D73B3A] transition-colors"
+                      >
+                        <UserCircle2 className="w-4 h-4 text-[#D73B3A]" />
+                        <span>Profile Details</span>
+                      </Link>
+                      <Link
+                        href="/account?tab=orders"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#FFF8EE] hover:text-[#D73B3A] transition-colors"
+                      >
+                        <Package className="w-4 h-4 text-[#D73B3A]" />
+                        <span>My Orders</span>
+                      </Link>
+                      <Link
+                        href="/account?tab=rewards"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#FFF8EE] hover:text-[#D73B3A] transition-colors"
+                      >
+                        <Gamepad2 className="w-4 h-4 text-[#D73B3A]" />
+                        <span>Fox Runner &amp; Points</span>
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-[#522C28]/10 p-2">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setAccountOpen(false);
+                          await logout();
+                          router.push("/");
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-black text-[#D73B3A] hover:bg-red-50 transition-colors cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-4 space-y-3">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-wider text-[#D73B3A]">
+                        ✦ Crunch Club Account
+                      </p>
+                      <p className="text-sm font-black text-[#25100E] mt-0.5">
+                        Sign in to track orders &amp; rewards
+                      </p>
+                      <p className="text-[11px] font-semibold text-[#522C28]/70">
+                        Get 50 welcome Crunch Points on signup.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleCornerGoogleLogin}
+                      disabled={googleBusy}
+                      className="w-full py-2.5 px-3 rounded-full bg-white hover:bg-[#FFF8EE] text-[#25100E] border-2 border-[#522C28]/15 hover:border-[#D73B3A] font-black text-xs flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+                    >
+                      {googleBusy ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-[#D73B3A]" />
+                      ) : (
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            fill="#4285F4"
+                            d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"
+                          />
+                          <path
+                            fill="#34A853"
+                            d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"
+                          />
+                          <path
+                            fill="#FBBC05"
+                            d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"
+                          />
+                          <path
+                            fill="#EA4335"
+                            d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"
+                          />
+                        </svg>
+                      )}
+                      <span>{googleBusy ? "Connecting..." : "Continue with Google"}</span>
+                    </button>
+
+                    {menuError && (
+                      <p className="text-[11px] font-bold text-red-700 bg-red-50 border border-red-200 rounded-xl p-2">
+                        {menuError}
+                      </p>
+                    )}
+
+                    <Link
+                      href="/login"
+                      onClick={() => setAccountOpen(false)}
+                      className="w-full py-2.5 px-3 rounded-full bg-[#D73B3A] hover:bg-[#FB0008] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                    >
+                      <LogIn className="w-3.5 h-3.5" />
+                      <span>Email Sign In / Register</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Admin Console shortcut */}
           <Link

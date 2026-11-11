@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Sparkles, LogIn, UserPlus, ArrowRight, ExternalLink } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/components/AuthContext";
-import { getSupabaseBrowserAsync } from "@/lib/supabaseBrowser";
+import { startGoogleOAuth } from "@/lib/supabaseBrowser";
 
 function LoginForm() {
   const router = useRouter();
@@ -36,58 +36,18 @@ function LoginForm() {
     setGoogleLoading(true);
 
     try {
-      const supabase = await getSupabaseBrowserAsync();
-      if (!supabase) {
-        setError(
-          "Google Sign-In needs NEXT_PUBLIC_SUPABASE_URL & NEXT_PUBLIC_SUPABASE_ANON_KEY configured."
-        );
+      const res = await startGoogleOAuth(nextUrl);
+      if (!res.ok) {
+        setError(res.error || "Failed launching Google Sign-In.");
         setGoogleLoading(false);
         return;
       }
-
-      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
-        nextUrl
-      )}`;
-      const { data, error: oauthErr } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo,
-          skipBrowserRedirect: true,
-          queryParams: { prompt: "select_account" },
-        },
-      });
-
-      if (oauthErr) {
-        setError(oauthErr.message);
+      if (res.url) {
+        setOauthFallbackUrl(res.url);
+      }
+      if (!res.navigated) {
         setGoogleLoading(false);
-        return;
       }
-
-      const targetUrl = data?.url;
-      if (!targetUrl) {
-        setError("Supabase did not return a Google login URL. Check Auth Providers -> Google.");
-        setGoogleLoading(false);
-        return;
-      }
-
-      setOauthFallbackUrl(targetUrl);
-
-      // Google blocks embedding accounts.google.com inside an iframe (X-Frame-Options: DENY)
-      const inIframe = window.self !== window.top;
-      if (inIframe) {
-        try {
-          if (window.top) {
-            window.top.location.href = targetUrl;
-            return;
-          }
-        } catch {
-          window.open(targetUrl, "_blank", "noopener,noreferrer");
-          setGoogleLoading(false);
-          return;
-        }
-      }
-
-      window.location.assign(targetUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed launching Google Sign-In.");
       setGoogleLoading(false);

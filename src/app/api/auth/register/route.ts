@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: res.error || "Unable to register." }, { status: 400 });
     }
 
-    const token = createUserSessionToken(res.user.id);
+    const token = createUserSessionToken(res.user);
     const response = NextResponse.json({
       ok: true,
       user: sanitizeUser(res.user),

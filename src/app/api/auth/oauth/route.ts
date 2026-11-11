@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
     }
     writeStore(store);
 
-    const token = createUserSessionToken(syncedUser.id);
+    const token = createUserSessionToken(syncedUser);
     const response = NextResponse.json({
       ok: true,
       user: sanitizeUser(syncedUser),

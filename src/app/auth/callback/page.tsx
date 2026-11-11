@@ -5,72 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2, AlertTriangle } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { getSupabaseBrowserAsync } from "@/lib/supabaseBrowser";
-import { useAuth } from "@/components/AuthContext";
-
-// Deduplicates React 18 StrictMode double-mount so single-use PKCE codes are exchanged once.
-const inflightOAuthExchanges = new Map<string, Promise<string | null>>();
-
-async function exchangeOAuthCodeOnce(callbackKey: string, code: string | null): Promise<string | null> {
-  const existing = inflightOAuthExchanges.get(callbackKey);
-  if (existing) return existing;
-
-  const task = (async (): Promise<string | null> => {
-    const supabase = await getSupabaseBrowserAsync();
-    if (!supabase) {
-      throw new Error("Supabase browser configuration is missing.");
-    }
-
-    // Wait for Supabase auto-initialization (detectSessionInUrl) to finish first
-    let { data: sessData } = await supabase.auth.getSession();
-
-    // Only exchange ?code= explicitly if detectSessionInUrl didn't resolve a session yet
-    if (!sessData.session && code) {
-      const { data: exData, error: exErr } = await supabase.auth.exchangeCodeForSession(code);
-      if (exErr) {
-        // Re-check getSession in case another tab/hook already completed the PKCE exchange
-        const retry = await supabase.auth.getSession();
-        if (retry.data.session) {
-          sessData = retry.data;
-        } else {
-          throw new Error(exErr.message);
-        }
-      } else {
-        sessData = { session: exData.session };
-      }
-    }
-
-    const accessToken = sessData.session?.access_token || null;
-    if (!accessToken) {
-      throw new Error("Could not complete Google Sign-In session. Please try again.");
-    }
-
-    const res = await fetch("/api/auth/oauth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access_token: accessToken }),
-    });
-    const json = await res.json();
-    if (!res.ok || !json.ok) {
-      throw new Error(json.error || "Failed creating account session.");
-    }
-
-    return accessToken;
-  })();
-
-  inflightOAuthExchanges.set(callbackKey, task);
-  try {
-    return await task;
-  } finally {
-    setTimeout(() => inflightOAuthExchanges.delete(callbackKey), 5000);
-  }
-}
+import { completeOAuthIfNeeded } from "@/lib/supabaseBrowser";
+import { useAuth, type AuthUser } from "@/components/AuthContext";
 
 function OAuthCallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextUrl = searchParams.get("next") || "/account";
-  const { refreshUser } = useAuth();
+  const { setUser, refreshUser } = useAuth();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -86,12 +28,18 @@ function OAuthCallbackHandler() {
       }
 
       const code = searchParams.get("code");
-      const hashKey = typeof window !== "undefined" ? window.location.hash : "";
-      const callbackKey = code || hashKey || "oauth_session";
 
       try {
-        await exchangeOAuthCodeOnce(callbackKey, code);
-        await refreshUser();
+        const syncedUser = await completeOAuthIfNeeded<AuthUser>({
+          explicitCode: code,
+          cleanUrl: false,
+          throwOnMissingSession: true,
+        });
+        if (syncedUser) {
+          setUser(syncedUser);
+        } else {
+          await refreshUser();
+        }
         if (!cancelled) {
           router.replace(nextUrl);
         }
@@ -106,7 +54,7 @@ function OAuthCallbackHandler() {
     return () => {
       cancelled = true;
     };
-  }, [nextUrl, refreshUser, router, searchParams]);
+  }, [nextUrl, refreshUser, router, searchParams, setUser]);
 
   return (
     <div className="max-w-md mx-auto bg-white rounded-3xl border-2 border-[#522C28]/15 shadow-xl p-8 text-center space-y-4">

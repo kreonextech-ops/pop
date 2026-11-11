@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Coins,
   Trophy,
@@ -40,8 +40,10 @@ interface DashboardStats {
   totalSaved: number;
 }
 
-export default function AccountPage() {
+function AccountDashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab") as DashboardTab | null;
   const { user, loading, logout, refreshUser } = useAuth();
   const { addItem } = useCart();
 
@@ -51,6 +53,17 @@ export default function AccountPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [fetching, setFetching] = useState(true);
   const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
+
+  useEffect(() => {
+    if (
+      tabParam === "overview" ||
+      tabParam === "orders" ||
+      tabParam === "profile" ||
+      tabParam === "rewards"
+    ) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
   const [orderFilter, setOrderFilter] = useState<OrderFilter>("all");
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
@@ -822,5 +835,22 @@ export default function AccountPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#FFF8EE] text-[#522C28]">
+          <Navbar />
+          <div className="max-w-4xl mx-auto py-24 text-center font-black uppercase text-sm">
+            Loading your Crunch Club dashboard...
+          </div>
+        </div>
+      }
+    >
+      <AccountDashboardContent />
+    </Suspense>
   );
 }

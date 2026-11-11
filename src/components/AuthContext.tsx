@@ -1,6 +1,12 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {
+  completeOAuthIfNeeded,
+  getSupabaseBrowserAsync,
+  signOutSupabaseBrowser,
+  syncSupabaseAccessToken,
+} from "@/lib/supabaseBrowser";
 
 export interface AuthUser {
   id: string;
@@ -40,13 +46,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshUser = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/me", { cache: "no-store" });
-      if (!res.ok) {
-        setUser(null);
-        return null;
+      const data = res.ok ? await res.json() : { user: null };
+      if (data.user) {
+        setUser(data.user as AuthUser);
+        return data.user as AuthUser;
       }
-      const data = await res.json();
-      setUser(data.user || null);
-      return (data.user as AuthUser) || null;
+
+      // If Supabase redirected back to '/' (Site URL) with ?code= / #access_token=
+      // or holds an active browser OAuth session, bridge it into our HTTP-only cookie automatically.
+      try {
+        const synced = await completeOAuthIfNeeded<AuthUser>({
+          cleanUrl: typeof window !== "undefined" && !window.location.pathname.startsWith("/auth/callback"),
+        });
+        if (synced) {
+          setUser(synced);
+          return synced;
+        }
+      } catch {
+        // Leave logged out if OAuth completion fails outside /auth/callback
+      }
+
+      setUser(null);
+      return null;
     } catch {
       setUser(null);
       return null;
@@ -57,10 +78,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     void refreshUser();
+
+    let unsubscribe: (() => void) | undefined;
+    void getSupabaseBrowserAsync().then((sb) => {
+      if (!sb) return;
+      const { data } = sb.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_IN" && session?.access_token) {
+          void syncSupabaseAccessToken<AuthUser>(session.access_token)
+            .then((synced) => {
+              if (synced) setUser(synced);
+            })
+            .catch(() => {});
+        }
+      });
+      unsubscribe = () => data.subscription.unsubscribe();
+    });
+
+    return () => {
+      unsubscribe?.();
+    };
   }, [refreshUser]);
 
   const logout = useCallback(async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await Promise.all([
+      fetch("/api/auth/logout", { method: "POST" }).catch(() => {}),
+      signOutSupabaseBrowser(),
+    ]);
     setUser(null);
   }, []);
 
