@@ -9,6 +9,12 @@ export interface NutritionItem {
 export interface ProductDetails {
   slug: string;
   id: string;
+  numericId: number;
+  variantIds: {
+    single: number;
+    trio: number;
+    party: number;
+  };
   name: string;
   badge: string;
   emoji: string;
@@ -45,6 +51,8 @@ export interface ProductDetails {
 export interface ComboItem {
   slug: string;
   id: string;
+  numericId: number;
+  variantId: number;
   name: string;
   badge: string;
   emoji: string;
@@ -68,6 +76,8 @@ export const COMBOS: Record<string, ComboItem> = {
   "trio-variety-pack": {
     slug: "trio-variety-pack",
     id: "combo-trio",
+    numericId: 100004,
+    variantId: 10000401,
     name: "ULTIMATE TRIO VARIETY PACK",
     badge: "🎁 TRIO PACK (3 PACKS)",
     emoji: "🎁",
@@ -94,6 +104,8 @@ export const COMBOS: Record<string, ComboItem> = {
   "party-crunch-box": {
     slug: "party-crunch-box",
     id: "combo-party",
+    numericId: 100005,
+    variantId: 10000501,
     name: "PARTY CRUNCH BUNDLE",
     badge: "🎉 PARTY PACK (6 PACKS)",
     emoji: "🎉",
@@ -120,6 +132,8 @@ export const COMBOS: Record<string, ComboItem> = {
   "mega-muncher-stash": {
     slug: "mega-muncher-stash",
     id: "combo-mega",
+    numericId: 100006,
+    variantId: 10000601,
     name: "MEGA MUNCHER 12-PACK STASH",
     badge: "⚡ MEGA STASH (12 PACKS)",
     emoji: "⚡",
@@ -149,6 +163,8 @@ export const PRODUCTS: Record<string, ProductDetails> = {
   "peri-peri": {
     slug: "peri-peri",
     id: "periperi",
+    numericId: 100001,
+    variantIds: { single: 10000101, trio: 10000102, party: 10000103 },
     name: "PERI PERI",
     badge: "🌶️ PERI PERI",
     emoji: "🌶️",
@@ -234,6 +250,8 @@ export const PRODUCTS: Record<string, ProductDetails> = {
   "cheddar-cheese": {
     slug: "cheddar-cheese",
     id: "cheddar",
+    numericId: 100002,
+    variantIds: { single: 10000201, trio: 10000202, party: 10000203 },
     name: "CHEDDAR CHEESE",
     badge: "🧀 CHEDDAR CHEESE",
     emoji: "🧀",
@@ -319,6 +337,8 @@ export const PRODUCTS: Record<string, ProductDetails> = {
   "raw-makhana": {
     slug: "raw-makhana",
     id: "plain",
+    numericId: 100003,
+    variantIds: { single: 10000301, trio: 10000302, party: 10000303 },
     name: "RAW MAKHANA",
     badge: "🌱 RAW MAKHANA",
     emoji: "🌱",

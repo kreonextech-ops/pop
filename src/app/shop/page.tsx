@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ShoppingBag,
@@ -16,73 +16,155 @@ import {
   Plus,
 } from "lucide-react";
 import { PRODUCTS, COMBOS, ProductDetails, ComboItem } from "@/data/products";
+import { useCart } from "@/components/CartContext";
+import Navbar from "@/components/Navbar";
+import type { StoreProduct } from "@/lib/store";
 
 export default function ShopPage() {
   const [activeFilter, setActiveFilter] = useState<"all" | "flavours" | "combos">("all");
   const [sortBy, setSortBy] = useState<"featured" | "price-asc" | "price-desc">("featured");
-  const [cartCount, setCartCount] = useState(3);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [customProducts, setCustomProducts] = useState<StoreProduct[]>([]);
+  const { totalCount, openCart, addItem } = useCart();
 
-  const productList = Object.values(PRODUCTS);
-  const comboList = Object.values(COMBOS);
+  useEffect(() => {
+    fetch("/api/catalog")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.ok && Array.isArray(data.products)) {
+          setCustomProducts(data.products);
+        }
+      })
+      .catch(() => {
+        // fallback to static PRODUCTS & COMBOS
+      });
+  }, []);
 
-  const handleAddToCart = (name: string, price: number) => {
-    setCartCount((c) => c + 1);
-    setToastMessage(`Added 1 × ${name} (₹${price}) to your cart! 🍿`);
+  const staticProductSlugs = new Set(Object.keys(PRODUCTS));
+  const staticComboSlugs = new Set(Object.keys(COMBOS));
+
+  const extraStoreFlavours = customProducts.filter(
+    (p) => !p.isCombo && !staticProductSlugs.has(p.slug)
+  );
+  const extraStoreCombos = customProducts.filter(
+    (p) => p.isCombo && !staticComboSlugs.has(p.slug)
+  );
+
+  // Overlay live admin prices if updated in store
+  const liveBySlug = new Map(customProducts.map((p) => [p.slug, p]));
+
+  const productList: ProductDetails[] = [
+    ...Object.values(PRODUCTS).map((p) => {
+      const live = liveBySlug.get(p.slug);
+      if (!live || !live.variants[0]) return p;
+      const singlePrice = parseFloat(live.variants[0].price) || p.pricing.single.price;
+      const trioPrice = live.variants[1] ? parseFloat(live.variants[1].price) : p.pricing.trio.price;
+      const partyPrice = live.variants[2] ? parseFloat(live.variants[2].price) : p.pricing.party.price;
+      return {
+        ...p,
+        pricing: {
+          single: { ...p.pricing.single, price: singlePrice },
+          trio: { ...p.pricing.trio, price: trioPrice },
+          party: { ...p.pricing.party, price: partyPrice },
+        },
+      };
+    }),
+    ...extraStoreFlavours.map((sp) => {
+      const v0 = sp.variants[0];
+      const price = v0 ? parseFloat(v0.price) : 40;
+      const orig = v0 ? parseFloat(v0.compare_at_price) : price;
+      return {
+        ...Object.values(PRODUCTS)[0],
+        slug: sp.slug,
+        id: String(sp.id),
+        numericId: sp.id,
+        variantIds: {
+          single: v0?.id || sp.id * 100 + 1,
+          trio: sp.variants[1]?.id || sp.id * 100 + 2,
+          party: sp.variants[2]?.id || sp.id * 100 + 3,
+        },
+        name: sp.title,
+        badge: sp.badge,
+        emoji: sp.emoji,
+        tagline: sp.tagline,
+        shortDesc: sp.body_html.replace(/<[^>]+>/g, ""),
+        themeColor: sp.themeColor,
+        accentBg: sp.accentBg,
+        packImage: sp.image,
+        pricing: {
+          single: { label: v0?.title || "1 Pouch (20g)", count: "20g", price, originalPrice: orig },
+          trio: { label: "Pack of 3", count: "60g", price: price * 3, originalPrice: orig * 3 },
+          party: { label: "Pack of 6", count: "120g", price: price * 6, originalPrice: orig * 6 },
+        },
+      };
+    }),
+  ];
+
+  const comboList: ComboItem[] = [
+    ...Object.values(COMBOS).map((c) => {
+      const live = liveBySlug.get(c.slug);
+      if (!live || !live.variants[0]) return c;
+      return {
+        ...c,
+        price: parseFloat(live.variants[0].price) || c.price,
+      };
+    }),
+    ...extraStoreCombos.map((sp) => {
+      const v0 = sp.variants[0];
+      return {
+        slug: sp.slug,
+        id: String(sp.id),
+        numericId: sp.id,
+        variantId: v0?.id || sp.id * 100 + 1,
+        name: sp.title,
+        badge: sp.badge,
+        emoji: sp.emoji,
+        tagline: sp.tagline,
+        shortDesc: sp.body_html.replace(/<[^>]+>/g, ""),
+        packImage: sp.image,
+        secondaryImage: sp.secondaryImage,
+        includedFlavours: sp.includedFlavours || [],
+        themeColor: sp.themeColor,
+        accentBg: sp.accentBg,
+        price: v0 ? parseFloat(v0.price) : 115,
+        originalPrice: v0 ? parseFloat(v0.compare_at_price) : 135,
+        savingsBadge: "NEW COMBO",
+        rating: 4.9,
+        reviewsCount: 1,
+        packCountText: sp.packCountText || v0?.title || "Combo Box",
+      };
+    }),
+  ];
+
+  const handleAddToCart = (item: {
+    variantId: number;
+    slug: string;
+    name: string;
+    variantLabel: string;
+    price: number;
+    originalPrice?: number;
+    image: string;
+  }) => {
+    addItem(item, 1, false);
+    setToastMessage(`Added 1 × ${item.name} (₹${item.price}) to your cart! 🍿`);
     setTimeout(() => setToastMessage(null), 2500);
   };
 
+  const sortedProducts = [...productList].sort((a, b) => {
+    if (sortBy === "price-asc") return a.pricing.single.price - b.pricing.single.price;
+    if (sortBy === "price-desc") return b.pricing.single.price - a.pricing.single.price;
+    return 0;
+  });
+
+  const sortedCombos = [...comboList].sort((a, b) => {
+    if (sortBy === "price-asc") return a.price - b.price;
+    if (sortBy === "price-desc") return b.price - a.price;
+    return 0;
+  });
+
   return (
     <div className="min-h-screen bg-[#FFF8EE] text-[#522C28] font-sans antialiased selection:bg-[#D73B3A] selection:text-white">
-      {/* =========================================================================
-          TOP NAVBAR
-          ========================================================================= */}
-      <header className="w-full bg-[#FFF8EE]/95 sticky top-0 z-50 backdrop-blur-md border-b border-[#522C28]/10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3.5 flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center group">
-            <img
-              src="/pop-culture-logo.svg"
-              alt="Pop Culture"
-              className="h-10 sm:h-12 w-auto object-contain hover:scale-105 transition-transform"
-            />
-          </Link>
-
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center space-x-8 font-black text-xs sm:text-sm text-[#522C28] uppercase tracking-wider">
-            <Link href="/" className="hover:text-[#D73B3A] transition-colors">
-              Home
-            </Link>
-            <Link href="/#flavours" className="hover:text-[#D73B3A] transition-colors">
-              Flavours
-            </Link>
-            <Link
-              href="/shop"
-              className="text-[#D73B3A] border-b-2 border-[#D73B3A] pb-0.5 transition-colors"
-            >
-              Shop All
-            </Link>
-            <Link href="/#discover" className="hover:text-[#D73B3A] transition-colors">
-              Discover
-            </Link>
-          </nav>
-
-          {/* Cart Utility */}
-          <div className="flex items-center space-x-3 text-[#522C28]">
-            <button
-              onClick={() => handleAddToCart("Trial Pouch", 40)}
-              className="relative p-2 rounded-full bg-[#25100E] text-[#FAC537] hover:bg-[#1A0A09] transition-all shadow-sm cursor-pointer flex items-center gap-2 px-3 sm:px-4"
-              aria-label="Cart"
-            >
-              <ShoppingBag className="w-4 h-4 stroke-[2.5]" />
-              <span className="text-xs font-black uppercase hidden sm:inline">Cart</span>
-              <span className="w-5 h-5 bg-[#D73B3A] text-white text-[10px] font-black rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Floating Cart Notification Toast */}
       {toastMessage && (
@@ -177,17 +259,31 @@ export default function ShopPage() {
             </button>
           </div>
 
-          {/* Results Summary */}
-          <div className="text-xs font-bold text-[#522C28]/70">
-            Showing{" "}
-            <span className="font-black text-[#25100E]">
-              {activeFilter === "all"
-                ? productList.length + comboList.length
-                : activeFilter === "flavours"
-                ? productList.length
-                : comboList.length}
-            </span>{" "}
-            tasty picks
+          {/* Results Summary + Sort Selector */}
+          <div className="flex items-center gap-3 text-xs font-bold text-[#522C28]/70">
+            <span>
+              Showing{" "}
+              <span className="font-black text-[#25100E]">
+                {activeFilter === "all"
+                  ? sortedProducts.length + sortedCombos.length
+                  : activeFilter === "flavours"
+                  ? sortedProducts.length
+                  : sortedCombos.length}
+              </span>{" "}
+              tasty picks
+            </span>
+            <select
+              aria-label="Sort products"
+              value={sortBy}
+              onChange={(e) =>
+                setSortBy(e.target.value as "featured" | "price-asc" | "price-desc")
+              }
+              className="bg-white border border-[#522C28]/20 rounded-full px-3 py-1.5 text-xs font-black text-[#522C28] focus:outline-none focus:border-[#D73B3A]"
+            >
+              <option value="featured">Sort: Featured</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
           </div>
 
         </div>
@@ -216,7 +312,7 @@ export default function ShopPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              {comboList.map((combo) => (
+              {sortedCombos.map((combo) => (
                 <div
                   key={combo.slug}
                   className="rounded-3xl bg-white border-2 border-[#522C28]/15 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1"
@@ -313,7 +409,17 @@ export default function ShopPage() {
                       </div>
 
                       <button
-                        onClick={() => handleAddToCart(combo.name, combo.price)}
+                        onClick={() =>
+                          handleAddToCart({
+                            variantId: combo.variantId,
+                            slug: combo.slug,
+                            name: combo.name,
+                            variantLabel: combo.packCountText,
+                            price: combo.price,
+                            originalPrice: combo.originalPrice,
+                            image: combo.packImage,
+                          })
+                        }
                         className="px-4 py-2.5 rounded-full bg-[#25100E] text-[#FAC537] hover:bg-[#1A0A09] font-black text-xs uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer ring-2 ring-[#FAC537]/50"
                       >
                         <Plus className="w-3.5 h-3.5 stroke-[3]" />
@@ -346,7 +452,7 @@ export default function ShopPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              {productList.map((product) => (
+              {sortedProducts.map((product) => (
                 <div
                   key={product.slug}
                   className="rounded-3xl bg-white border-2 border-[#522C28]/15 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1"
@@ -437,7 +543,15 @@ export default function ShopPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() =>
-                            handleAddToCart(product.name, product.pricing.single.price)
+                            handleAddToCart({
+                              variantId: product.variantIds.single,
+                              slug: product.slug,
+                              name: product.name,
+                              variantLabel: product.pricing.single.label,
+                              price: product.pricing.single.price,
+                              originalPrice: product.pricing.single.originalPrice,
+                              image: product.packImage,
+                            })
                           }
                           className="flex-1 py-2.5 rounded-full bg-[#25100E] text-[#FAC537] hover:bg-[#1A0A09] font-black text-xs uppercase tracking-wider shadow-sm hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer ring-2 ring-[#FAC537]/50"
                         >

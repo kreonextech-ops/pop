@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import {
@@ -20,75 +20,161 @@ import {
   Minus,
 } from "lucide-react";
 import { PRODUCTS, ProductDetails } from "@/data/products";
+import { useCart } from "@/components/CartContext";
+import Navbar from "@/components/Navbar";
+import type { StoreProduct } from "@/lib/store";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = (params?.slug as string) || "peri-peri";
-  const product: ProductDetails | undefined = PRODUCTS[slug];
+  const staticProduct = PRODUCTS[slug];
 
-  if (!product) {
-    notFound();
-  }
+  const [dynamicProduct, setDynamicProduct] = useState<ProductDetails | null>(
+    staticProduct || null
+  );
+  const [loadingDynamic, setLoadingDynamic] = useState(!staticProduct);
+
+  useEffect(() => {
+    fetch("/api/catalog")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok && Array.isArray(d.products)) {
+          const found = (d.products as StoreProduct[]).find((p) => p.slug === slug);
+          if (found) {
+            if (staticProduct) {
+              const v0 = found.variants[0];
+              const singlePrice = v0 ? parseFloat(v0.price) : staticProduct.pricing.single.price;
+              const trioPrice = found.variants[1]
+                ? parseFloat(found.variants[1].price)
+                : staticProduct.pricing.trio.price;
+              const partyPrice = found.variants[2]
+                ? parseFloat(found.variants[2].price)
+                : staticProduct.pricing.party.price;
+              setDynamicProduct({
+                ...staticProduct,
+                pricing: {
+                  single: { ...staticProduct.pricing.single, price: singlePrice },
+                  trio: { ...staticProduct.pricing.trio, price: trioPrice },
+                  party: { ...staticProduct.pricing.party, price: partyPrice },
+                },
+              });
+            } else {
+              const template = Object.values(PRODUCTS)[0];
+              const v0 = found.variants[0];
+              const singlePrice = v0 ? parseFloat(v0.price) : 40;
+              const singleOrig = v0 ? parseFloat(v0.compare_at_price) || singlePrice : singlePrice;
+              setDynamicProduct({
+                ...template,
+                slug: found.slug,
+                id: String(found.id),
+                numericId: found.id,
+                variantIds: {
+                  single: v0?.id || found.id * 100 + 1,
+                  trio: found.variants[1]?.id || found.id * 100 + 2,
+                  party: found.variants[2]?.id || found.id * 100 + 3,
+                },
+                name: found.title,
+                badge: found.badge || "✨ NEW FLAVOUR",
+                emoji: found.emoji || "🍿",
+                tagline: found.tagline || "Roasted Himalayan Makhana",
+                shortDesc:
+                  found.body_html?.replace(/<[^>]+>/g, "") ||
+                  "Slow-roasted foxnuts seasoned in small batches for crunch.",
+                themeColor: found.themeColor || "#D73B3A",
+                accentBg: found.accentBg || "#D73B3A",
+                packImage: found.image || "/packets/peri peri.svg",
+                pricing: {
+                  single: {
+                    label: v0?.title || "1 Pouch (20g)",
+                    count: "20g",
+                    price: singlePrice,
+                    originalPrice: singleOrig,
+                  },
+                  trio: {
+                    label: found.variants[1]?.title || "Pack of 3",
+                    count: "60g",
+                    price: found.variants[1] ? parseFloat(found.variants[1].price) : singlePrice * 3,
+                    originalPrice: singleOrig * 3,
+                  },
+                  party: {
+                    label: found.variants[2]?.title || "Pack of 6",
+                    count: "120g",
+                    price: found.variants[2] ? parseFloat(found.variants[2].price) : singlePrice * 6,
+                    originalPrice: singleOrig * 6,
+                  },
+                },
+              });
+            }
+          }
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingDynamic(false));
+  }, [slug, staticProduct]);
+
+  const product: ProductDetails | undefined = dynamicProduct || undefined;
 
   // Selected pack option: 'single' | 'trio' | 'party'
   const [selectedPack, setSelectedPack] = useState<"single" | "trio" | "party">("trio");
   const [quantity, setQuantity] = useState(1);
-  const [cartCount, setCartCount] = useState(3);
   const [addedToast, setAddedToast] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const { addItem } = useCart();
+
+  if (loadingDynamic) {
+    return (
+      <div className="min-h-screen bg-[#FFF8EE] text-[#522C28]">
+        <Navbar />
+        <div className="max-w-4xl mx-auto py-24 text-center font-black uppercase text-sm">
+          Loading flavour details...
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    notFound();
+  }
 
   const packData = product.pricing[selectedPack];
   const totalPrice = packData.price * quantity;
   const originalTotalPrice = packData.originalPrice * quantity;
   const totalSavings = originalTotalPrice - totalPrice;
 
-  const handleAddToCart = () => {
-    setCartCount((c) => c + quantity);
-    setAddedToast(true);
-    setTimeout(() => setAddedToast(false), 2400);
+  const handleAddToCart = (andOpenDrawer = false) => {
+    addItem(
+      {
+        variantId: product.variantIds[selectedPack],
+        slug: product.slug,
+        name: product.name,
+        variantLabel: packData.label,
+        price: packData.price,
+        originalPrice: packData.originalPrice,
+        image: product.packImage,
+      },
+      quantity,
+      andOpenDrawer
+    );
+    if (!andOpenDrawer) {
+      setAddedToast(true);
+      setTimeout(() => setAddedToast(false), 2400);
+    }
   };
 
   const otherProducts = Object.values(PRODUCTS).filter((p) => p.slug !== product.slug);
 
   return (
     <div className="min-h-screen bg-[#FFF8EE] text-[#25100E] font-sans antialiased selection:bg-[#E53925] selection:text-white">
-      {/* =========================================================================
-          TOP NAVBAR
-          ========================================================================= */}
-      <header className="w-full bg-[#FFF8EE]/95 sticky top-0 z-50 backdrop-blur-md border-b border-[#522C28]/10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3.5 flex items-center justify-between">
-          {/* Back link */}
-          <Link
-            href="/#flavours"
-            className="inline-flex items-center gap-2 text-xs sm:text-sm font-black text-[#522C28] hover:text-[#E53925] transition-colors uppercase tracking-wider group"
-          >
-            <ArrowLeft className="w-4 h-4 stroke-[2.5] transition-transform group-hover:-translate-x-1" />
-            <span>All Flavours</span>
-          </Link>
-
-          {/* Logo */}
-          <Link href="/" className="flex items-center group">
-            <img
-              src="/pop-culture-logo.svg"
-              alt="Pop Culture"
-              className="h-10 sm:h-12 w-auto object-contain hover:scale-105 transition-transform"
-            />
-          </Link>
-
-          {/* Cart Indicator */}
-          <button
-            onClick={handleAddToCart}
-            className="relative p-2 rounded-full bg-[#25100E] text-[#FFCD3C] hover:bg-[#1A0A09] transition-all shadow-sm cursor-pointer flex items-center gap-2 px-3 sm:px-4"
-            aria-label="Cart"
-          >
-            <ShoppingBag className="w-4 h-4 stroke-[2.5]" />
-            <span className="text-xs font-black uppercase hidden sm:inline">Cart</span>
-            <span className="w-5 h-5 bg-[#E53925] text-white text-[10px] font-black rounded-full flex items-center justify-center">
-              {cartCount}
-            </span>
-          </button>
-        </div>
-      </header>
+      <Navbar />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <Link
+          href="/#flavours"
+          className="inline-flex items-center gap-2 text-xs font-black text-[#522C28]/75 hover:text-[#D73B3A] transition-colors uppercase tracking-wider group"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 stroke-[2.5] transition-transform group-hover:-translate-x-1" />
+          <span>Back to All Flavours</span>
+        </Link>
+      </div>
 
       {/* Added to cart toast notification */}
       {addedToast && (
@@ -332,7 +418,7 @@ export default function ProductDetailPage() {
               {/* Action Buttons: Add to Cart & Buy Now */}
               <div className="flex flex-col sm:flex-row items-center gap-3 mb-6">
                 <button
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddToCart(false)}
                   className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-full bg-[#25100E] text-[#FFCD3C] font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:bg-[#1A0A09] hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer ring-2 ring-[#FFCD3C]/60"
                 >
                   <ShoppingBag className="w-4 h-4 stroke-[2.5]" />
@@ -340,7 +426,7 @@ export default function ProductDetailPage() {
                 </button>
 
                 <button
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddToCart(true)}
                   style={{ backgroundColor: product.themeColor }}
                   className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-full text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >

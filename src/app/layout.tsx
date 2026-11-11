@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/Footer";
+import { CartProvider } from "@/components/CartContext";
+import { AuthProvider } from "@/components/AuthContext";
+import CartDrawer from "@/components/CartDrawer";
 
 const lilita = localFont({
   src: [
@@ -50,7 +54,13 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-bitejoy-bg text-bitejoy-text antialiased overflow-x-hidden w-full max-w-full font-sans">
-        {children}
+        <AuthProvider>
+          <CartProvider>
+            {children}
+            <Footer />
+            <CartDrawer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

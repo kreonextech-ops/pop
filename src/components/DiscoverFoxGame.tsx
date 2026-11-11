@@ -1,6 +1,16 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
+import { useAuth } from "./AuthContext";
+
+interface LeaderboardEntry {
+  rank: number;
+  id: string;
+  name: string;
+  highScore: number;
+  totalRuns: number;
+}
 
 interface ObstacleData {
   id: number;
@@ -30,6 +40,12 @@ const ALL_SPRITES = [
 ];
 
 export default function DiscoverFoxGame() {
+  const { user, refreshUser } = useAuth();
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
   // Sky Theme State
   type SkyTheme = "day" | "sunset" | "night";
   const [skyTheme, setSkyTheme] = useState<SkyTheme>("day");
@@ -41,6 +57,22 @@ export default function DiscoverFoxGame() {
   const [gameOver, setGameOver] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
+  const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
+  const [savingScore, setSavingScore] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    fetch("/api/game/score")
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d.leaderboard)) setLeaderboard(d.leaderboard);
+        if (d.user?.gameHighScore) {
+          setHighScore((prev) => Math.max(prev, Number(d.user.gameHighScore) || 0));
+        }
+      })
+      .catch(() => {});
+  }, [user?.id]);
 
   // Landscape Arcade Mobile Mode
   const [isLandscapeMode, setIsLandscapeMode] = useState(false);
@@ -550,6 +582,7 @@ export default function DiscoverFoxGame() {
             setGameOver(true);
             const finalDist = Math.floor(distanceRef.current / 8);
             setFinalScore(finalDist);
+            setEarnedPoints(null);
             setHighScore((prev) => {
               const best = Math.max(prev, finalDist);
               try {
@@ -557,6 +590,28 @@ export default function DiscoverFoxGame() {
               } catch {}
               return best;
             });
+
+            if (userRef.current) {
+              setSavingScore(true);
+              fetch("/api/game/score", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ distance: finalDist }),
+              })
+                .then((r) => r.json())
+                .then((d) => {
+                  if (d.ok) {
+                    setEarnedPoints(d.pointsEarned ?? 0);
+                    if (Array.isArray(d.leaderboard)) setLeaderboard(d.leaderboard);
+                    if (d.user?.gameHighScore) {
+                      setHighScore((p) => Math.max(p, d.user.gameHighScore));
+                    }
+                    void refreshUser();
+                  }
+                })
+                .catch(() => {})
+                .finally(() => setSavingScore(false));
+            }
           }
         }
       } catch (err) {
@@ -672,10 +727,32 @@ export default function DiscoverFoxGame() {
                 1.0x
               </span>
             </div>
+            {user ? (
+              <Link
+                href="/account"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAC537] text-[#522C28] text-[11px] font-black shadow-xs hover:scale-105 transition-transform"
+              >
+                <span>🪙 {user.loyaltyPoints} pts</span>
+              </Link>
+            ) : (
+              <Link
+                href="/login?next=/#discover"
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold border border-white/20"
+              >
+                <span>Sign in to Earn Pts</span>
+              </Link>
+            )}
           </div>
 
           {/* Action Hints & Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setShowLeaderboard(true)}
+              className="px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-black uppercase tracking-wide cursor-pointer"
+            >
+              🏆 Top Runs
+            </button>
             {/* Landscape Toggle Button */}
             {!isLandscapeMode ? (
               <button
@@ -1035,11 +1112,30 @@ export default function DiscoverFoxGame() {
                     <span className="font-mono text-lg sm:text-xl font-black text-[#FFCD3C]">{highScore}m</span>
                   </div>
                 </div>
+
+                {user ? (
+                  <div className="mt-2.5 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-black">
+                    {savingScore
+                      ? "Saving score & Crunch Points..."
+                      : earnedPoints !== null
+                      ? `+${earnedPoints} Crunch Points Earned! (Total: ${user.loyaltyPoints} pts)`
+                      : `Signed in as ${user.fullName} — Run saved!`}
+                  </div>
+                ) : (
+                  <Link
+                    href="/login?next=/#discover"
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-2.5 block px-3 py-2 rounded-xl bg-[#FAC537]/30 border border-[#FAC537] text-[#522C28] text-[11px] font-black hover:bg-[#FAC537]/50 transition-colors"
+                  >
+                    Sign in to save high scores & earn Crunch Points (₹ discount) →
+                  </Link>
+                )}
               </div>
               <div className="flex flex-col gap-2 w-full mt-1">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    setEarnedPoints(null);
                     resetToRun();
                   }}
                   className="w-full py-2.5 sm:py-3 rounded-2xl bg-[#D73B3A] hover:bg-[#FB0008] active:scale-95 text-white font-display text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-all"
@@ -1058,6 +1154,60 @@ export default function DiscoverFoxGame() {
                   </button>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            LEADERBOARD MODAL
+            ========================================================================= */}
+        {showLeaderboard && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowLeaderboard(false);
+            }}
+            className="absolute inset-0 bg-black/55 backdrop-blur-xs z-45 flex items-center justify-center p-4"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-sm shadow-2xl border-2 border-[#FAC537] text-[#522C28]"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-display text-xl uppercase text-[#25100E]">
+                  🏆 Fox Runner Hall of Fame
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => setShowLeaderboard(false)}
+                  className="text-xs font-black px-2 py-1 rounded-full bg-[#FFF8EE]"
+                >
+                  ✕
+                </button>
+              </div>
+              {leaderboard.length === 0 ? (
+                <p className="text-xs font-semibold text-[#522C28]/70 py-6 text-center">
+                  No logged-in scores recorded yet. Sign in and set the first record!
+                </p>
+              ) : (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {leaderboard.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className={`flex items-center justify-between px-3 py-2 rounded-xl border text-xs font-bold ${
+                        user?.id === entry.id
+                          ? "bg-[#FFF8EE] border-[#D73B3A] text-[#D73B3A]"
+                          : "bg-[#FFF8EE]/50 border-[#522C28]/10"
+                      }`}
+                    >
+                      <span>
+                        #{entry.rank} {entry.name}
+                      </span>
+                      <span className="font-mono font-black">{entry.highScore}m</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
