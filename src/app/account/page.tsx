@@ -346,21 +346,21 @@ function AccountDashboardContent() {
               type="button"
               onClick={() => void loadDashboard()}
               disabled={fetching}
-              className="px-3.5 py-2 rounded-full bg-[#FFF8EE] border border-[#522C28]/20 text-xs font-black uppercase text-[#522C28] hover:border-[#D73B3A] inline-flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 rounded-full bg-[#FFF8EE] border border-[#522C28]/20 text-xs font-black uppercase text-[#522C28] hover:border-[#D73B3A] inline-flex items-center gap-1.5 cursor-pointer transition-[border-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${fetching ? "animate-spin" : ""}`} />
               <span>Refresh</span>
             </button>
             <Link
               href="/shop"
-              className="px-4 py-2 rounded-full bg-[#D73B3A] text-white text-xs font-black uppercase inline-flex items-center gap-1.5 shadow-xs hover:bg-[#FB0008] transition-colors"
+              className="px-4 py-2 rounded-full bg-[#D73B3A] text-white text-xs font-black uppercase inline-flex items-center gap-1.5 shadow-xs hover:bg-[#FB0008] transition-[background-color,transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 active:scale-95"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               <span>Shop Snacks</span>
             </Link>
             <Link
               href="/#discover"
-              className="px-4 py-2 rounded-full bg-[#FAC537] text-[#522C28] text-xs font-black uppercase inline-flex items-center gap-1.5 shadow-xs hover:scale-105 transition-transform"
+              className="px-4 py-2 rounded-full bg-[#FAC537] text-[#522C28] text-xs font-black uppercase inline-flex items-center gap-1.5 shadow-xs hover:scale-105 transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95"
             >
               <Gamepad2 className="w-4 h-4" />
               <span>Play Fox Runner</span>
@@ -371,7 +371,7 @@ function AccountDashboardContent() {
                 await logout();
                 router.push("/");
               }}
-              className="px-4 py-2 rounded-full bg-[#FFF8EE] border border-[#522C28]/20 text-xs font-black uppercase text-[#522C28] hover:border-[#D73B3A] hover:text-[#D73B3A] inline-flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-full bg-[#FFF8EE] border border-[#522C28]/20 text-xs font-black uppercase text-[#522C28] hover:border-[#D73B3A] hover:text-[#D73B3A] inline-flex items-center gap-1.5 cursor-pointer transition-[border-color,color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign Out</span>
@@ -493,7 +493,7 @@ function AccountDashboardContent() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-full text-xs font-black uppercase cursor-pointer transition-all ${
+              className={`px-4 py-2 rounded-full text-xs font-black uppercase cursor-pointer transition-[transform,background-color,color,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 ${
                 activeTab === tab.id
                   ? "bg-[#25100E] text-[#FAC537] shadow-xs"
                   : "bg-white border border-[#522C28]/15 text-[#522C28]/75 hover:border-[#D73B3A]"
@@ -539,7 +539,7 @@ function AccountDashboardContent() {
                       key={f.id}
                       type="button"
                       onClick={() => setOrderFilter(f.id)}
-                      className={`px-3 py-1 rounded-full text-[11px] font-black uppercase cursor-pointer ${
+                      className={`px-3 py-1 rounded-full text-[11px] font-black uppercase cursor-pointer transition-[background-color,color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 ${
                         orderFilter === f.id
                           ? "bg-[#D73B3A] text-white"
                           : "bg-[#FFF8EE] text-[#522C28]/75 hover:text-[#D73B3A]"

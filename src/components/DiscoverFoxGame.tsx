@@ -532,15 +532,16 @@ export default function DiscoverFoxGame() {
                     slot.style.display = "flex";
                     slot.style.transform = `translate3d(${newObs.x}px, 0, 0)`;
 
+                    const groundBaseline = isLandscapeMode ? 44 : (isMobilePortrait ? 34 : 48);
                     if (type === "samosa") {
-                      slot.style.bottom = isMobilePortrait ? "34px" : "48px";
+                      slot.style.bottom = `${groundBaseline}px`;
                       samosaImg.style.display = "block";
                       jalebiImg.style.display = "none";
                       badge.textContent = "JUMP!";
                       badge.style.background = "#FFCD3C";
                       badge.style.color = "#522C28";
                     } else {
-                      slot.style.bottom = isMobilePortrait ? "84px" : "128px";
+                      slot.style.bottom = `${groundBaseline + (isLandscapeMode ? 80 : (isMobilePortrait ? 50 : 80))}px`;
                       samosaImg.style.display = "none";
                       jalebiImg.style.display = "block";
                       badge.textContent = "SLIDE!";
@@ -579,7 +580,7 @@ export default function DiscoverFoxGame() {
 
             if (foxHitboxRight > obsHitboxLeft && foxHitboxLeft < obsHitboxRight) {
               if (obs.type === "samosa") {
-                const jumpSafeThreshold = isMobilePortrait ? -28 : -48;
+                const jumpSafeThreshold = isLandscapeMode ? -34 : (isMobilePortrait ? -28 : -48);
                 const safe = !isGroundedRef.current && foxYRef.current < jumpSafeThreshold;
                 if (!safe) collision = true;
               } else if (obs.type === "jalebi") {
@@ -699,7 +700,7 @@ export default function DiscoverFoxGame() {
       onClick={triggerJump}
       className={`${
         isLandscapeMode
-          ? "fixed z-[9999] inset-0 w-screen h-screen flex flex-col justify-between select-none cursor-pointer overflow-hidden touch-none"
+          ? "fixed z-[9999] inset-0 w-full h-full flex flex-col justify-between select-none cursor-pointer overflow-hidden touch-none"
           : "relative w-full min-h-[440px] sm:min-h-[580px] flex flex-col justify-between select-none cursor-pointer overflow-hidden [contain:layout_paint]"
       } bg-gradient-to-b ${skyThemeClasses[skyTheme]} transition-colors duration-700`}
       style={
@@ -708,20 +709,28 @@ export default function DiscoverFoxGame() {
               position: "fixed",
               top: 0,
               left: "100vw",
-              width: "100vh",
-              height: "100vw",
+              width: "100dvh",
+              height: "100dvw",
               transform: "rotate(90deg)",
               transformOrigin: "top left",
               zIndex: 9999,
+              paddingBottom: "env(safe-area-inset-bottom, 0px)",
+              paddingLeft: "env(safe-area-inset-left, 0px)",
+              paddingRight: "env(safe-area-inset-right, 0px)",
             }
           : isLandscapeMode
           ? {
               position: "fixed",
               top: 0,
               left: 0,
-              width: "100vw",
-              height: "100vh",
+              right: 0,
+              bottom: 0,
+              width: "100%",
+              height: "100%",
               zIndex: 9999,
+              paddingBottom: "env(safe-area-inset-bottom, 0px)",
+              paddingLeft: "env(safe-area-inset-left, 0px)",
+              paddingRight: "env(safe-area-inset-right, 0px)",
             }
           : {}
       }
@@ -730,154 +739,182 @@ export default function DiscoverFoxGame() {
       {/* =========================================================================
           TOP GAME HEADER & HUD
           ========================================================================= */}
-      <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-5 relative z-30">
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-white shadow-xl"
-        >
-          {/* Live Score & Speed Indicator */}
-          <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm font-display tracking-wide">
-            <div className="flex items-center gap-1.5">
-              <span className="text-white/70 uppercase">Score:</span>
-              <span ref={scoreTextRef} className="font-mono text-sm sm:text-base font-bold text-[#FFCD3C]">
-                0m
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-white/70 uppercase">Best:</span>
-              <span ref={bestTextRef} className="font-mono text-xs sm:text-sm text-white/90">
-                {highScore}m
-              </span>
-            </div>
-            <div className="flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-md bg-white/15 border border-white/10">
-              <span className="text-[10px] sm:text-[11px] text-white/80">⚡ Speed:</span>
-              <span ref={speedTextRef} className="font-mono text-[11px] sm:text-xs font-bold text-[#FFCD3C]">
-                1.0x
-              </span>
-            </div>
-            {user ? (
-              <Link
-                href="/account"
-                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAC537] text-[#522C28] text-[11px] font-black shadow-xs hover:scale-105 transition-transform"
-              >
-                <span>🪙 {user.loyaltyPoints} pts</span>
-              </Link>
-            ) : (
-              <Link
-                href="/login?next=/#discover"
-                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold border border-white/20"
-              >
-                <span>Sign in to Earn Pts</span>
-              </Link>
-            )}
-          </div>
-
-          {/* Action Hints & Controls */}
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+      <div className={`w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 relative z-30 shrink-0 ${isLandscapeMode ? "pt-1.5 pb-0.5 max-w-5xl" : "pt-3 sm:pt-5"}`}>
+        {!gameStarted && !gameOver ? (
+          /* =========================================================================
+             IDLE / LANDING TOP CTA BADGE (Decluttered, minimal, engaging)
+             ========================================================================= */
+          <div className="flex items-center justify-center">
             <button
               type="button"
-              onClick={() => setShowLeaderboard(true)}
-              className="px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-black uppercase tracking-wide cursor-pointer"
+              onClick={triggerJump}
+              className="inline-flex items-center gap-2 px-4 sm:px-6 py-1.5 sm:py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/25 text-white shadow-xl hover:bg-black/55 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer group"
             >
-              🏆 Top Runs
+              <span className="text-base sm:text-lg animate-bounce">🎮</span>
+              <span className="font-display font-black text-xs sm:text-sm tracking-widest uppercase text-white group-hover:text-[#FFCD3C] transition-colors">
+                Sprint &amp; Win • Tap to Play Game
+              </span>
+              <span className="text-sm sm:text-base">🍿</span>
             </button>
-            {/* Landscape Toggle Button */}
-            {!isLandscapeMode ? (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  enterLandscape();
-                }}
-                className="flex lg:hidden items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#FFCD3C] to-[#F37D20] text-[#522C28] font-black text-[10px] sm:text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer"
-                title="Play in Wide Landscape Mode"
-              >
-                <span>🎮 Landscape</span>
-              </button>
-            ) : (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  exitLandscape();
-                }}
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-red-600/90 active:bg-red-700 text-white font-black text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer"
-                title="Exit Landscape Mode"
-              >
-                <span>✕ Exit</span>
-              </button>
-            )}
-
-            {/* Sky Mood Toggles */}
-            <div className="hidden sm:flex items-center bg-black/30 rounded-full p-0.5 border border-white/15">
-              <button
-                onClick={() => setSkyTheme("day")}
-                className={`px-2.5 py-0.5 rounded-full text-xs font-display transition-all ${
-                  skyTheme === "day" ? "bg-white text-[#4EA8DE] shadow-md font-bold" : "text-white/80 hover:text-white"
-                }`}
-                title="Sunny Day Sky"
-              >
-                ☀️ Day
-              </button>
-              <button
-                onClick={() => setSkyTheme("sunset")}
-                className={`px-2.5 py-0.5 rounded-full text-xs font-display transition-all ${
-                  skyTheme === "sunset" ? "bg-white text-[#F3705A] shadow-md font-bold" : "text-white/80 hover:text-white"
-                }`}
-                title="Sunset Sky"
-              >
-                🌅 Sunset
-              </button>
-              <button
-                onClick={() => setSkyTheme("night")}
-                className={`px-2.5 py-0.5 rounded-full text-xs font-display transition-all ${
-                  skyTheme === "night" ? "bg-white text-[#1B1A47] shadow-md font-bold" : "text-white/80 hover:text-white"
-                }`}
-                title="Night Sky"
-              >
-                🌙 Night
-              </button>
+          </div>
+        ) : (
+          /* =========================================================================
+             ACTIVE GAMEPLAY SCOREBOARD & HUD (Rendered only during active run)
+             ========================================================================= */
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`flex items-center justify-between gap-1.5 sm:gap-3 rounded-full bg-black/35 backdrop-blur-md border border-white/20 text-white shadow-xl ${
+              isLandscapeMode ? "flex-nowrap px-2.5 py-1 text-xs" : "flex-wrap px-3 sm:px-4 py-2 sm:py-2.5"
+            }`}
+          >
+            {/* Live Score & Speed Indicator */}
+            <div className="flex items-center gap-2.5 sm:gap-4 text-xs sm:text-sm font-display tracking-wide flex-nowrap">
+              <div className="flex items-center gap-1">
+                <span className="text-white/70 uppercase text-[10px] sm:text-xs">Score:</span>
+                <span ref={scoreTextRef} className="font-mono text-xs sm:text-base font-bold text-[#FFCD3C]">
+                  0m
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-white/70 uppercase text-[10px] sm:text-xs">Best:</span>
+                <span ref={bestTextRef} className="font-mono text-[11px] sm:text-sm text-white/90">
+                  {highScore}m
+                </span>
+              </div>
+              <div className="flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 rounded-md bg-white/15 border border-white/10">
+                <span className="text-[9px] sm:text-[11px] text-white/80">⚡</span>
+                <span ref={speedTextRef} className="font-mono text-[10px] sm:text-xs font-bold text-[#FFCD3C]">
+                  1.0x
+                </span>
+              </div>
+              {user ? (
+                <Link
+                  href="/account"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAC537] text-[#522C28] text-[11px] font-black shadow-xs hover:scale-105 transition-transform"
+                >
+                  <span>🪙 {user.loyaltyPoints} pts</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/login?next=/#discover"
+                  className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold border border-white/20"
+                >
+                  <span>Sign in to Earn Pts</span>
+                </Link>
+              )}
             </div>
 
-            {/* Desktop Control Buttons */}
-            <div className="hidden sm:flex items-center gap-1.5">
+            {/* Action Hints & Controls */}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-nowrap shrink-0">
               <button
-                onClick={resetToRun}
-                className={`px-3 py-1 rounded-full text-xs font-display uppercase tracking-wider transition-all shadow-sm ${
-                  currentMode === "run"
-                    ? "bg-white text-[#522C28] font-bold shadow-md ring-2 ring-white"
-                    : "bg-white/20 text-white hover:bg-white/35"
-                }`}
+                type="button"
+                onClick={() => setShowLeaderboard(true)}
+                className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white/15 hover:bg-white/25 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-wide cursor-pointer"
               >
-                🏃 Run
+                🏆 Top Runs
               </button>
-              <button
-                onClick={triggerJump}
-                className={`px-3 py-1 rounded-full text-xs font-display uppercase tracking-wider transition-all shadow-sm ${
-                  currentMode === "jump"
-                    ? "bg-[#FFCD3C] text-[#522C28] font-bold shadow-md ring-2 ring-white"
-                    : "bg-white/20 text-white hover:bg-white/35"
-                }`}
-              >
-                🦘 Jump
-              </button>
-              <button
-                onClick={triggerSlide}
-                className={`px-3 py-1 rounded-full text-xs font-display uppercase tracking-wider transition-all shadow-sm ${
-                  currentMode === "slide"
-                    ? "bg-[#F37D20] text-white font-bold shadow-md ring-2 ring-white"
-                    : "bg-white/20 text-white hover:bg-white/35"
-                }`}
-              >
-                🛹 Slide
-              </button>
+              {/* Landscape Toggle Button */}
+              {!isLandscapeMode ? (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    enterLandscape();
+                  }}
+                  className="flex lg:hidden items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#FFCD3C] to-[#F37D20] text-[#522C28] font-black text-[10px] sm:text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer"
+                  title="Play in Wide Landscape Mode"
+                >
+                  <span>🎮 Landscape</span>
+                </button>
+              ) : (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    exitLandscape();
+                  }}
+                  className="flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-red-600/90 active:bg-red-700 text-white font-black text-[11px] sm:text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer"
+                  title="Exit Landscape Mode"
+                >
+                  <span>✕ Exit</span>
+                </button>
+              )}
+
+              {/* Sky Mood Toggles (Hidden in mobile landscape to save precious vertical space) */}
+              {!isLandscapeMode && (
+                <div className="hidden sm:flex items-center bg-black/30 rounded-full p-0.5 border border-white/15">
+                  <button
+                    onClick={() => setSkyTheme("day")}
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-display transition-all ${
+                      skyTheme === "day" ? "bg-white text-[#4EA8DE] shadow-md font-bold" : "text-white/80 hover:text-white"
+                    }`}
+                    title="Sunny Day Sky"
+                  >
+                    ☀️ Day
+                  </button>
+                  <button
+                    onClick={() => setSkyTheme("sunset")}
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-display transition-all ${
+                      skyTheme === "sunset" ? "bg-white text-[#F3705A] shadow-md font-bold" : "text-white/80 hover:text-white"
+                    }`}
+                    title="Sunset Sky"
+                  >
+                    🌅 Sunset
+                  </button>
+                  <button
+                    onClick={() => setSkyTheme("night")}
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-display transition-all ${
+                      skyTheme === "night" ? "bg-white text-[#1B1A47] shadow-md font-bold" : "text-white/80 hover:text-white"
+                    }`}
+                    title="Night Sky"
+                  >
+                    🌙 Night
+                  </button>
+                </div>
+              )}
+
+              {/* Desktop Control Buttons (Hidden in mobile landscape) */}
+              {!isLandscapeMode && (
+                <div className="hidden sm:flex items-center gap-1.5">
+                  <button
+                    onClick={resetToRun}
+                    className={`px-3 py-1 rounded-full text-xs font-display uppercase tracking-wider transition-all shadow-sm ${
+                      currentMode === "run"
+                        ? "bg-white text-[#522C28] font-bold shadow-md ring-2 ring-white"
+                        : "bg-white/20 text-white hover:bg-white/35"
+                    }`}
+                  >
+                    🏃 Run
+                  </button>
+                  <button
+                    onClick={triggerJump}
+                    className={`px-3 py-1 rounded-full text-xs font-display uppercase tracking-wider transition-all shadow-sm ${
+                      currentMode === "jump"
+                        ? "bg-[#FFCD3C] text-[#522C28] font-bold shadow-md ring-2 ring-white"
+                        : "bg-white/20 text-white hover:bg-white/35"
+                    }`}
+                  >
+                    🦘 Jump
+                  </button>
+                  <button
+                    onClick={triggerSlide}
+                    className={`px-3 py-1 rounded-full text-xs font-display uppercase tracking-wider transition-all shadow-sm ${
+                      currentMode === "slide"
+                        ? "bg-[#F37D20] text-white font-bold shadow-md ring-2 ring-white"
+                        : "bg-white/20 text-white hover:bg-white/35"
+                    }`}
+                  >
+                    🛹 Slide
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* =========================================================================
           OPEN CARTOON RUNNER ARENA
           ========================================================================= */}
-      <div className={`relative w-full ${isLandscapeMode ? "h-full my-auto" : "h-[340px] sm:h-[460px]"} flex items-end overflow-visible`}>
+      <div className={`relative w-full ${isLandscapeMode ? "flex-1 min-h-0" : "h-[340px] sm:h-[460px]"} flex items-end overflow-hidden`}>
 
         {/* PARALLAX SKY ATMOSPHERE */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
@@ -927,14 +964,14 @@ export default function DiscoverFoxGame() {
             ========================================================================= */}
         <div
           className={`absolute left-0 w-full bg-white border-b-2 border-[#522C28]/25 z-15 shadow-sm ${
-            isLandscapeMode ? "bottom-[48px] h-[6px]" : "bottom-[34px] sm:bottom-[48px] h-[4px] sm:h-[6px]"
+            isLandscapeMode ? "bottom-[44px] h-[5px]" : "bottom-[34px] sm:bottom-[48px] h-[4px] sm:h-[6px]"
           }`}
         />
 
         {/* RUNNING TRACK GROUND TURF */}
         <div
           className={`absolute bottom-0 left-0 w-full overflow-hidden z-10 bg-gradient-to-t from-black/20 to-transparent ${
-            isLandscapeMode ? "h-[48px]" : "h-[34px] sm:h-[48px]"
+            isLandscapeMode ? "h-[44px]" : "h-[34px] sm:h-[48px]"
           }`}
         >
           <div ref={groundStripRef} className="w-[2400px] h-full flex will-change-transform">
@@ -966,7 +1003,7 @@ export default function DiscoverFoxGame() {
               }}
               src="/fox/obstacles/samosa.png"
               alt="Samosa"
-              loading="lazy"
+              loading="eager"
               decoding="async"
               className={`object-contain object-bottom pointer-events-none ${
                 isLandscapeMode
@@ -983,7 +1020,7 @@ export default function DiscoverFoxGame() {
               }}
               src="/fox/obstacles/jalebi.png"
               alt="Jalebi"
-              loading="lazy"
+              loading="eager"
               decoding="async"
               className={`object-contain object-bottom pointer-events-none ${
                 isLandscapeMode
@@ -1012,7 +1049,7 @@ export default function DiscoverFoxGame() {
           ref={foxContainerRef}
           className={`absolute z-25 flex items-end justify-center pointer-events-none will-change-transform ${
             isLandscapeMode
-              ? "bottom-[48px] left-[14%] sm:left-[17%] w-[160px] sm:w-[190px] h-[160px] sm:h-[190px]"
+              ? "bottom-[44px] left-[12%] sm:left-[17%] w-[125px] sm:w-[160px] h-[125px] sm:h-[160px]"
               : "bottom-[34px] sm:bottom-[48px] left-[10%] sm:left-[17%] w-[95px] sm:w-[190px] h-[95px] sm:h-[190px]"
           }`}
         >
@@ -1024,7 +1061,7 @@ export default function DiscoverFoxGame() {
               }}
               src={sprite.src}
               alt={sprite.id}
-              loading="lazy"
+              loading="eager"
               decoding="async"
               className="absolute bottom-0 w-full h-full object-contain object-bottom will-change-transform"
               style={{ display: sprite.id === "run-0" ? "block" : "none" }}
@@ -1037,18 +1074,18 @@ export default function DiscoverFoxGame() {
           ref={shadowRef}
           className={`absolute z-10 bg-black/35 rounded-full blur-[2px] pointer-events-none will-change-transform ${
             isLandscapeMode
-              ? "bottom-[44px] left-[14%] sm:left-[17%] translate-x-[35px] sm:translate-x-[45px] w-28 sm:w-32 h-3.5"
+              ? "bottom-[40px] left-[12%] sm:left-[17%] translate-x-[25px] sm:translate-x-[40px] w-24 sm:w-28 h-2.5 sm:h-3"
               : "bottom-[30px] sm:bottom-[44px] left-[10%] sm:left-[17%] translate-x-[18px] sm:translate-x-[45px] w-18 sm:w-32 h-2 sm:h-3.5"
           }`}
         />
 
         {/* =========================================================================
-            LANDSCAPE MODE DUAL THUMB ARCADE CONTROLS
+            LANDSCAPE MODE DUAL THUMB ARCADE CONTROLS (Rendered only during active play)
             ========================================================================= */}
-        {isLandscapeMode && (
+        {isLandscapeMode && gameStarted && !gameOver && (
           <>
             {/* Left Thumb: SLIDE Button */}
-            <div className="absolute bottom-4 left-6 z-40 pointer-events-auto flex items-center">
+            <div className="absolute bottom-4 sm:bottom-6 left-5 sm:left-8 z-40 pointer-events-auto flex items-center">
               <button
                 onTouchStart={(e) => {
                   e.stopPropagation();
@@ -1058,15 +1095,15 @@ export default function DiscoverFoxGame() {
                   e.stopPropagation();
                   triggerSlide();
                 }}
-                className="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-[#F37D20]/90 active:bg-[#D8661E] text-white font-display text-xs uppercase shadow-[0_6px_20px_rgba(243,125,32,0.5)] border-2 border-white/60 active:scale-90 transition-transform backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#F37D20]/90 active:bg-[#D8661E] text-white font-display text-xs uppercase shadow-[0_4px_16px_rgba(243,125,32,0.5)] border-2 border-white/60 active:scale-90 transition-transform backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none"
               >
-                <span className="text-xl">🛹</span>
-                <span className="font-bold text-[10px] sm:text-[11px] mt-0.5">SLIDE</span>
+                <span className="text-base sm:text-lg">🛹</span>
+                <span className="font-bold text-[9px] sm:text-[10px] mt-0.5">SLIDE</span>
               </button>
             </div>
 
             {/* Right Thumb: JUMP Button */}
-            <div className="absolute bottom-4 right-6 z-40 pointer-events-auto flex items-center">
+            <div className="absolute bottom-4 sm:bottom-6 right-5 sm:right-8 z-40 pointer-events-auto flex items-center">
               <button
                 onTouchStart={(e) => {
                   e.stopPropagation();
@@ -1076,34 +1113,29 @@ export default function DiscoverFoxGame() {
                   e.stopPropagation();
                   triggerJump();
                 }}
-                className="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-[#FFCD3C]/95 active:bg-[#FCC434] text-[#522C28] font-display text-xs uppercase shadow-[0_6px_20px_rgba(255,205,60,0.5)] border-2 border-white/70 active:scale-90 transition-transform backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#FFCD3C]/95 active:bg-[#FCC434] text-[#522C28] font-display text-xs uppercase shadow-[0_4px_16px_rgba(255,205,60,0.5)] border-2 border-white/70 active:scale-90 transition-transform backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none"
               >
-                <span className="text-xl">🦘</span>
-                <span className="font-bold text-[10px] sm:text-[11px] mt-0.5">JUMP</span>
+                <span className="text-base sm:text-lg">🦘</span>
+                <span className="font-bold text-[9px] sm:text-[10px] mt-0.5">JUMP</span>
               </button>
             </div>
           </>
         )}
 
         {/* =========================================================================
-            READY TO PLAY OVERLAY
+            READY TO PLAY OVERLAY (Minimal, focused on conversion)
             ========================================================================= */}
         {!gameStarted && !gameOver && (
           <div
             onClick={triggerJump}
             className="absolute inset-0 z-35 flex items-center justify-center cursor-pointer pointer-events-auto px-4"
           >
-            <div className="px-4 sm:px-6 py-3 sm:py-3.5 rounded-3xl bg-white/95 backdrop-blur-md shadow-2xl border-2 border-[#522C28]/15 flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3.5 hover:scale-105 transition-all text-center sm:text-left max-w-sm sm:max-w-md">
+            <div className="px-5 sm:px-7 py-3 sm:py-4 rounded-3xl bg-white/95 backdrop-blur-md shadow-2xl border-2 border-[#522C28]/15 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 hover:scale-105 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] text-center sm:text-left max-w-sm sm:max-w-md">
               <div className="flex items-center gap-3">
-                <span className="text-2xl sm:text-3xl animate-bounce">🏃</span>
-                <div>
-                  <span className="font-display text-xs sm:text-base text-[#522C28] uppercase tracking-wide block font-black">
-                    Tap anywhere to Play!
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] text-[#522C28]/70 font-sans block">
-                    🥟 Jump Samosas &nbsp;•&nbsp; 🌀 Slide Jalebis
-                  </span>
-                </div>
+                <span className="text-2xl sm:text-3xl animate-float-gentle">🏃</span>
+                <span className="font-display text-sm sm:text-base text-[#522C28] uppercase tracking-wide block font-black">
+                  Tap anywhere to Play!
+                </span>
               </div>
 
               {!isLandscapeMode && (
@@ -1112,7 +1144,7 @@ export default function DiscoverFoxGame() {
                     e.stopPropagation();
                     enterLandscape();
                   }}
-                  className="w-full sm:w-auto mt-1 sm:mt-0 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#FFCD3C] to-[#F37D20] text-[#522C28] font-display text-[11px] uppercase tracking-wider shadow-sm font-black flex items-center justify-center gap-1 active:scale-95"
+                  className="w-full sm:w-auto mt-1 sm:mt-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#FFCD3C] to-[#F37D20] text-[#522C28] font-display text-[11px] uppercase tracking-wider shadow-sm font-black flex items-center justify-center gap-1 active:scale-95"
                 >
                   <span>🎮 Play Landscape</span>
                 </button>
@@ -1125,9 +1157,9 @@ export default function DiscoverFoxGame() {
             GAME OVER MODAL
             ========================================================================= */}
         {gameOver && (
-          <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px] z-40 flex flex-col items-center justify-center animate-fade-in p-4">
+          <div className="animate-panel-pop absolute inset-0 bg-black/45 backdrop-blur-[2px] z-40 flex flex-col items-center justify-center p-4">
             <div className="bg-white rounded-3xl p-5 sm:p-8 text-center shadow-2xl flex flex-col items-center gap-3 sm:gap-4 border-2 border-[#522C28]/10 max-w-xs sm:max-w-sm mx-auto">
-              <span className="text-4xl sm:text-5xl animate-bounce">💥</span>
+              <span className="text-4xl sm:text-5xl animate-float-gentle">💥</span>
               <div>
                 <h4 className="font-display text-xl sm:text-2xl text-[#D73B3A] uppercase tracking-wide font-black">
                   Game Over!
@@ -1201,7 +1233,7 @@ export default function DiscoverFoxGame() {
               e.stopPropagation();
               setShowLeaderboard(false);
             }}
-            className="absolute inset-0 bg-black/55 backdrop-blur-xs z-45 flex items-center justify-center p-4"
+            className="animate-panel-pop absolute inset-0 bg-black/55 backdrop-blur-xs z-45 flex items-center justify-center p-4"
           >
             <div
               onClick={(e) => e.stopPropagation()}

@@ -269,8 +269,8 @@ export async function POST(req: Request) {
       ? {
           first_name: customer.name,
           line1: customer.address || "123 Snack Street",
-          city: customer.city || "Mumbai",
-          pincode: customer.pincode || "400001",
+          city: customer.city || "Siliguri",
+          pincode: customer.pincode || "734001",
           country: "India",
           country_code: "IN",
           phone: customer.phone || "9999999999",

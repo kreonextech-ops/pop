@@ -72,7 +72,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/shop" className="hover:text-[#A5151C] transition-colors">
+                  <Link href="/build-a-box" className="hover:text-[#A5151C] transition-colors">
                     Build a Box
                   </Link>
                 </li>
@@ -123,6 +123,11 @@ export default function Footer() {
               </div>
               <ul className="space-y-1.5 text-xs font-semibold text-[#522C28]">
                 <li>
+                  <Link href="/about" className="hover:text-[#A5151C] transition-colors">
+                    Our Story &amp; Founders
+                  </Link>
+                </li>
+                <li>
                   <Link href="/#flavours" className="hover:text-[#A5151C] transition-colors">
                     Our Flavours
                   </Link>
@@ -167,7 +172,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Instagram"
-                  className="w-7 h-7 rounded-lg border border-white/60 flex items-center justify-center hover:bg-white/20 transition-all text-white"
+                  className="w-7 h-7 rounded-lg border border-white/60 flex items-center justify-center hover:bg-white/20 hover:scale-105 transition-[transform,background-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] text-white"
                 >
                   <Instagram className="w-3.5 h-3.5" />
                 </a>
@@ -176,7 +181,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Facebook"
-                  className="w-7 h-7 rounded-lg border border-white/60 flex items-center justify-center hover:bg-white/20 transition-all text-white"
+                  className="w-7 h-7 rounded-lg border border-white/60 flex items-center justify-center hover:bg-white/20 hover:scale-105 transition-[transform,background-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] text-white"
                 >
                   <Facebook className="w-3.5 h-3.5" />
                 </a>
@@ -185,7 +190,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="YouTube"
-                  className="w-7 h-7 rounded-lg border border-white/60 flex items-center justify-center hover:bg-white/20 transition-all text-white"
+                  className="w-7 h-7 rounded-lg border border-white/60 flex items-center justify-center hover:bg-white/20 hover:scale-105 transition-[transform,background-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] text-white"
                 >
                   <Youtube className="w-3.5 h-3.5" />
                 </a>
@@ -194,7 +199,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="LinkedIn"
-                  className="w-7 h-7 rounded-lg border border-white/60 flex items-center justify-center hover:bg-white/20 transition-all text-white"
+                  className="w-7 h-7 rounded-lg border border-white/60 flex items-center justify-center hover:bg-white/20 hover:scale-105 transition-[transform,background-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] text-white"
                 >
                   <Linkedin className="w-3.5 h-3.5" />
                 </a>
@@ -265,7 +270,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Instagram"
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/80 hover:bg-white border border-[#522C28]/20 hover:border-[#A5151C] flex items-center justify-center text-[#522C28] hover:text-[#A5151C] shadow-xs transition-all hover:scale-105"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/80 hover:bg-white border border-[#522C28]/20 hover:border-[#A5151C] flex items-center justify-center text-[#522C28] hover:text-[#A5151C] shadow-xs transition-[transform,background-color,color,border-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105"
                 >
                   <Instagram className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
                 </a>
@@ -274,7 +279,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Facebook"
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/80 hover:bg-white border border-[#522C28]/20 hover:border-[#A5151C] flex items-center justify-center text-[#522C28] hover:text-[#A5151C] shadow-xs transition-all hover:scale-105"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/80 hover:bg-white border border-[#522C28]/20 hover:border-[#A5151C] flex items-center justify-center text-[#522C28] hover:text-[#A5151C] shadow-xs transition-[transform,background-color,color,border-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105"
                 >
                   <Facebook className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
                 </a>
@@ -283,7 +288,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="YouTube"
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/80 hover:bg-white border border-[#522C28]/20 hover:border-[#A5151C] flex items-center justify-center text-[#522C28] hover:text-[#A5151C] shadow-xs transition-all hover:scale-105"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/80 hover:bg-white border border-[#522C28]/20 hover:border-[#A5151C] flex items-center justify-center text-[#522C28] hover:text-[#A5151C] shadow-xs transition-[transform,background-color,color,border-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105"
                 >
                   <Youtube className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
                 </a>
@@ -292,7 +297,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="LinkedIn"
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/80 hover:bg-white border border-[#522C28]/20 hover:border-[#A5151C] flex items-center justify-center text-[#522C28] hover:text-[#A5151C] shadow-xs transition-all hover:scale-105"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/80 hover:bg-white border border-[#522C28]/20 hover:border-[#A5151C] flex items-center justify-center text-[#522C28] hover:text-[#A5151C] shadow-xs transition-[transform,background-color,color,border-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105"
                 >
                   <Linkedin className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
                 </a>
@@ -315,7 +320,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/shop" className="hover:text-[#A5151C] transition-colors">
+                  <Link href="/build-a-box" className="hover:text-[#A5151C] transition-colors">
                     Build a Box
                   </Link>
                 </li>
@@ -359,6 +364,11 @@ export default function Footer() {
                 <span>COMPANY</span>
               </div>
               <ul className="space-y-1 text-xs font-semibold text-[#522C28]">
+                <li>
+                  <Link href="/about" className="hover:text-[#A5151C] transition-colors">
+                    Our Story &amp; Founders
+                  </Link>
+                </li>
                 <li>
                   <Link href="/#flavours" className="hover:text-[#A5151C] transition-colors">
                     Our Flavours

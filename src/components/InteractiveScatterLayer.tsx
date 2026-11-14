@@ -99,19 +99,19 @@ export default function InteractiveScatterLayer({
 
     if (!isScattered) {
       el.style.transform = `translate(-50%, -50%) translate3d(0px, 0px, -140px) rotate(0deg) scale(0.22)`;
-      el.style.opacity = "0.85";
-      el.style.transition = "transform 130ms cubic-bezier(0.4, 0, 0.2, 1), opacity 100ms ease-in";
+      el.style.opacity = "0";
+      el.style.transition = "transform 160ms cubic-bezier(0.4, 0, 0.2, 1), opacity 130ms ease-out";
     } else {
-      el.style.transform = `translate(-50%, -50%) translate3d(${state.x}px, ${state.y}px, 0px) rotate(${state.rotation}deg) scale(${state.scale})`;
+      el.style.transform = `translate(-50%, -50%) translate3d(${state.x.toFixed(2)}px, ${state.y.toFixed(2)}px, 0px) rotate(${state.rotation.toFixed(2)}deg) scale(${state.scale})`;
       el.style.opacity = "1";
       if (state.isDragging) {
         el.style.transition = "none";
       } else if (isBursting) {
-        el.style.transition = `transform 260ms cubic-bezier(0.175, 0.885, 0.32, 1.2) ${delay}, opacity 60ms ease-out`;
+        el.style.transition = `transform 380ms cubic-bezier(0.22, 1.18, 0.36, 1) ${delay}, opacity 160ms ease-out`;
       } else if (state.isThrown) {
         el.style.transition = "none";
       } else {
-        el.style.transition = "transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+        el.style.transition = "transform 300ms cubic-bezier(0.22, 1, 0.36, 1)";
       }
     }
   }, [isScattered]);
@@ -186,22 +186,28 @@ export default function InteractiveScatterLayer({
   const runPhysicsLoop = useCallback(() => {
     if (isLoopRunningRef.current) return;
     isLoopRunningRef.current = true;
+    let lastTime = performance.now();
 
-    const tick = () => {
+    const tick = (now: number) => {
+      const dt = Math.min(2.2, Math.max(0.25, (now - lastTime) / 16.67));
+      lastTime = now;
+
       let anyThrown = false;
       const { minX, maxX, minY, maxY } = boundsRef.current;
+      const drag = Math.pow(0.94, dt);
+      const rotDrag = Math.pow(0.95, dt);
 
       physicsRef.current.forEach((state) => {
         if (!state.isThrown) return;
         anyThrown = true;
 
-        state.x += state.vx;
-        state.y += state.vy;
-        state.rotation += state.vRot;
+        state.x += state.vx * dt;
+        state.y += state.vy * dt;
+        state.rotation += state.vRot * dt;
 
-        state.vx *= 0.94;
-        state.vy *= 0.94;
-        state.vRot *= 0.95;
+        state.vx *= drag;
+        state.vy *= drag;
+        state.vRot *= rotDrag;
 
         // Bounce off section walls with restitution
         if (state.x < minX) {
@@ -390,9 +396,9 @@ export default function InteractiveScatterLayer({
             }}
             title="Grab & throw me!"
           >
-            {/* GPU-accelerated CSS float animation runs at 120fps with 0% CPU */}
+            {/* GPU-accelerated CSS float animation runs cleanly on compositor */}
             <div
-              className={`w-full h-full flex items-center justify-center transition-transform duration-150 group-hover:scale-105 will-change-transform ${
+              className={`w-full h-full flex items-center justify-center transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 will-change-transform ${
                 piece.floatClass || "animate-float-gentle"
               }`}
             >
@@ -400,7 +406,7 @@ export default function InteractiveScatterLayer({
                 key={`${activeFlavourId}-${piece.id}-img`}
                 src={piece.src}
                 alt={piece.alt}
-                loading="lazy"
+                loading="eager"
                 decoding="async"
                 draggable={false}
                 className="w-full h-full object-contain pointer-events-none select-none drop-shadow-md"

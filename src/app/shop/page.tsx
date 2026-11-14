@@ -168,7 +168,7 @@ export default function ShopPage() {
 
       {/* Floating Cart Notification Toast */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#25100E] text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-[#FAC537] animate-bounce">
+        <div className="animate-toast-in fixed bottom-6 right-6 z-50 bg-[#25100E] text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-[#FAC537]">
           <span className="text-xl">✨</span>
           <div>
             <p className="text-xs font-black uppercase text-[#FAC537]">Munch Box Updated!</p>
@@ -222,14 +222,14 @@ export default function ShopPage() {
       {/* =========================================================================
           FILTER & SORT BAR
           ========================================================================= */}
-      <section className="sticky top-18 z-40 bg-[#FFF8EE]/95 backdrop-blur-md border-b border-[#522C28]/10 py-3 sm:py-4">
+      <section className="sticky top-0 z-30 bg-[#FFF8EE]/95 backdrop-blur-md border-b border-[#522C28]/10 py-3 sm:py-4 transition-[box-shadow] duration-300">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           
           {/* Category Tabs */}
           <div className="inline-flex items-center p-1 rounded-full bg-white border border-[#522C28]/15 shadow-xs w-full sm:w-auto justify-center">
             <button
               onClick={() => setActiveFilter("all")}
-              className={`px-4 sm:px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+              className={`px-4 sm:px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-[transform,background-color,color,box-shadow] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 cursor-pointer ${
                 activeFilter === "all"
                   ? "bg-[#25100E] text-[#FAC537] shadow-xs"
                   : "text-[#522C28] hover:text-[#25100E] hover:bg-[#FFF3E3]"
@@ -239,7 +239,7 @@ export default function ShopPage() {
             </button>
             <button
               onClick={() => setActiveFilter("flavours")}
-              className={`px-4 sm:px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+              className={`px-4 sm:px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-[transform,background-color,color,box-shadow] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 cursor-pointer ${
                 activeFilter === "flavours"
                   ? "bg-[#25100E] text-[#FAC537] shadow-xs"
                   : "text-[#522C28] hover:text-[#25100E] hover:bg-[#FFF3E3]"
@@ -249,7 +249,7 @@ export default function ShopPage() {
             </button>
             <button
               onClick={() => setActiveFilter("combos")}
-              className={`px-4 sm:px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+              className={`px-4 sm:px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider transition-[transform,background-color,color,box-shadow] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 cursor-pointer ${
                 activeFilter === "combos"
                   ? "bg-[#25100E] text-[#FAC537] shadow-xs"
                   : "text-[#522C28] hover:text-[#25100E] hover:bg-[#FFF3E3]"
@@ -315,7 +315,7 @@ export default function ShopPage() {
               {sortedCombos.map((combo) => (
                 <div
                   key={combo.slug}
-                  className="rounded-3xl bg-white border-2 border-[#522C28]/15 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1"
+                  className="rounded-3xl bg-white border-2 border-[#522C28]/15 shadow-md hover:shadow-xl transition-[transform,box-shadow] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] flex flex-col justify-between overflow-hidden group hover:-translate-y-1.5 will-change-transform"
                 >
                   {/* Top Badge Strip */}
                   <div className="p-5 pb-0 flex items-start justify-between">
@@ -341,7 +341,7 @@ export default function ShopPage() {
                       <img
                         src={combo.packImage}
                         alt={combo.name}
-                        className="h-44 sm:h-52 w-auto object-contain drop-shadow-xl z-10 transition-transform duration-300 group-hover:scale-105"
+                        className="h-44 sm:h-52 w-auto object-contain drop-shadow-xl z-10 transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                       />
                       {combo.secondaryImage && (
                         <img
@@ -455,7 +455,7 @@ export default function ShopPage() {
               {sortedProducts.map((product) => (
                 <div
                   key={product.slug}
-                  className="rounded-3xl bg-white border-2 border-[#522C28]/15 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1"
+                  className="rounded-3xl bg-white border-2 border-[#522C28]/15 shadow-md hover:shadow-xl transition-[transform,box-shadow] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] flex flex-col justify-between overflow-hidden group hover:-translate-y-1.5 will-change-transform"
                 >
                   {/* Top Badge Strip */}
                   <div className="p-5 pb-0 flex items-start justify-between">
@@ -480,7 +480,7 @@ export default function ShopPage() {
                     <img
                       src={product.packImage}
                       alt={product.name}
-                      className="h-44 sm:h-52 w-auto object-contain drop-shadow-xl z-10 transition-transform duration-300 group-hover:scale-108"
+                      className="h-44 sm:h-52 w-auto object-contain drop-shadow-xl z-10 transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]"
                     />
                   </Link>
 
@@ -637,28 +637,21 @@ export default function ShopPage() {
       {/* =========================================================================
           BOTTOM STRAIGHT MARQUEE RIBBON
           ========================================================================= */}
-      <div className="relative z-20 w-full bg-gradient-to-r from-[#C92328] via-[#E23E3E] to-[#C92328] border-t-2 border-[#FFF8EE]/40 border-b-2 border-[#1A0A09]/20 shadow-lg py-3 sm:py-3.5 md:py-4 overflow-hidden select-none">
+      <div className="relative z-20 w-full bg-gradient-to-r from-[#C92328] via-[#E23E3E] to-[#C92328] border-t-2 border-[#FFF8EE]/40 border-b-2 border-[#1A0A09]/20 shadow-lg py-2 sm:py-3.5 md:py-4 overflow-hidden select-none">
         <div className="flex w-max animate-wave-marquee">
-          <div className="flex shrink-0 items-center gap-6 pr-6">
-            {[...Array(6)].map((_, i) => (
-              <span
-                key={i}
-                className="font-display text-[20px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
-              >
-                THE COOLEST WAY TO SNACK BETTER <span className="text-[#FAC537]">✦</span>
-              </span>
-            ))}
-          </div>
-          <div className="flex shrink-0 items-center gap-6 pr-6">
-            {[...Array(6)].map((_, i) => (
-              <span
-                key={i}
-                className="font-display text-[20px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
-              >
-                THE COOLEST WAY TO SNACK BETTER <span className="text-[#FAC537]">✦</span>
-              </span>
-            ))}
-          </div>
+          {[0, 1].map((dup) => (
+            <div key={dup} className="flex shrink-0 items-center gap-5 sm:gap-7 pr-5 sm:pr-7">
+              {[...Array(6)].map((_, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-5 sm:gap-7 font-display text-[15px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] uppercase font-bold whitespace-nowrap"
+                >
+                  <span className="font-display tracking-[0.09em]">THE COOLEST WAY TO SNACK BETTER</span>
+                  <span className="font-display text-[#FFCD3C] leading-none">✦</span>
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     </div>

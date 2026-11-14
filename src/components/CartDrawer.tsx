@@ -272,15 +272,26 @@ export default function CartDrawer() {
     }
   };
 
-  if (!isCartOpen) {
-    return (
-      <input
-        type="hidden"
-        id="sellerDomain"
-        value={config?.sellerDomain || "localhost:3001"}
-      />
-    );
-  }
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (isCartOpen) {
+      window.__lenis?.stop();
+    } else {
+      window.__lenis?.start();
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isCartOpen) {
+        closeCart();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      if (isCartOpen) {
+        window.__lenis?.start();
+      }
+    };
+  }, [isCartOpen, closeCart]);
 
   return (
     <>
@@ -293,11 +304,19 @@ export default function CartDrawer() {
       {/* Backdrop */}
       <div
         onClick={closeCart}
-        className="fixed inset-0 bg-[#25100E]/60 backdrop-blur-xs z-[90] transition-opacity"
+        aria-hidden={!isCartOpen}
+        className={`fixed inset-0 bg-[#25100E]/60 backdrop-blur-xs z-[90] transition-opacity duration-300 ease-out will-change-[opacity] ${
+          isCartOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
       />
 
       {/* Slide-over Cart Panel */}
-      <aside className="fixed top-0 right-0 h-full w-full max-w-md bg-[#FFF8EE] text-[#522C28] z-[100] shadow-2xl border-l-2 border-[#522C28]/15 flex flex-col">
+      <aside
+        aria-hidden={!isCartOpen}
+        className={`fixed top-0 right-0 h-full w-full max-w-md bg-[#FFF8EE] text-[#522C28] z-[100] shadow-2xl border-l-2 border-[#522C28]/15 flex flex-col transition-transform duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform ${
+          isCartOpen ? "translate-x-0 pointer-events-auto" : "translate-x-full pointer-events-none"
+        }`}
+      >
         {/* Header */}
         <div className="px-5 py-4 bg-white border-b border-[#522C28]/10 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -632,7 +651,7 @@ export default function CartDrawer() {
             <button
               onClick={handleShiprocketCheckout}
               disabled={loadingCheckout}
-              className="w-full py-3.5 rounded-full bg-[#25100E] hover:bg-[#1A0A09] text-[#FAC537] font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer ring-2 ring-[#FAC537]/60 transition-transform active:scale-98"
+              className="w-full py-3.5 rounded-full bg-[#25100E] hover:bg-[#1A0A09] text-[#FAC537] font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer ring-2 ring-[#FAC537]/60 transition-[transform,background-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-98"
             >
               {loadingCheckout ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

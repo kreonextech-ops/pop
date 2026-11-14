@@ -140,7 +140,7 @@ function CheckoutStatusContent() {
             {!isSuccess && oid && (
               <button
                 onClick={loadOrder}
-                className="px-5 py-2.5 rounded-full bg-[#FFF8EE] border border-[#522C28]/20 text-xs font-black uppercase flex items-center gap-1.5 cursor-pointer"
+                className="px-5 py-2.5 rounded-full bg-[#FFF8EE] border border-[#522C28]/20 text-xs font-black uppercase flex items-center gap-1.5 cursor-pointer transition-[border-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#D73B3A] active:scale-95"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Refresh Status</span>
@@ -148,13 +148,13 @@ function CheckoutStatusContent() {
             )}
             <Link
               href="/account"
-              className="px-5 py-2.5 rounded-full bg-[#FAC537] text-[#522C28] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+              className="px-5 py-2.5 rounded-full bg-[#FAC537] text-[#522C28] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md active:scale-95"
             >
               <span>My Orders Dashboard</span>
             </Link>
             <Link
               href="/shop"
-              className="px-6 py-3 rounded-full bg-[#25100E] text-[#FAC537] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md"
+              className="px-6 py-3 rounded-full bg-[#25100E] text-[#FAC537] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
             >
               <span>Continue Shopping</span>
               <ArrowRight className="w-3.5 h-3.5" />

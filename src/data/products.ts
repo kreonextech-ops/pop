@@ -73,6 +73,34 @@ export interface ComboItem {
 }
 
 export const COMBOS: Record<string, ComboItem> = {
+  "ultimate-trio-pack": {
+    slug: "ultimate-trio-pack",
+    id: "combo-trio",
+    numericId: 100004,
+    variantId: 10000401,
+    name: "ULTIMATE TRIO VARIETY PACK",
+    badge: "🎁 TRIO PACK (3 PACKS)",
+    emoji: "🎁",
+    tagline: "1 × Peri Peri + 1 × Cheddar Cheese + 1 × Raw Makhana",
+    shortDesc:
+      "Can’t pick just one? Taste all three signature Pop Culture flavours in one exciting box. The perfect crunch discovery kit!",
+    packImage: "/packets/peri peri.svg",
+    secondaryImage: "/packets/cheese.svg",
+    includedFlavours: [
+      "1 × Peri Peri Punch (20g)",
+      "1 × Cheddar Cheese Melt (20g)",
+      "1 × Raw Roasted Makhana (20g)",
+    ],
+    themeColor: "#D73B3A",
+    accentBg: "#ED0006",
+    price: 115,
+    originalPrice: 135,
+    savingsBadge: "BEST SELLER",
+    rating: 4.9,
+    reviewsCount: 312,
+    packCountText: "3 × 20g Pouches (60g)",
+    isBestSeller: true,
+  },
   "trio-variety-pack": {
     slug: "trio-variety-pack",
     id: "combo-trio",

@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { smoothScrollTo } from "@/components/LenisProvider";
 import {
   WheatOff,
   Sparkles,
@@ -451,7 +452,7 @@ export default function MakhanaBenefitsScroll() {
           trigger: container,
           start: "top 38%",
           end: "top -180px",
-          scrub: 0.6,
+          scrub: 0.72,
           invalidateOnRefresh: true,
         },
       });
@@ -466,7 +467,7 @@ export default function MakhanaBenefitsScroll() {
           end: "+=8600",
           pin: pinSection,
           pinSpacing: true,
-          scrub: 0.65,
+          scrub: 0.35,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
@@ -795,12 +796,149 @@ export default function MakhanaBenefitsScroll() {
 
       tl.to({}, { duration: 0.8 }, t6 + 1.05);
 
+      // =====================================================================
+      // Step-by-Step Scroll Progression (1 Scroll / Swipe = 1 Beat Stop)
+      // Prevents fast desktop wheel or mobile thumb-flicks from skipping benefits.
+      // =====================================================================
+      const stopTimes = [
+        0.4,
+        t2A + 0.72,
+        t2B + 1.25,
+        t3A + 0.72,
+        t3B + 1.22,
+        t4A + 0.72,
+        t4B + 1.22,
+        t5A + 0.72,
+        t5B + 1.22,
+        tP + 1.15,
+        t6 + 1.25,
+      ];
+
+      let lockUntil = 0;
+      let lockedIdx = 0;
+      let touchStartY: number | null = null;
+      let touchConsumed = false;
+
+      const getStopScrollY = (idx: number) => {
+        const st = tl.scrollTrigger;
+        if (!st) return window.scrollY;
+        const totalDur = Math.max(0.01, tl.duration());
+        const progress = Math.min(1, Math.max(0, stopTimes[idx] / totalDur));
+        return st.start + (st.end - st.start) * progress;
+      };
+
+      const getNearestStepIndex = (scrollY: number) => {
+        let bestIdx = 0;
+        let bestDist = Infinity;
+        for (let i = 0; i < stopTimes.length; i++) {
+          const dist = Math.abs(scrollY - getStopScrollY(i));
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIdx = i;
+          }
+        }
+        return bestIdx;
+      };
+
+      const isPinnedActive = () => {
+        const st = tl.scrollTrigger;
+        if (!st) return false;
+        const y = window.scrollY;
+        return y >= st.start - 4 && y <= st.end + 4;
+      };
+
+      const goToStep = (nextIdx: number) => {
+        const clamped = Math.max(0, Math.min(stopTimes.length - 1, nextIdx));
+        lockedIdx = clamped;
+        lockUntil = performance.now() + 720;
+        const targetY = getStopScrollY(clamped);
+        if (window.__lenis) {
+          window.__lenis.scrollTo(targetY, {
+            duration: 0.78,
+            easing: (t: number) => 1 - Math.pow(1 - t, 3),
+            force: true,
+          });
+        } else {
+          window.scrollTo({ top: targetY, behavior: "smooth" });
+        }
+      };
+
+      const onWheel = (e: WheelEvent) => {
+        if (!isPinnedActive() || Math.abs(e.deltaY) < 4) return;
+        const now = performance.now();
+        const activeIdx = now < lockUntil ? lockedIdx : getNearestStepIndex(window.scrollY);
+        const dir = e.deltaY > 0 ? 1 : -1;
+
+        // Release cleanly at top/bottom boundaries so user can scroll to #flavours or #discover
+        if ((dir < 0 && activeIdx <= 0) || (dir > 0 && activeIdx >= stopTimes.length - 1)) {
+          return;
+        }
+
+        e.preventDefault();
+        if (now < lockUntil) return;
+        goToStep(activeIdx + dir);
+      };
+
+      const onTouchStart = (e: TouchEvent) => {
+        if (e.touches.length !== 1) {
+          touchStartY = null;
+          return;
+        }
+        touchStartY = e.touches[0].clientY;
+        touchConsumed = false;
+      };
+
+      const onTouchMove = (e: TouchEvent) => {
+        if (touchStartY === null || !isPinnedActive() || e.touches.length !== 1) return;
+        const dy = e.touches[0].clientY - touchStartY;
+        if (Math.abs(dy) < 10) return;
+
+        const now = performance.now();
+        const activeIdx = now < lockUntil ? lockedIdx : getNearestStepIndex(window.scrollY);
+        const dir = dy < 0 ? 1 : -1; // swipe up -> scroll down (next), swipe down -> scroll up (prev)
+
+        // Allow native scroll when leaving the first or last beat
+        if ((dir < 0 && activeIdx <= 0) || (dir > 0 && activeIdx >= stopTimes.length - 1)) {
+          return;
+        }
+
+        e.preventDefault();
+        if (touchConsumed || now < lockUntil) return;
+        if (Math.abs(dy) >= 24) {
+          touchConsumed = true;
+          goToStep(activeIdx + dir);
+        }
+      };
+
+      const onTouchEnd = () => {
+        touchStartY = null;
+        touchConsumed = false;
+      };
+
+      window.addEventListener("wheel", onWheel, { passive: false });
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove", onTouchMove, { passive: false });
+      window.addEventListener("touchend", onTouchEnd, { passive: true });
+      window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
       const refreshTimer = setTimeout(() => {
         ScrollTrigger.refresh();
       }, 250);
+      let isMounted = true;
+      if (typeof document !== "undefined" && document.fonts?.ready) {
+        void document.fonts.ready.then(() => {
+          if (isMounted) ScrollTrigger.refresh();
+        });
+      }
 
       return () => {
+        isMounted = false;
         clearTimeout(refreshTimer);
+        window.removeEventListener("wheel", onWheel);
+        window.removeEventListener("touchstart", onTouchStart);
+        window.removeEventListener("touchmove", onTouchMove);
+        window.removeEventListener("touchend", onTouchEnd);
+        window.removeEventListener("touchcancel", onTouchEnd);
       };
     }, container);
 
@@ -812,8 +950,7 @@ export default function MakhanaBenefitsScroll() {
   }, []);
 
   const scrollToFlavours = () => {
-    const el = document.getElementById("flavours");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    smoothScrollTo("#flavours");
   };
 
   return (
@@ -832,7 +969,7 @@ export default function MakhanaBenefitsScroll() {
           <img
             src="/scroll/scroll.webp"
             alt="Pop Culture Desert Landscape Desktop"
-            loading="lazy"
+            loading="eager"
             decoding="async"
             className="hidden md:block w-full h-full object-cover object-bottom"
           />
@@ -840,7 +977,7 @@ export default function MakhanaBenefitsScroll() {
           <img
             src="/scroll/mobile scroll.webp"
             alt="Pop Culture Desert Landscape Mobile"
-            loading="lazy"
+            loading="eager"
             decoding="async"
             className="block md:hidden w-full h-full object-cover object-bottom"
           />
@@ -1568,7 +1705,7 @@ export default function MakhanaBenefitsScroll() {
                 <button
                   type="button"
                   onClick={scrollToFlavours}
-                  className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-[#D73B3A] hover:bg-[#B82928] text-[#FFF8EE] font-black text-xs sm:text-sm tracking-wider uppercase shadow-[0_10px_24px_rgba(215,59,58,0.35)] hover:scale-105 active:scale-95 transition-transform cursor-pointer flex items-center gap-2"
+                  className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-[#D73B3A] hover:bg-[#B82928] text-[#FFF8EE] font-black text-xs sm:text-sm tracking-wider uppercase shadow-[0_10px_24px_rgba(215,59,58,0.35)] hover:scale-105 active:scale-95 transition-[transform,background-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer flex items-center gap-2"
                 >
                   <span>EXPLORE ALL 4 FLAVOURS</span>
                   <ArrowUpRight className="w-4 h-4 stroke-[3]" />

@@ -88,10 +88,12 @@ export default React.memo(function HeroMakhanaPhysics({ containerRef }: HeroMakh
   const isVisibleRef = useRef(true);
   const isAwakeRef = useRef(true);
   const lastFrameRef = useRef<number>(0);
+  const startLoopRef = useRef<(() => void) | null>(null);
 
   const wakePhysics = () => {
     isAwakeRef.current = true;
     lastFrameRef.current = performance.now();
+    startLoopRef.current?.();
   };
 
   useIsomorphicLayoutEffect(() => {
@@ -102,6 +104,11 @@ export default React.memo(function HeroMakhanaPhysics({ containerRef }: HeroMakh
       const rect = container.getBoundingClientRect();
       const width = Math.max(280, rect.width);
       const height = Math.max(240, rect.height);
+      const prev = boundsRef.current;
+      // Ignore tiny height-only shifts caused by mobile URL bars hiding/showing while scrolling
+      if (prev.width > 0 && Math.abs(width - prev.width) < 2 && Math.abs(height - prev.height) < 85) {
+        return;
+      }
       const isMobile = width < 640;
       boundsRef.current = { width, height };
 
@@ -164,8 +171,9 @@ export default React.memo(function HeroMakhanaPhysics({ containerRef }: HeroMakh
     const io = new IntersectionObserver(
       ([entry]) => {
         isVisibleRef.current = entry.isIntersecting;
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && isAwakeRef.current) {
           lastFrameRef.current = performance.now();
+          startLoopRef.current?.();
         }
       },
       { threshold: 0.02 }
@@ -235,10 +243,8 @@ export default React.memo(function HeroMakhanaPhysics({ containerRef }: HeroMakh
     lastFrameRef.current = performance.now();
 
     const step = (now: number) => {
-      rafRef.current = window.requestAnimationFrame(step);
-
+      rafRef.current = null;
       if (!isVisibleRef.current || !isAwakeRef.current) {
-        lastFrameRef.current = now;
         return;
       }
 
@@ -372,15 +378,24 @@ export default React.memo(function HeroMakhanaPhysics({ containerRef }: HeroMakh
         if (!b.active) continue;
         const el = itemRefs.current[i];
         if (!el) continue;
-        el.style.transform = `translate3d(${(b.x - b.size / 2).toFixed(1)}px, ${(b.y - b.size / 2).toFixed(1)}px, 0) rotate(${b.angle.toFixed(1)}deg)`;
+        el.style.transform = `translate3d(${(b.x - b.size / 2).toFixed(2)}px, ${(b.y - b.size / 2).toFixed(2)}px, 0) rotate(${b.angle.toFixed(2)}deg)`;
       }
 
       if (totalMotion < 3) {
         isAwakeRef.current = false;
+      } else if (isVisibleRef.current) {
+        rafRef.current = window.requestAnimationFrame(step);
       }
     };
 
-    rafRef.current = window.requestAnimationFrame(step);
+    const ensureLoop = () => {
+      if (rafRef.current === null && isVisibleRef.current && isAwakeRef.current) {
+        lastFrameRef.current = performance.now();
+        rafRef.current = window.requestAnimationFrame(step);
+      }
+    };
+    startLoopRef.current = ensureLoop;
+    ensureLoop();
 
     const handleGlobalMove = (e: PointerEvent) => {
       const idx = activeDragRef.current;
@@ -426,6 +441,7 @@ export default React.memo(function HeroMakhanaPhysics({ containerRef }: HeroMakh
     window.addEventListener("pointercancel", handleGlobalUp, { passive: true });
 
     return () => {
+      startLoopRef.current = null;
       if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
       ro.disconnect();
       io.disconnect();

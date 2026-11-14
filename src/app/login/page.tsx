@@ -105,7 +105,7 @@ function LoginForm() {
         type="button"
         onClick={handleGoogleSignIn}
         disabled={googleLoading || loading}
-        className="w-full py-3 px-4 rounded-full bg-white hover:bg-[#FFF8EE] text-[#25100E] border-2 border-[#522C28]/15 hover:border-[#D73B3A] font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xs transition-all cursor-pointer mb-4"
+        className="w-full py-3 px-4 rounded-full bg-white hover:bg-[#FFF8EE] text-[#25100E] border-2 border-[#522C28]/15 hover:border-[#D73B3A] font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xs transition-[transform,background-color,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer mb-4"
       >
         {googleLoading ? (
           <Loader2 className="w-4 h-4 animate-spin text-[#D73B3A]" />
@@ -171,7 +171,7 @@ function LoginForm() {
             setMode("login");
             setError(null);
           }}
-          className={`py-2 rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
+          className={`py-2 rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1.5 cursor-pointer transition-[background-color,color,box-shadow,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 ${
             mode === "login"
               ? "bg-[#25100E] text-[#FAC537] shadow-xs"
               : "text-[#522C28]/70 hover:text-[#522C28]"
@@ -186,7 +186,7 @@ function LoginForm() {
             setMode("register");
             setError(null);
           }}
-          className={`py-2 rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
+          className={`py-2 rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1.5 cursor-pointer transition-[background-color,color,box-shadow,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 ${
             mode === "register"
               ? "bg-[#D73B3A] text-white shadow-xs"
               : "text-[#522C28]/70 hover:text-[#522C28]"
@@ -199,7 +199,7 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit} className="space-y-3.5">
         {mode === "register" && (
-          <>
+          <div className="animate-panel-pop space-y-3.5">
             <div>
               <label className="block text-[11px] font-black uppercase text-[#522C28]/75 mb-1">
                 Full Name
@@ -210,7 +210,7 @@ function LoginForm() {
                 placeholder="Aarav Sharma"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFF8EE] border border-[#522C28]/20 text-sm font-semibold focus:outline-none focus:border-[#D73B3A]"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFF8EE] border border-[#522C28]/20 text-sm font-semibold focus:outline-none focus:border-[#D73B3A] transition-colors duration-200"
               />
             </div>
             <div>
@@ -222,10 +222,10 @@ function LoginForm() {
                 placeholder="9876543210"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFF8EE] border border-[#522C28]/20 text-sm font-semibold focus:outline-none focus:border-[#D73B3A]"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFF8EE] border border-[#522C28]/20 text-sm font-semibold focus:outline-none focus:border-[#D73B3A] transition-colors duration-200"
               />
             </div>
-          </>
+          </div>
         )}
 
         <div>
@@ -238,7 +238,7 @@ function LoginForm() {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFF8EE] border border-[#522C28]/20 text-sm font-semibold focus:outline-none focus:border-[#D73B3A]"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFF8EE] border border-[#522C28]/20 text-sm font-semibold focus:outline-none focus:border-[#D73B3A] transition-colors duration-200"
           />
         </div>
 
@@ -253,12 +253,12 @@ function LoginForm() {
             placeholder="Min. 6 characters"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFF8EE] border border-[#522C28]/20 text-sm font-semibold focus:outline-none focus:border-[#D73B3A]"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFF8EE] border border-[#522C28]/20 text-sm font-semibold focus:outline-none focus:border-[#D73B3A] transition-colors duration-200"
           />
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-bold text-red-700">
+          <div className="animate-panel-pop p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-bold text-red-700">
             {error}
           </div>
         )}
@@ -266,7 +266,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 rounded-full bg-[#D73B3A] hover:bg-[#FB0008] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
+          className="w-full py-3 rounded-full bg-[#D73B3A] hover:bg-[#FB0008] text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-[transform,background-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 active:scale-[0.98]"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
           <span>{mode === "login" ? "Sign In to Crunch Club" : "Create Account (+50 Pts)"}</span>

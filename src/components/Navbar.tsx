@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useCart } from "./CartContext";
 import { useAuth } from "./AuthContext";
+import { smoothScrollTo } from "./LenisProvider";
 import { startGoogleOAuth } from "@/lib/supabaseBrowser";
 
 interface SearchProduct {
@@ -178,6 +179,8 @@ export default function Navbar() {
     { href: "/", label: "Home" },
     { href: "/#flavours", label: "Flavours" },
     { href: "/shop", label: "Shop All" },
+    { href: "/build-a-box", label: "Build a Box" },
+    { href: "/about", label: "Our Story" },
     { href: "/#discover", label: "Play & Earn" },
     { href: "/contact", label: "Contact" },
   ];
@@ -190,9 +193,19 @@ export default function Navbar() {
 
   const showNavbar = isNavVisible || mobileOpen || searchOpen || accountOpen;
 
+  const handleHashNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, closeMenus = false) => {
+    if (closeMenus) {
+      setMobileOpen(false);
+    }
+    if (href.startsWith("/#") && pathname === "/") {
+      e.preventDefault();
+      smoothScrollTo(href.slice(1));
+    }
+  };
+
   return (
     <header
-      className={`w-full sticky top-0 z-50 transition-[transform,opacity] duration-300 ease-out will-change-transform ${t.header} ${
+      className={`w-full sticky top-0 z-50 transition-[transform,opacity] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform ${t.header} ${
         showNavbar
           ? "translate-y-0 opacity-100"
           : "-translate-y-full opacity-0 pointer-events-none"
@@ -236,7 +249,8 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`transition-colors whitespace-nowrap ${
+                onClick={(e) => handleHashNavClick(e, item.href)}
+                className={`transition-colors duration-200 whitespace-nowrap ${
                   isActive(item.href) ? t.navActive : t.navHover
                 }`}
               >
@@ -251,7 +265,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setSearchOpen((v) => !v)}
-              className={`p-1.5 sm:p-2 rounded-full border backdrop-blur-md transition-all cursor-pointer shadow-2xs ${t.iconBtn}`}
+              className={`p-1.5 sm:p-2 rounded-full border backdrop-blur-md transition-[transform,background-color,color,border-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 active:scale-95 cursor-pointer shadow-2xs ${t.iconBtn}`}
               aria-label="Search Products"
               title="Search flavours & combos"
             >
@@ -267,7 +281,7 @@ export default function Navbar() {
                     setAccountOpen((v) => !v);
                     setMenuError(null);
                   }}
-                  className={`inline-flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-full border backdrop-blur-md shadow-xs transition-all cursor-pointer ${
+                  className={`inline-flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-full border backdrop-blur-md shadow-xs transition-[transform,background-color,color,border-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 cursor-pointer ${
                     accountOpen || pathname === "/account" ? t.pillActive : t.pillIdle
                   }`}
                   title="Open Profile & Orders Menu"
@@ -310,7 +324,7 @@ export default function Navbar() {
 
             {/* Floating Corner Dropdown */}
             {accountOpen && (
-              <div className="absolute right-0 mt-3 w-72 rounded-2xl bg-white/85 backdrop-blur-xl backdrop-saturate-150 border border-white/80 ring-1 ring-[#522C28]/15 shadow-[0_16px_40px_rgba(82,44,40,0.18)] overflow-hidden z-[60]">
+              <div className="animate-panel-pop origin-top-right absolute right-0 mt-3 w-72 rounded-2xl bg-white/85 backdrop-blur-xl backdrop-saturate-150 border border-white/80 ring-1 ring-[#522C28]/15 shadow-[0_16px_40px_rgba(82,44,40,0.18)] overflow-hidden z-[60]">
                 {user ? (
                   <>
                     <div className="px-4 py-3.5 bg-[#FFF8EE]/75 border-b border-[#522C28]/10">
@@ -457,7 +471,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={openCart}
-            className={`relative px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-all shadow-sm cursor-pointer inline-flex items-center gap-1.5 ${t.cartBtn}`}
+            className={`relative px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-[transform,background-color,box-shadow] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 active:scale-95 shadow-sm cursor-pointer inline-flex items-center gap-1.5 ${t.cartBtn}`}
             aria-label="Open Cart"
           >
             <ShoppingBag className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -475,7 +489,7 @@ export default function Navbar() {
 
       {/* Expandable Search Bar & Live Results */}
       {searchOpen && (
-        <div className="relative z-20 border-t border-[#522C28]/10 bg-white/90 backdrop-blur-xl text-[#522C28] shadow-lg">
+        <div className="animate-panel-pop relative z-20 border-t border-[#522C28]/10 bg-white/90 backdrop-blur-xl text-[#522C28] shadow-lg">
           <div className="max-w-3xl mx-auto px-4 py-3.5">
             <div className="relative flex items-center">
               <Search className="w-4 h-4 text-[#522C28]/50 absolute left-3.5" />
@@ -542,13 +556,13 @@ export default function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       {mobileOpen && (
-        <div className="md:hidden relative z-20 border-t border-[#522C28]/10 bg-[#FFF8EE]/95 backdrop-blur-xl text-[#522C28] px-4 py-4 space-y-2 shadow-lg">
+        <div className="animate-panel-pop md:hidden relative z-20 border-t border-[#522C28]/10 bg-[#FFF8EE]/95 backdrop-blur-xl text-[#522C28] px-4 py-4 space-y-2 shadow-lg">
           {navLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className={`block px-3 py-2.5 rounded-xl text-sm font-black ${
+              onClick={(e) => handleHashNavClick(e, item.href, true)}
+              className={`block px-3 py-2.5 rounded-xl text-sm font-black transition-colors duration-200 ${
                 isActive(item.href)
                   ? "bg-[#D73B3A] text-white"
                   : "text-[#522C28] hover:bg-white"

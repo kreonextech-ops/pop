@@ -19,7 +19,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
-import { PRODUCTS, ProductDetails } from "@/data/products";
+import { PRODUCTS, COMBOS, ProductDetails } from "@/data/products";
 import { useCart } from "@/components/CartContext";
 import Navbar from "@/components/Navbar";
 import type { StoreProduct } from "@/lib/store";
@@ -27,7 +27,115 @@ import type { StoreProduct } from "@/lib/store";
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = (params?.slug as string) || "peri-peri";
-  const staticProduct = PRODUCTS[slug];
+  const staticCombo =
+    COMBOS[slug] ||
+    (slug === "ultimate-trio-pack" ? COMBOS["trio-variety-pack"] : undefined) ||
+    (slug === "trio-variety-pack" ? COMBOS["ultimate-trio-pack"] : undefined);
+  const staticProduct: ProductDetails | undefined =
+    PRODUCTS[slug] ||
+    (staticCombo
+      ? {
+          slug: staticCombo.slug,
+          id: staticCombo.id,
+          numericId: staticCombo.numericId,
+          variantIds: {
+            single: staticCombo.variantId,
+            trio: staticCombo.variantId + 1,
+            party: staticCombo.variantId + 2,
+          },
+          name: staticCombo.name,
+          badge: staticCombo.badge,
+          emoji: staticCombo.emoji || "🍿",
+          tagline: staticCombo.tagline,
+          shortDesc: staticCombo.shortDesc,
+          flavorProfile: {
+            crunch: 5,
+            spice: 4,
+            tangy: 4,
+            cheesiness: 4,
+          },
+          keyBenefits: [
+            "Even Seasoning Distribution (Zero Lump Tech)",
+            "100% Nitrogen-Flushed Foil Pouches",
+            "Zero Cholesterol & Zero Palm Oil",
+            "Locally Sourced from Bihar & Roasted in Siliguri",
+          ],
+          packImage: staticCombo.packImage,
+          themeColor: staticCombo.themeColor,
+          accentBg: staticCombo.accentBg,
+          gradient: "from-[#F79E1B] to-[#ED0006]",
+          bgSvg: "/patterns/chilli-pattern.svg",
+          accentColor: staticCombo.themeColor,
+          servingSize: "20g per pouch",
+          ingredients:
+            "Slow-Roasted Popped Lotus Seeds (Foxnuts / Makhana), Cold-Pressed Edible Oil Blend, Signature Artisan Spice Seasoning. No Added Sugar • Zero Trans Fats • Zero Palm Oil.",
+          allergen: "MANUFACTURED IN A FACILITY THAT ALSO PROCESSES NUTS AND DAIRY.",
+          disclaimer:
+            "*The % Daily Value (DV) tells you how much a nutrient in a serving of food contributes to a daily diet. Store in a cool dry place away from direct sunlight.",
+          borderAccentColor: staticCombo.themeColor,
+          nutrition: [
+            { label: "Energy", amount: "442 kcal", isBold: true },
+            { label: "Protein", amount: "9.2g", isBold: true },
+            { label: "Carbohydrates", amount: "67.4g" },
+            { label: "Dietary Fibre", amount: "8.1g" },
+            { label: "Total Fat", amount: "15.8g" },
+            { label: "Cholesterol", amount: "0 mg", isBold: true },
+          ],
+          pricing: {
+            single: {
+              label: staticCombo.badge,
+              count: staticCombo.packCountText,
+              price: staticCombo.price,
+              originalPrice: staticCombo.originalPrice,
+              badge: staticCombo.savingsBadge || "SPECIAL BUNDLE",
+            },
+            trio: {
+              label: `2 × ${staticCombo.name}`,
+              count: `Double Bundle (${staticCombo.packCountText} × 2)`,
+              price: Math.round(staticCombo.price * 1.9),
+              originalPrice: staticCombo.originalPrice * 2,
+              badge: "DOUBLE STASH",
+            },
+            party: {
+              label: `3 × ${staticCombo.name}`,
+              count: `Triple Stash (${staticCombo.packCountText} × 3)`,
+              price: Math.round(staticCombo.price * 2.75),
+              originalPrice: staticCombo.originalPrice * 3,
+              badge: "BEST VALUE",
+            },
+          },
+          faqs: [
+            {
+              q: "What flavours are included in this bundle?",
+              a: staticCombo.includedFlavours.join(", "),
+            },
+            {
+              q: "Are the packs individually sealed?",
+              a: "Yes! Every single pack inside the bundle is individually nitrogen-flushed and airtight foil-sealed to guarantee maximum crunch freshness.",
+            },
+            {
+              q: "What is the shelf life?",
+              a: "9 months from the date of manufacture. Store in a cool, dry place.",
+            },
+          ],
+          reviews: [
+            {
+              name: "Rohan M.",
+              rating: 5,
+              title: "Best variety pack ever!",
+              comment: "Love getting all the flavours together. The masala is perfectly distributed with zero lumps.",
+              date: "2 days ago",
+            },
+            {
+              name: "Sneha K.",
+              rating: 5,
+              title: "Super crunchy & healthy",
+              comment: "Kids and family finished the entire box in a weekend. Reordering again!",
+              date: "1 week ago",
+            },
+          ],
+        }
+      : undefined);
 
   const [dynamicProduct, setDynamicProduct] = useState<ProductDetails | null>(
     staticProduct || null
@@ -178,7 +286,7 @@ export default function ProductDetailPage() {
 
       {/* Added to cart toast notification */}
       {addedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#25100E] text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-[#FFCD3C] animate-bounce">
+        <div className="animate-toast-in fixed bottom-6 right-6 z-50 bg-[#25100E] text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-[#FFCD3C]">
           <span className="text-xl">🍿</span>
           <div>
             <p className="text-xs font-black uppercase text-[#FFCD3C]">Added to Munch Box!</p>
@@ -255,7 +363,7 @@ export default function ProductDetailPage() {
                 <img
                   src={product.packImage}
                   alt={product.name}
-                  className="relative z-10 w-auto h-full max-h-[360px] object-contain drop-shadow-[0_20px_35px_rgba(120,40,0,0.3)] transition-transform duration-300 group-hover:scale-105"
+                  className="relative z-10 w-auto h-full max-h-[360px] object-contain drop-shadow-[0_20px_35px_rgba(120,40,0,0.3)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 will-change-transform"
                 />
 
                 {/* Floating Micro-badge */}
@@ -277,7 +385,7 @@ export default function ProductDetailPage() {
               {/* 4 Health Pillars Grid under Pouch */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full max-w-[460px] mt-4">
                 {[
-                  { icon: "🌱", title: "100% Foxnuts", sub: "Clean Lotus Pops" },
+                  { icon: "✨", title: "No Preservatives", sub: "Clean & Pure" },
                   { icon: "🔥", title: "Never Fried", sub: "Slow-Roasted" },
                   { icon: "🌾", title: "Gluten Free", sub: "Guilt-Free Bite" },
                   { icon: "🛡️", title: "0g Trans Fat", sub: "Heart Healthy" },
@@ -347,7 +455,7 @@ export default function ProductDetailPage() {
                         key={packKey}
                         type="button"
                         onClick={() => setSelectedPack(packKey)}
-                        className={`relative p-3 sm:p-3.5 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                        className={`relative p-3 sm:p-3.5 rounded-2xl border-2 text-left transition-[transform,border-color,background-color,box-shadow] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-98 cursor-pointer flex flex-col justify-between ${
                           isSelected
                             ? "border-[#25100E] bg-white shadow-md ring-2 ring-[#FFCD3C]/60 scale-102"
                             : "border-[#522C28]/20 bg-white/70 hover:bg-white hover:border-[#522C28]/40"
@@ -419,7 +527,7 @@ export default function ProductDetailPage() {
               <div className="flex flex-col sm:flex-row items-center gap-3 mb-6">
                 <button
                   onClick={() => handleAddToCart(false)}
-                  className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-full bg-[#25100E] text-[#FFCD3C] font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:bg-[#1A0A09] hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer ring-2 ring-[#FFCD3C]/60"
+                  className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-full bg-[#25100E] text-[#FFCD3C] font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:bg-[#1A0A09] hover:scale-102 active:scale-98 transition-[transform,background-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] flex items-center justify-center gap-2 cursor-pointer ring-2 ring-[#FFCD3C]/60"
                 >
                   <ShoppingBag className="w-4 h-4 stroke-[2.5]" />
                   <span>Add to Cart (₹{totalPrice})</span>
@@ -428,7 +536,7 @@ export default function ProductDetailPage() {
                 <button
                   onClick={() => handleAddToCart(true)}
                   style={{ backgroundColor: product.themeColor }}
-                  className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-full text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:flex-1 py-3 sm:py-3.5 rounded-full text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:scale-102 active:scale-98 transition-[transform,box-shadow,filter] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:brightness-105 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Buy Now ⚡</span>
                 </button>
@@ -510,26 +618,6 @@ export default function ProductDetailPage() {
                   </p>
                 </div>
               </div>
-
-              {/* Clean Snacking Highlights */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-4 rounded-2xl bg-white border border-[#25100E]/10 text-center">
-                  <span className="text-2xl">🌿</span>
-                  <p className="text-xs font-black uppercase text-[#25100E] mt-1">Plant Powered</p>
-                  <p className="text-[10px] text-[#522C28]/70 font-semibold">Natural lotus seeds</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-white border border-[#25100E]/10 text-center">
-                  <span className="text-2xl">🔥</span>
-                  <p className="text-xs font-black uppercase text-[#25100E] mt-1">0% Deep Fry</p>
-                  <p className="text-[10px] text-[#522C28]/70 font-semibold">Evenly roasted</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-white border border-[#25100E]/10 text-center">
-                  <span className="text-2xl">✨</span>
-                  <p className="text-xs font-black uppercase text-[#25100E] mt-1">No Preservatives</p>
-                  <p className="text-[10px] text-[#522C28]/70 font-semibold">Zero artificial colors</p>
-                </div>
-              </div>
-
             </div>
 
             {/* RIGHT: EXACT PACKAGING NUTRITIONAL FACTS LABEL */}
@@ -674,20 +762,27 @@ export default function ProductDetailPage() {
                 >
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full p-4 sm:p-5 text-left font-black text-xs sm:text-sm text-[#25100E] flex items-center justify-between cursor-pointer"
+                    aria-expanded={isOpen}
+                    className="w-full p-4 sm:p-5 text-left font-black text-xs sm:text-sm text-[#25100E] flex items-center justify-between cursor-pointer hover:bg-[#FFF8EE]/50 transition-colors duration-200"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
-                      className={`w-4 h-4 stroke-[2.5] transition-transform duration-200 ${
+                      className={`w-4 h-4 stroke-[2.5] shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                         isOpen ? "rotate-180 text-[#E53925]" : "text-[#522C28]"
                       }`}
                     />
                   </button>
-                  {isOpen && (
-                    <div className="px-4 pb-4 sm:px-5 sm:pb-5 text-xs sm:text-sm text-[#4A201B] font-medium leading-relaxed border-t border-[#25100E]/10 pt-3">
-                      {faq.a}
+                  <div
+                    className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                      isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="px-4 pb-4 sm:px-5 sm:pb-5 text-xs sm:text-sm text-[#4A201B] font-medium leading-relaxed border-t border-[#25100E]/10 pt-3">
+                        {faq.a}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             })}
@@ -709,11 +804,11 @@ export default function ProductDetailPage() {
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {otherProducts.map((other) => (
               <div
                 key={other.slug}
-                className="p-6 rounded-3xl bg-white border border-[#25100E]/15 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
+                className="p-6 rounded-3xl bg-white border border-[#25100E]/15 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-[transform,box-shadow] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] flex flex-col justify-between group"
               >
                 <div className="flex items-center justify-between mb-4">
                   <span className="px-3 py-1 rounded-full bg-[#FFF8EE] text-[#25100E] text-xs font-black uppercase tracking-wider border border-[#25100E]/15">
@@ -726,7 +821,7 @@ export default function ProductDetailPage() {
                   <img
                     src={other.packImage}
                     alt={other.name}
-                    className="h-full w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform"
+                    className="h-full w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]"
                   />
                 </div>
 
@@ -754,28 +849,21 @@ export default function ProductDetailPage() {
       {/* =========================================================================
           BOTTOM STRAIGHT MARQUEE RIBBON
           ========================================================================= */}
-      <div className="relative z-20 w-full bg-gradient-to-r from-[#C92328] via-[#E23E3E] to-[#C92328] border-t-2 border-[#FFF8EE]/40 border-b-2 border-[#1A0A09]/20 shadow-lg py-3 sm:py-3.5 md:py-4 overflow-hidden select-none">
+      <div className="relative z-20 w-full bg-gradient-to-r from-[#C92328] via-[#E23E3E] to-[#C92328] border-t-2 border-[#FFF8EE]/40 border-b-2 border-[#1A0A09]/20 shadow-lg py-2 sm:py-3.5 md:py-4 overflow-hidden select-none">
         <div className="flex w-max animate-wave-marquee">
-          <div className="flex shrink-0 items-center gap-6 pr-6">
-            {[...Array(6)].map((_, i) => (
-              <span
-                key={i}
-                className="font-display text-[20px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
-              >
-                THE COOLEST WAY TO SNACK BETTER <span className="text-[#FFCD3C]">✦</span>
-              </span>
-            ))}
-          </div>
-          <div className="flex shrink-0 items-center gap-6 pr-6">
-            {[...Array(6)].map((_, i) => (
-              <span
-                key={i}
-                className="font-display text-[20px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] tracking-[0.09em] uppercase font-bold whitespace-nowrap"
-              >
-                THE COOLEST WAY TO SNACK BETTER <span className="text-[#FFCD3C]">✦</span>
-              </span>
-            ))}
-          </div>
+          {[0, 1].map((dup) => (
+            <div key={dup} className="flex shrink-0 items-center gap-5 sm:gap-7 pr-5 sm:pr-7">
+              {[...Array(6)].map((_, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-5 sm:gap-7 font-display text-[15px] sm:text-[24px] md:text-[28px] text-[#FFF8EE] uppercase font-bold whitespace-nowrap"
+                >
+                  <span className="font-display tracking-[0.09em]">THE COOLEST WAY TO SNACK BETTER</span>
+                  <span className="font-display text-[#FFCD3C] leading-none">✦</span>
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     </div>
