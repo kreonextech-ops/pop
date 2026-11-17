@@ -301,7 +301,7 @@ export default function DiscoverFoxGame() {
     if (isGroundedRef.current) {
       isGroundedRef.current = false;
       const isDesktop = isDesktopRef.current;
-      velocityYRef.current = isDesktop ? -15.2 : -9.2;
+      velocityYRef.current = isDesktop ? -15.2 : -10.6;
       modeRef.current = "jump";
       setCurrentMode("jump");
       switchSprite("jump-0");
@@ -346,13 +346,11 @@ export default function DiscoverFoxGame() {
     const rawDy = currentY - startY;
     if (isRotatedPortraitRef.current) {
       // 90deg clockwise software rotation:
-      // What user perceives as visual DOWN is raw screen -X
-      // What user perceives as visual UP is raw screen +X
-      // What user perceives as visual RIGHT is raw screen +Y
-      // What user perceives as visual LEFT is raw screen -Y
+      // Visual ground is screen RIGHT (+rawDx), visual sky is screen LEFT (-rawDx)
+      // Visual forward run is screen BOTTOM (+rawDy), visual backward is screen TOP (-rawDy)
       return {
         dx: rawDy,
-        dy: -rawDx,
+        dy: rawDx,
       };
     }
     return {
@@ -377,7 +375,8 @@ export default function DiscoverFoxGame() {
     if (dy > 14 && dy > Math.abs(dx) * 0.75) {
       triggerSlide();
       touchStartRef.current = null; // consume gesture
-    } else if (dy < -14 && Math.abs(dy) > Math.abs(dx) * 0.75 && isGroundedRef.current) {
+    } else if (dy < -14 && Math.abs(dy) > Math.abs(dx) * 0.75) {
+      // Responsive upward swipe -> Jump immediately
       triggerJump();
       touchStartRef.current = null; // consume gesture
     }
@@ -398,16 +397,11 @@ export default function DiscoverFoxGame() {
     if (!end) return;
 
     const { dx, dy } = getGameDelta(start.x, start.y, end.clientX, end.clientY);
-    const dt = performance.now() - start.time;
 
-    if (Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx) * 0.75) {
-      if (dy > 0) {
-        triggerSlide();
-      } else {
-        triggerJump();
-      }
-    } else if (dt < 320 && Math.hypot(dx, dy) < 18) {
-      // Clean tap on arena to jump
+    // Downward swipe triggers slide; all other taps, upward flicks and touches trigger JUMP
+    if (dy > 14 && dy > Math.abs(dx) * 0.75) {
+      triggerSlide();
+    } else {
       triggerJump();
     }
   }, [triggerJump, triggerSlide, getGameDelta]);
@@ -524,7 +518,7 @@ export default function DiscoverFoxGame() {
         const isDesktop = isDesktopRef.current;
         const arenaW = arenaRef.current?.clientWidth || arenaWidthRef.current || (isDesktop ? 1200 : 400);
         arenaWidthRef.current = arenaW;
-        const GRAVITY = isDesktop ? 0.74 : 0.68;
+        const GRAVITY = isDesktop ? 0.74 : 0.66;
 
         if (modeRef.current !== "crash") {
           // Ground motion
@@ -664,7 +658,7 @@ export default function DiscoverFoxGame() {
                     slot.style.display = "flex";
                     slot.style.transform = `translate3d(${newObs.x}px, 0, 0)`;
 
-                    const groundBaseline = isDesktop ? 48 : (isLandscapeMode ? 54 : 28);
+                    const groundBaseline = isDesktop ? 48 : (isLandscapeMode ? 58 : 32);
                     if (type === "samosa") {
                       slot.style.bottom = `${groundBaseline}px`;
                       samosaImg.style.display = "block";
@@ -673,7 +667,7 @@ export default function DiscoverFoxGame() {
                       badge.style.background = "#FFCD3C";
                       badge.style.color = "#522C28";
                     } else {
-                      slot.style.bottom = `${groundBaseline + (isDesktop ? 70 : 32)}px`;
+                      slot.style.bottom = `${groundBaseline + (isDesktop ? 70 : 36)}px`;
                       samosaImg.style.display = "none";
                       jalebiImg.style.display = "block";
                       badge.textContent = "SLIDE!";
@@ -692,8 +686,8 @@ export default function DiscoverFoxGame() {
 
           // Obstacle Translation & Hitbox Collision (Tight, fair core hitboxes)
           const foxX = arenaW * (isDesktop ? 0.17 : 0.22);
-          const foxHitboxLeft = foxX + (isDesktop ? 45 : 22);
-          const foxHitboxRight = foxX + (isDesktop ? 115 : 46);
+          const foxHitboxLeft = foxX + (isDesktop ? 45 : 24);
+          const foxHitboxRight = foxX + (isDesktop ? 115 : 60);
 
           let collision = false;
           const survivingObstacles: ObstacleData[] = [];
@@ -708,14 +702,14 @@ export default function DiscoverFoxGame() {
             }
 
             const obsHitboxLeft = obs.x + (isDesktop ? 16 : 8);
-            const obsHitboxRight = obs.x + (isDesktop ? 64 : 26);
+            const obsHitboxRight = obs.x + (isDesktop ? 64 : 36);
 
             if (foxHitboxRight > obsHitboxLeft && foxHitboxLeft < obsHitboxRight) {
               if (obs.cleared) {
                 // Successfully cleared earlier in this dodge - immune to landing or slide ending
               } else if (obs.type === "samosa") {
                 const jumpSafeThreshold = isDesktop ? -28 : -10;
-                if (!isGroundedRef.current && foxYRef.current < jumpSafeThreshold) {
+                if (!isGroundedRef.current && (foxYRef.current < jumpSafeThreshold || velocityYRef.current < -3)) {
                   // Active jump clears the samosa! Mark cleared immediately so landing never crashes
                   obs.cleared = true;
                 } else {
@@ -1124,15 +1118,15 @@ export default function DiscoverFoxGame() {
             isDesktopScreen
               ? "bottom-[48px] h-[6px]"
               : isLandscapeMode
-              ? "bottom-[54px] h-[5px]"
-              : "bottom-[28px] h-[4px]"
+              ? "bottom-[58px] h-[5px]"
+              : "bottom-[32px] h-[4px]"
           }`}
         />
 
         {/* RUNNING TRACK GROUND TURF */}
         <div
           className={`absolute bottom-0 left-0 w-full overflow-hidden z-10 bg-gradient-to-t from-black/20 to-transparent ${
-            isDesktopScreen ? "h-[48px]" : isLandscapeMode ? "h-[54px]" : "h-[28px]"
+            isDesktopScreen ? "h-[48px]" : isLandscapeMode ? "h-[58px]" : "h-[32px]"
           }`}
         >
           <div ref={groundStripRef} className="w-[2400px] h-full flex will-change-transform">
@@ -1146,7 +1140,7 @@ export default function DiscoverFoxGame() {
         </div>
 
         {/* =========================================================================
-            PRE-ALLOCATED POOLED OBSTACLE SLOTS (Scaled down gracefully on portrait mobile)
+            PRE-ALLOCATED POOLED OBSTACLE SLOTS (Scaled up for crisp mobile visibility)
             ========================================================================= */}
         {[...Array(POOL_SIZE)].map((_, i) => (
           <div
@@ -1169,7 +1163,7 @@ export default function DiscoverFoxGame() {
               className={`object-contain object-bottom pointer-events-none ${
                 isDesktopScreen
                   ? "w-20 h-20"
-                  : "w-9 h-9"
+                  : "w-11 h-11"
               }`}
               style={{ display: "none" }}
             />
@@ -1186,7 +1180,7 @@ export default function DiscoverFoxGame() {
               className={`object-contain object-bottom pointer-events-none ${
                 isDesktopScreen
                   ? "w-20 h-20"
-                  : "w-9 h-9"
+                  : "w-11 h-11"
               }`}
               style={{ display: "none" }}
             />
@@ -1199,7 +1193,7 @@ export default function DiscoverFoxGame() {
               className={`absolute rounded-full font-black uppercase shadow-sm tracking-wider ${
                 isDesktopScreen
                   ? "-top-3 text-[9px] px-2 py-0.5"
-                  : "-top-2.5 text-[7px] px-1.5 py-0.2"
+                  : "-top-2.5 text-[8px] px-1.5 py-0.5"
               }`}
             >
               JUMP!
@@ -1216,8 +1210,8 @@ export default function DiscoverFoxGame() {
             isDesktopScreen
               ? "bottom-[48px] left-[17%] w-[190px] h-[190px]"
               : isLandscapeMode
-              ? "bottom-[54px] left-[22%] w-[76px] h-[76px]"
-              : "bottom-[28px] left-[22%] w-[72px] h-[72px]"
+              ? "bottom-[58px] left-[22%] w-[92px] h-[92px]"
+              : "bottom-[32px] left-[22%] w-[86px] h-[86px]"
           }`}
         >
           {ALL_SPRITES.map((sprite) => (
@@ -1243,8 +1237,8 @@ export default function DiscoverFoxGame() {
             isDesktopScreen
               ? "bottom-[44px] left-[17%] translate-x-[45px] w-32 h-3.5"
               : isLandscapeMode
-              ? "bottom-[50px] left-[22%] translate-x-[8px] w-14 h-2.5"
-              : "bottom-[24px] left-[22%] translate-x-[8px] w-14 h-2"
+              ? "bottom-[54px] left-[22%] translate-x-[10px] w-18 h-3"
+              : "bottom-[28px] left-[22%] translate-x-[10px] w-16 h-2.5"
           }`}
         />
 
