@@ -219,9 +219,9 @@ export default function Navbar() {
 
         <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-3">
           {/* Mobile Spacer (Left) to ensure Logo is dead center on mobile */}
-          <div className="w-8 min-[360px]:w-9 md:hidden shrink-0 pointer-events-none" aria-hidden="true" />
+          <div className="w-9 min-[360px]:w-10 md:hidden shrink-0 pointer-events-none" aria-hidden="true" />
 
-          {/* Center Brand Logo: Centered and larger on mobile, Left-aligned on desktop */}
+          {/* Center Brand Logo: Centered and prominent on mobile, Left-aligned on desktop */}
           <div className="flex items-center justify-center md:justify-start min-w-0 flex-1 md:flex-initial">
             <Link
               href="/"
@@ -230,7 +230,7 @@ export default function Navbar() {
               <img
                 src="/pop-culture-logo.svg"
                 alt="Pop Culture"
-                className="w-[115px] min-[360px]:w-[135px] sm:w-[155px] md:w-auto md:h-10 h-auto max-w-full object-contain"
+                className="h-9 min-[360px]:h-10 sm:h-11 md:h-10 w-auto max-w-[210px] sm:max-w-[240px] md:max-w-none object-contain drop-shadow-xs"
               />
             </Link>
           </div>
@@ -483,7 +483,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileOpen((v) => !v)}
-            className={`md:hidden p-1.5 sm:p-2 rounded-xl border shrink-0 transition-colors ${t.iconBtn}`}
+            className={`md:hidden p-1.5 sm:p-2 w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 flex items-center justify-center rounded-xl border shrink-0 transition-colors ${t.iconBtn}`}
             aria-label="Toggle Menu"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
