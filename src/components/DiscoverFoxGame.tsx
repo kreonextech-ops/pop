@@ -276,12 +276,12 @@ export default function DiscoverFoxGame() {
     if (isGroundedRef.current) {
       isGroundedRef.current = false;
       const isDesktop = isDesktopRef.current;
-      velocityYRef.current = isDesktop ? -15.2 : (isLandscapeMode ? -11.0 : -11.6);
+      velocityYRef.current = isDesktop ? -15.2 : -12.0;
       modeRef.current = "jump";
       setCurrentMode("jump");
       switchSprite("jump-0");
     }
-  }, [switchSprite, isLandscapeMode]);
+  }, [switchSprite]);
 
   // =========================================================================
   // SLIDE MECHANISM
@@ -309,6 +309,62 @@ export default function DiscoverFoxGame() {
       switchSprite("slide-0");
     }
   }, [switchSprite]);
+
+  // =========================================================================
+  // TOUCH SWIPE GESTURES FOR MOBILE (No buttons - pure swipe up/down & tap)
+  // =========================================================================
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY, time: performance.now() };
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const t = e.touches[0];
+    const dy = t.clientY - touchStartRef.current.y;
+    const dx = t.clientX - touchStartRef.current.x;
+
+    // Fast-trigger downward swipe (Slide)
+    if (dy > 25 && dy > Math.abs(dx) * 1.1) {
+      triggerSlide();
+      touchStartRef.current = null; // consume gesture
+    } else if (dy < -25 && Math.abs(dy) > Math.abs(dx) * 1.1 && isGroundedRef.current) {
+      triggerJump();
+      touchStartRef.current = null; // consume gesture
+    }
+  }, [triggerSlide, triggerJump]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+
+    if (!gameStartedRef.current) {
+      triggerJump();
+      return;
+    }
+
+    const end = e.changedTouches[0];
+    if (!end) return;
+
+    const dx = end.clientX - start.x;
+    const dy = end.clientY - start.y;
+    const dt = performance.now() - start.time;
+
+    if (Math.abs(dy) > 20 && Math.abs(dy) > Math.abs(dx)) {
+      if (dy > 0) {
+        triggerSlide();
+      } else {
+        triggerJump();
+      }
+    } else if (dt < 300 && Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+      // Tap anywhere to jump
+      triggerJump();
+    }
+  }, [triggerJump, triggerSlide]);
 
   // =========================================================================
   // CRASH / GAME OVER
@@ -415,8 +471,7 @@ export default function DiscoverFoxGame() {
 
         const arenaW = arenaWidthRef.current || 1200;
         const isDesktop = isDesktopRef.current;
-        const isMobileLandscape = !isDesktop && isLandscapeMode;
-        const GRAVITY = isDesktop ? 0.74 : 0.58;
+        const GRAVITY = isDesktop ? 0.74 : 0.60;
 
         if (modeRef.current !== "crash") {
           // Ground motion
@@ -428,7 +483,7 @@ export default function DiscoverFoxGame() {
           // Distance & Speed
           if (gameStartedRef.current) {
             distanceRef.current += gameSpeedRef.current * timeFactor;
-            const baseSpeed = isDesktop ? 6.2 : (isMobileLandscape ? 5.2 : 4.8);
+            const baseSpeed = isDesktop ? 6.2 : 4.8;
             const dynamicSpeed = Math.min(
               isDesktop ? 13.5 : 9.8,
               baseSpeed + (distanceRef.current / 3600) * (isDesktop ? 2.2 : 1.5)
@@ -548,7 +603,7 @@ export default function DiscoverFoxGame() {
                     slot.style.display = "flex";
                     slot.style.transform = `translate3d(${newObs.x}px, 0, 0)`;
 
-                    const groundBaseline = isDesktop ? 48 : (isMobileLandscape ? 22 : 24);
+                    const groundBaseline = isDesktop ? 48 : 26;
                     if (type === "samosa") {
                       slot.style.bottom = `${groundBaseline}px`;
                       samosaImg.style.display = "block";
@@ -557,7 +612,7 @@ export default function DiscoverFoxGame() {
                       badge.style.background = "#FFCD3C";
                       badge.style.color = "#522C28";
                     } else {
-                      slot.style.bottom = `${groundBaseline + (isDesktop ? 80 : (isMobileLandscape ? 54 : 38))}px`;
+                      slot.style.bottom = `${groundBaseline + (isDesktop ? 70 : 30)}px`;
                       samosaImg.style.display = "none";
                       jalebiImg.style.display = "block";
                       badge.textContent = "SLIDE!";
@@ -575,9 +630,9 @@ export default function DiscoverFoxGame() {
           }
 
           // Obstacle Translation & Hitbox Collision (Tight, responsive hitboxes)
-          const foxX = arenaW * (isDesktop ? 0.17 : (isMobileLandscape ? 0.20 : 0.08));
-          const foxHitboxLeft = foxX + (isDesktop ? 45 : (isMobileLandscape ? 14 : 12));
-          const foxHitboxRight = foxX + (isDesktop ? 115 : (isMobileLandscape ? 52 : 48));
+          const foxX = arenaW * (isDesktop ? 0.17 : 0.12);
+          const foxHitboxLeft = foxX + (isDesktop ? 45 : 12);
+          const foxHitboxRight = foxX + (isDesktop ? 115 : 48);
 
           let collision = false;
           const survivingObstacles: ObstacleData[] = [];
@@ -591,12 +646,12 @@ export default function DiscoverFoxGame() {
               slot.style.transform = `translate3d(${obs.x}px, 0, 0)`;
             }
 
-            const obsHitboxLeft = obs.x + (isDesktop ? 18 : 6);
-            const obsHitboxRight = obs.x + (isDesktop ? (obs.type === "samosa" ? 62 : 56) : (obs.type === "samosa" ? 26 : 24));
+            const obsHitboxLeft = obs.x + (isDesktop ? 16 : 4);
+            const obsHitboxRight = obs.x + (isDesktop ? 64 : 32);
 
             if (foxHitboxRight > obsHitboxLeft && foxHitboxLeft < obsHitboxRight) {
               if (obs.type === "samosa") {
-                const jumpSafeThreshold = isDesktop ? -30 : -14;
+                const jumpSafeThreshold = isDesktop ? -30 : -16;
                 const safe = !isGroundedRef.current && foxYRef.current < jumpSafeThreshold;
                 if (!safe) collision = true;
               } else if (obs.type === "jalebi") {
@@ -715,6 +770,9 @@ export default function DiscoverFoxGame() {
     <div
       ref={arenaRef}
       onClick={triggerJump}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className={`${
         isLandscapeMode
           ? "fixed z-[9999] inset-0 w-full h-full flex flex-col justify-between select-none cursor-pointer overflow-hidden touch-none"
@@ -778,51 +836,52 @@ export default function DiscoverFoxGame() {
           /* =========================================================================
              ACTIVE GAMEPLAY SCOREBOARD & HUD (Rendered only during active run)
              ========================================================================= */
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className={`flex items-center justify-between gap-1.5 sm:gap-3 rounded-full bg-black/35 backdrop-blur-md border border-white/20 text-white shadow-xl ${
-              isLandscapeMode ? "flex-nowrap px-2.5 py-1 text-xs" : "flex-wrap px-3 sm:px-4 py-2 sm:py-2.5"
-            }`}
-          >
-            {/* Live Score & Speed Indicator */}
-            <div className="flex items-center gap-2.5 sm:gap-4 text-xs sm:text-sm font-display tracking-wide flex-nowrap">
-              <div className="flex items-center gap-1">
-                <span className="text-white/70 uppercase text-[10px] sm:text-xs">Score:</span>
-                <span ref={scoreTextRef} className="font-mono text-xs sm:text-base font-bold text-[#FFCD3C]">
-                  0m
-                </span>
+          <>
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className={`flex items-center justify-between gap-1.5 sm:gap-3 rounded-full bg-black/35 backdrop-blur-md border border-white/20 text-white shadow-xl ${
+                isLandscapeMode ? "flex-nowrap px-2.5 py-1 text-xs" : "flex-wrap px-3 sm:px-4 py-2 sm:py-2.5"
+              }`}
+            >
+              {/* Live Score & Speed Indicator */}
+              <div className="flex items-center gap-2.5 sm:gap-4 text-xs sm:text-sm font-display tracking-wide flex-nowrap">
+                <div className="flex items-center gap-1">
+                  <span className="text-white/70 uppercase text-[10px] sm:text-xs">Score:</span>
+                  <span ref={scoreTextRef} className="font-mono text-xs sm:text-base font-bold text-[#FFCD3C]">
+                    0m
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-white/70 uppercase text-[10px] sm:text-xs">Best:</span>
+                  <span ref={bestTextRef} className="font-mono text-[11px] sm:text-sm text-white/90">
+                    {highScore}m
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 rounded-md bg-white/15 border border-white/10">
+                  <span className="text-[9px] sm:text-[11px] text-white/80">⚡</span>
+                  <span ref={speedTextRef} className="font-mono text-[10px] sm:text-xs font-bold text-[#FFCD3C]">
+                    1.0x
+                  </span>
+                </div>
+                {user ? (
+                  <Link
+                    href="/account"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAC537] text-[#522C28] text-[11px] font-black shadow-xs hover:scale-105 transition-transform"
+                  >
+                    <span>🪙 {user.loyaltyPoints} pts</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login?next=/#discover"
+                    className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold border border-white/20"
+                  >
+                    <span>Sign in to Earn Pts</span>
+                  </Link>
+                )}
               </div>
-              <div className="flex items-center gap-1">
-                <span className="text-white/70 uppercase text-[10px] sm:text-xs">Best:</span>
-                <span ref={bestTextRef} className="font-mono text-[11px] sm:text-sm text-white/90">
-                  {highScore}m
-                </span>
-              </div>
-              <div className="flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 rounded-md bg-white/15 border border-white/10">
-                <span className="text-[9px] sm:text-[11px] text-white/80">⚡</span>
-                <span ref={speedTextRef} className="font-mono text-[10px] sm:text-xs font-bold text-[#FFCD3C]">
-                  1.0x
-                </span>
-              </div>
-              {user ? (
-                <Link
-                  href="/account"
-                  className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAC537] text-[#522C28] text-[11px] font-black shadow-xs hover:scale-105 transition-transform"
-                >
-                  <span>🪙 {user.loyaltyPoints} pts</span>
-                </Link>
-              ) : (
-                <Link
-                  href="/login?next=/#discover"
-                  className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold border border-white/20"
-                >
-                  <span>Sign in to Earn Pts</span>
-                </Link>
-              )}
-            </div>
 
-            {/* Action Hints & Controls */}
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-nowrap shrink-0">
+              {/* Action Hints & Controls */}
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-nowrap shrink-0">
               <button
                 type="button"
                 onClick={() => setShowLeaderboard(true)}
@@ -924,7 +983,19 @@ export default function DiscoverFoxGame() {
                 </div>
               )}
             </div>
-          </div>
+            </div>
+
+            {/* Mobile Touch Instructions Dropdown Pill */}
+            {!isDesktopScreen && (
+              <div className="flex justify-center mt-1 sm:mt-1.5 pointer-events-none">
+                <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-wider shadow-md animate-pulse">
+                  <span className="text-[#FFCD3C]">↑ Tap / Swipe Up to Jump</span>
+                  <span className="text-white/40">•</span>
+                  <span className="text-[#F37D20]">↓ Swipe Down to Slide</span>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -983,8 +1054,6 @@ export default function DiscoverFoxGame() {
           className={`absolute left-0 w-full bg-white border-b-2 border-[#522C28]/25 z-15 shadow-sm ${
             isDesktopScreen
               ? "bottom-[48px] h-[6px]"
-              : isLandscapeMode
-              ? "bottom-[22px] h-[4px]"
               : "bottom-[26px] h-[4px]"
           }`}
         />
@@ -992,7 +1061,7 @@ export default function DiscoverFoxGame() {
         {/* RUNNING TRACK GROUND TURF */}
         <div
           className={`absolute bottom-0 left-0 w-full overflow-hidden z-10 bg-gradient-to-t from-black/20 to-transparent ${
-            isDesktopScreen ? "h-[48px]" : isLandscapeMode ? "h-[22px]" : "h-[26px]"
+            isDesktopScreen ? "h-[48px]" : "h-[26px]"
           }`}
         >
           <div ref={groundStripRef} className="w-[2400px] h-full flex will-change-transform">
@@ -1029,7 +1098,7 @@ export default function DiscoverFoxGame() {
               className={`object-contain object-bottom pointer-events-none ${
                 isDesktopScreen
                   ? "w-20 h-20"
-                  : "w-8 h-8"
+                  : "w-9 h-9"
               }`}
               style={{ display: "none" }}
             />
@@ -1046,7 +1115,7 @@ export default function DiscoverFoxGame() {
               className={`object-contain object-bottom pointer-events-none ${
                 isDesktopScreen
                   ? "w-20 h-20"
-                  : "w-8 h-8"
+                  : "w-9 h-9"
               }`}
               style={{ display: "none" }}
             />
@@ -1075,9 +1144,7 @@ export default function DiscoverFoxGame() {
           className={`absolute z-25 flex items-end justify-center pointer-events-none will-change-transform ${
             isDesktopScreen
               ? "bottom-[48px] left-[17%] w-[190px] h-[190px]"
-              : isLandscapeMode
-              ? "bottom-[22px] left-[20%] w-[68px] h-[68px]"
-              : "bottom-[26px] left-[8%] w-[64px] h-[64px]"
+              : "bottom-[26px] left-[12%] w-[72px] h-[72px]"
           }`}
         >
           {ALL_SPRITES.map((sprite) => (
@@ -1102,54 +1169,9 @@ export default function DiscoverFoxGame() {
           className={`absolute z-10 bg-black/35 rounded-full blur-[2px] pointer-events-none will-change-transform ${
             isDesktopScreen
               ? "bottom-[44px] left-[17%] translate-x-[45px] w-32 h-3.5"
-              : isLandscapeMode
-              ? "bottom-[20px] left-[20%] translate-x-[8px] w-12 h-2"
-              : "bottom-[24px] left-[8%] translate-x-[8px] w-12 h-2"
+              : "bottom-[24px] left-[12%] translate-x-[8px] w-14 h-2"
           }`}
         />
-
-        {/* =========================================================================
-            LANDSCAPE MODE DUAL THUMB ARCADE CONTROLS (Rendered only on mobile during active play)
-            ========================================================================= */}
-        {!isDesktopScreen && isLandscapeMode && gameStarted && !gameOver && (
-          <>
-            {/* Left Thumb: SLIDE Button */}
-            <div className="absolute bottom-4 sm:bottom-6 left-5 sm:left-8 z-40 pointer-events-auto flex items-center">
-              <button
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  triggerSlide();
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  triggerSlide();
-                }}
-                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#F37D20]/90 active:bg-[#D8661E] text-white font-display text-xs uppercase shadow-[0_4px_16px_rgba(243,125,32,0.5)] border-2 border-white/60 active:scale-90 transition-transform backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none"
-              >
-                <span className="text-base sm:text-lg">🛹</span>
-                <span className="font-bold text-[9px] sm:text-[10px] mt-0.5">SLIDE</span>
-              </button>
-            </div>
-
-            {/* Right Thumb: JUMP Button */}
-            <div className="absolute bottom-4 sm:bottom-6 right-5 sm:right-8 z-40 pointer-events-auto flex items-center">
-              <button
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  triggerJump();
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  triggerJump();
-                }}
-                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#FFCD3C]/95 active:bg-[#FCC434] text-[#522C28] font-display text-xs uppercase shadow-[0_4px_16px_rgba(255,205,60,0.5)] border-2 border-white/70 active:scale-90 transition-transform backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none"
-              >
-                <span className="text-base sm:text-lg">🦘</span>
-                <span className="font-bold text-[9px] sm:text-[10px] mt-0.5">JUMP</span>
-              </button>
-            </div>
-          </>
-        )}
 
         {/* =========================================================================
             READY TO PLAY OVERLAY (Minimal, focused on conversion)
@@ -1159,13 +1181,21 @@ export default function DiscoverFoxGame() {
             onClick={triggerJump}
             className="absolute inset-0 z-35 flex items-center justify-center cursor-pointer pointer-events-auto px-4"
           >
-            <div className="px-5 sm:px-7 py-3 sm:py-4 rounded-3xl bg-white/95 backdrop-blur-md shadow-2xl border-2 border-[#522C28]/15 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 hover:scale-105 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] text-center sm:text-left max-w-sm sm:max-w-md">
+            <div className="px-5 sm:px-7 py-3 sm:py-4 rounded-3xl bg-white/95 backdrop-blur-md shadow-2xl border-2 border-[#522C28]/15 flex flex-col items-center gap-2 sm:gap-3 text-center max-w-sm sm:max-w-md hover:scale-105 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
               <div className="flex items-center gap-3">
                 <span className="text-2xl sm:text-3xl animate-float-gentle">🏃</span>
                 <span className="font-display text-sm sm:text-base text-[#522C28] uppercase tracking-wide block font-black">
                   Tap anywhere to Play!
                 </span>
               </div>
+
+              {!isDesktopScreen && (
+                <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold text-[#522C28]/80 bg-[#FFF8EE] px-3 py-1 rounded-full border border-[#522C28]/10">
+                  <span className="text-[#D73B3A]">↑ Swipe Up / Tap: Jump</span>
+                  <span>•</span>
+                  <span className="text-[#F37D20]">↓ Swipe Down: Slide</span>
+                </div>
+              )}
 
               {!isDesktopScreen && !isLandscapeMode && (
                 <button
