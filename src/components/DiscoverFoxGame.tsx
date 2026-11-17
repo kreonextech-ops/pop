@@ -105,6 +105,8 @@ export default function DiscoverFoxGame() {
   // Landscape Arcade Mobile Mode
   const [isLandscapeMode, setIsLandscapeMode] = useState(false);
   const [isDevicePortrait, setIsDevicePortrait] = useState(true);
+  const [isDesktopScreen, setIsDesktopScreen] = useState(true);
+  const isDesktopRef = useRef(true);
 
   // Core DOM References
   const arenaRef = useRef<HTMLDivElement>(null);
@@ -182,7 +184,16 @@ export default function DiscoverFoxGame() {
   // Orientation & Resize Listener
   useEffect(() => {
     const handleResize = () => {
-      setIsDevicePortrait(window.innerHeight > window.innerWidth);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setIsDevicePortrait(h > w);
+
+      // Desktop: screen width >= 768 and height >= 480 (mobile phones in landscape have height < 450)
+      const isTouchPhone = typeof navigator !== "undefined" && navigator.maxTouchPoints > 1 && (h < 480 || w < 600);
+      const isDesktop = w >= 768 && h >= 480 && !isTouchPhone;
+      setIsDesktopScreen(isDesktop);
+      isDesktopRef.current = isDesktop;
+
       if (arenaRef.current) {
         arenaWidthRef.current = arenaRef.current.clientWidth;
       }
@@ -264,8 +275,7 @@ export default function DiscoverFoxGame() {
 
     if (isGroundedRef.current) {
       isGroundedRef.current = false;
-      const arenaW = arenaWidthRef.current || 1200;
-      const isDesktop = !isLandscapeMode && arenaW >= 640;
+      const isDesktop = isDesktopRef.current;
       velocityYRef.current = isDesktop ? -15.2 : (isLandscapeMode ? -11.0 : -11.6);
       modeRef.current = "jump";
       setCurrentMode("jump");
@@ -404,8 +414,8 @@ export default function DiscoverFoxGame() {
         const timeFactor = delta / 16.67;
 
         const arenaW = arenaWidthRef.current || 1200;
-        const isDesktop = !isLandscapeMode && arenaW >= 640;
-        const isMobilePortrait = !isLandscapeMode && arenaW < 640;
+        const isDesktop = isDesktopRef.current;
+        const isMobileLandscape = !isDesktop && isLandscapeMode;
         const GRAVITY = isDesktop ? 0.74 : 0.58;
 
         if (modeRef.current !== "crash") {
@@ -418,7 +428,7 @@ export default function DiscoverFoxGame() {
           // Distance & Speed
           if (gameStartedRef.current) {
             distanceRef.current += gameSpeedRef.current * timeFactor;
-            const baseSpeed = isDesktop ? 6.2 : (isLandscapeMode ? 5.2 : 4.8);
+            const baseSpeed = isDesktop ? 6.2 : (isMobileLandscape ? 5.2 : 4.8);
             const dynamicSpeed = Math.min(
               isDesktop ? 13.5 : 9.8,
               baseSpeed + (distanceRef.current / 3600) * (isDesktop ? 2.2 : 1.5)
@@ -538,7 +548,7 @@ export default function DiscoverFoxGame() {
                     slot.style.display = "flex";
                     slot.style.transform = `translate3d(${newObs.x}px, 0, 0)`;
 
-                    const groundBaseline = isDesktop ? 48 : (isLandscapeMode ? 22 : 24);
+                    const groundBaseline = isDesktop ? 48 : (isMobileLandscape ? 22 : 24);
                     if (type === "samosa") {
                       slot.style.bottom = `${groundBaseline}px`;
                       samosaImg.style.display = "block";
@@ -547,7 +557,7 @@ export default function DiscoverFoxGame() {
                       badge.style.background = "#FFCD3C";
                       badge.style.color = "#522C28";
                     } else {
-                      slot.style.bottom = `${groundBaseline + (isDesktop ? 80 : (isLandscapeMode ? 54 : 38))}px`;
+                      slot.style.bottom = `${groundBaseline + (isDesktop ? 80 : (isMobileLandscape ? 54 : 38))}px`;
                       samosaImg.style.display = "none";
                       jalebiImg.style.display = "block";
                       badge.textContent = "SLIDE!";
@@ -565,9 +575,9 @@ export default function DiscoverFoxGame() {
           }
 
           // Obstacle Translation & Hitbox Collision (Tight, responsive hitboxes)
-          const foxX = arenaW * (isDesktop ? 0.17 : (isLandscapeMode ? 0.20 : 0.08));
-          const foxHitboxLeft = foxX + (isDesktop ? 45 : (isLandscapeMode ? 14 : 12));
-          const foxHitboxRight = foxX + (isDesktop ? 115 : (isLandscapeMode ? 52 : 48));
+          const foxX = arenaW * (isDesktop ? 0.17 : (isMobileLandscape ? 0.20 : 0.08));
+          const foxHitboxLeft = foxX + (isDesktop ? 45 : (isMobileLandscape ? 14 : 12));
+          const foxHitboxRight = foxX + (isDesktop ? 115 : (isMobileLandscape ? 52 : 48));
 
           let collision = false;
           const survivingObstacles: ObstacleData[] = [];
@@ -971,14 +981,18 @@ export default function DiscoverFoxGame() {
             ========================================================================= */}
         <div
           className={`absolute left-0 w-full bg-white border-b-2 border-[#522C28]/25 z-15 shadow-sm ${
-            isLandscapeMode ? "bottom-[44px] h-[5px]" : "bottom-[34px] sm:bottom-[48px] h-[4px] sm:h-[6px]"
+            isDesktopScreen
+              ? "bottom-[48px] h-[6px]"
+              : isLandscapeMode
+              ? "bottom-[22px] h-[4px]"
+              : "bottom-[26px] h-[4px]"
           }`}
         />
 
         {/* RUNNING TRACK GROUND TURF */}
         <div
           className={`absolute bottom-0 left-0 w-full overflow-hidden z-10 bg-gradient-to-t from-black/20 to-transparent ${
-            isLandscapeMode ? "h-[44px]" : "h-[34px] sm:h-[48px]"
+            isDesktopScreen ? "h-[48px]" : isLandscapeMode ? "h-[22px]" : "h-[26px]"
           }`}
         >
           <div ref={groundStripRef} className="w-[2400px] h-full flex will-change-transform">
@@ -1013,9 +1027,9 @@ export default function DiscoverFoxGame() {
               loading="eager"
               decoding="async"
               className={`object-contain object-bottom pointer-events-none ${
-                isLandscapeMode
-                  ? "w-8 h-8"
-                  : "w-8 sm:w-20 h-8 sm:h-20"
+                isDesktopScreen
+                  ? "w-20 h-20"
+                  : "w-8 h-8"
               }`}
               style={{ display: "none" }}
             />
@@ -1030,9 +1044,9 @@ export default function DiscoverFoxGame() {
               loading="eager"
               decoding="async"
               className={`object-contain object-bottom pointer-events-none ${
-                isLandscapeMode
-                  ? "w-8 h-8"
-                  : "w-8 sm:w-20 h-8 sm:h-20"
+                isDesktopScreen
+                  ? "w-20 h-20"
+                  : "w-8 h-8"
               }`}
               style={{ display: "none" }}
             />
@@ -1042,10 +1056,10 @@ export default function DiscoverFoxGame() {
               ref={(el) => {
                 obstacleBadgesRef.current[i] = el;
               }}
-              className={`absolute px-1.5 py-0.5 rounded-full font-black uppercase shadow-sm tracking-wider ${
-                isLandscapeMode
-                  ? "-top-2.5 text-[7px]"
-                  : "-top-2.5 sm:-top-3 text-[7px] sm:text-[9px] sm:px-2"
+              className={`absolute rounded-full font-black uppercase shadow-sm tracking-wider ${
+                isDesktopScreen
+                  ? "-top-3 text-[9px] px-2 py-0.5"
+                  : "-top-2.5 text-[7px] px-1.5 py-0.2"
               }`}
             >
               JUMP!
@@ -1059,9 +1073,11 @@ export default function DiscoverFoxGame() {
         <div
           ref={foxContainerRef}
           className={`absolute z-25 flex items-end justify-center pointer-events-none will-change-transform ${
-            isLandscapeMode
+            isDesktopScreen
+              ? "bottom-[48px] left-[17%] w-[190px] h-[190px]"
+              : isLandscapeMode
               ? "bottom-[22px] left-[20%] w-[68px] h-[68px]"
-              : "bottom-[26px] sm:bottom-[48px] left-[8%] sm:left-[17%] w-[64px] sm:w-[190px] h-[64px] sm:h-[190px]"
+              : "bottom-[26px] left-[8%] w-[64px] h-[64px]"
           }`}
         >
           {ALL_SPRITES.map((sprite) => (
@@ -1084,16 +1100,18 @@ export default function DiscoverFoxGame() {
         <div
           ref={shadowRef}
           className={`absolute z-10 bg-black/35 rounded-full blur-[2px] pointer-events-none will-change-transform ${
-            isLandscapeMode
+            isDesktopScreen
+              ? "bottom-[44px] left-[17%] translate-x-[45px] w-32 h-3.5"
+              : isLandscapeMode
               ? "bottom-[20px] left-[20%] translate-x-[8px] w-12 h-2"
-              : "bottom-[24px] sm:bottom-[44px] left-[8%] sm:left-[17%] translate-x-[8px] sm:translate-x-[45px] w-12 sm:w-32 h-2 sm:h-3.5"
+              : "bottom-[24px] left-[8%] translate-x-[8px] w-12 h-2"
           }`}
         />
 
         {/* =========================================================================
-            LANDSCAPE MODE DUAL THUMB ARCADE CONTROLS (Rendered only during active play)
+            LANDSCAPE MODE DUAL THUMB ARCADE CONTROLS (Rendered only on mobile during active play)
             ========================================================================= */}
-        {isLandscapeMode && gameStarted && !gameOver && (
+        {!isDesktopScreen && isLandscapeMode && gameStarted && !gameOver && (
           <>
             {/* Left Thumb: SLIDE Button */}
             <div className="absolute bottom-4 sm:bottom-6 left-5 sm:left-8 z-40 pointer-events-auto flex items-center">
@@ -1149,7 +1167,7 @@ export default function DiscoverFoxGame() {
                 </span>
               </div>
 
-              {!isLandscapeMode && (
+              {!isDesktopScreen && !isLandscapeMode && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
