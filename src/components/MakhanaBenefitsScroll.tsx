@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { smoothScrollTo, instantJumpTo } from "@/components/LenisProvider";
 import {
   WheatOff,
   Sparkles,
@@ -11,16 +10,12 @@ import {
   Check,
   X,
   Feather,
-  Activity,
   Zap,
-  Flame,
   Heart,
   Droplets,
   Leaf,
   Sun,
   Shield,
-  ArrowUpRight,
-  CheckCircle2,
 } from "lucide-react";
 
 type WordSegment = {
@@ -202,21 +197,7 @@ export default function MakhanaBenefitsScroll() {
   const beat2InRef = useRef<HTMLDivElement>(null);
   const beat2NotRef = useRef<HTMLDivElement>(null);
 
-  // Beat 3: Low GI ~22 + Steady Energy Wave Card
-  const beat3StageRef = useRef<HTMLDivElement>(null);
-  const beat3PropsFloatRef = useRef<HTMLDivElement>(null);
-  const beat3MakhanaDropRef = useRef<HTMLDivElement>(null);
-  const beat3MakhanaSpinRef = useRef<HTMLImageElement>(null);
-  const giChartWrapRef = useRef<HTMLDivElement>(null);
-  const giSpikePathRef = useRef<SVGPathElement>(null);
-  const giSteadyPathRef = useRef<SVGPathElement>(null);
-  const giBadgeRef = useRef<HTMLDivElement>(null);
-  const beat3TagRef = useRef<HTMLDivElement>(null);
-  const beat3CompareBoxRef = useRef<HTMLDivElement>(null);
-  const beat3InRef = useRef<HTMLDivElement>(null);
-  const beat3NotRef = useRef<HTMLDivElement>(null);
-
-  // Beat 4: Heart Health + Strictly Bounded HTML Mineral Monitor Card
+  // Beat 4: Heart Health + Strictly Bounded HTML Mineral Monitor Card (Benefit 02)
   const beat4StageRef = useRef<HTMLDivElement>(null);
   const beat4PropsFloatRef = useRef<HTMLDivElement>(null);
   const beat4MakhanaDropRef = useRef<HTMLDivElement>(null);
@@ -251,14 +232,6 @@ export default function MakhanaBenefitsScroll() {
   const promiseSealRef = useRef<HTMLDivElement>(null);
   const promiseTagRef = useRef<HTMLDivElement>(null);
   const promiseQuoteRef = useRef<HTMLDivElement>(null);
-
-  // Beat 6: Grand Finale Pop Culture Bowl + Flavours CTA
-  const beat6StageRef = useRef<HTMLDivElement>(null);
-  const beat6BowlWrapRef = useRef<HTMLDivElement>(null);
-  const beat6BurstRef = useRef<SVGSVGElement>(null);
-  const beat6TagRef = useRef<HTMLDivElement>(null);
-  const beat6BodyRef = useRef<HTMLParagraphElement>(null);
-  const beat6CtaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -302,11 +275,8 @@ export default function MakhanaBenefitsScroll() {
       });
 
       const b2 = qBeat(2);
-      const b3 = qBeat(3);
       const b4 = qBeat(4);
       const b5 = qBeat(5);
-      const b6Words = gsap.utils.toArray<HTMLElement>(".beat6-word-in");
-      const b6Chips = gsap.utils.toArray<HTMLElement>(".beat6-flavour-chip");
       const promiseWords = gsap.utils.toArray<HTMLElement>(".promise-word-in");
       const promisePills = gsap.utils.toArray<HTMLElement>(".promise-pill");
 
@@ -317,11 +287,9 @@ export default function MakhanaBenefitsScroll() {
 
       [
         beat2StageRef.current,
-        beat3StageRef.current,
         beat4StageRef.current,
         beat5StageRef.current,
         promiseStageRef.current,
-        beat6StageRef.current,
       ].forEach((el) => {
         if (el) gsap.set(el, { autoAlpha: 0, y: 0 });
       });
@@ -360,24 +328,7 @@ export default function MakhanaBenefitsScroll() {
       if (beat2MakhanaSpinRef.current) gsap.set(beat2MakhanaSpinRef.current, { rotation: -280 });
       if (beat2PropsFloatRef.current) gsap.set(beat2PropsFloatRef.current, { autoAlpha: 0, scale: 0.86 });
 
-      // --- Beat 3 (Low GI Curve) Initial States ---
-      if (beat3MakhanaDropRef.current) {
-        gsap.set(beat3MakhanaDropRef.current, {
-          xPercent: -50,
-          yPercent: -50,
-          y: -190,
-          scale: 1.24,
-          autoAlpha: 0,
-        });
-      }
-      if (beat3MakhanaSpinRef.current) gsap.set(beat3MakhanaSpinRef.current, { rotation: -240 });
-      if (beat3PropsFloatRef.current) gsap.set(beat3PropsFloatRef.current, { autoAlpha: 0, scale: 0.86 });
-      if (giChartWrapRef.current) gsap.set(giChartWrapRef.current, { autoAlpha: 0, y: 20 });
-      if (giSpikePathRef.current) gsap.set(giSpikePathRef.current, { strokeDashoffset: 360 });
-      if (giSteadyPathRef.current) gsap.set(giSteadyPathRef.current, { strokeDashoffset: 320 });
-      if (giBadgeRef.current) gsap.set(giBadgeRef.current, { autoAlpha: 0, scale: 0.78 });
-
-      // --- Beat 4 (Heart Pulse & Bounded HTML Bars) Initial States ---
+      // --- Beat 4 (Heart Pulse & Bounded HTML Bars - Benefit 02) Initial States ---
       if (beat4MakhanaDropRef.current) {
         gsap.set(beat4MakhanaDropRef.current, {
           xPercent: -50,
@@ -394,7 +345,7 @@ export default function MakhanaBenefitsScroll() {
       if (barKRef.current) gsap.set(barKRef.current, { scaleX: 0, transformOrigin: "left center" });
       if (barMgRef.current) gsap.set(barMgRef.current, { scaleX: 0, transformOrigin: "left center" });
 
-      // --- Beat 5 (Antioxidant Shield) Initial States ---
+      // --- Beat 5 (Antioxidant Shield - Benefit 03) Initial States ---
       if (beat5MakhanaDropRef.current) {
         gsap.set(beat5MakhanaDropRef.current, {
           xPercent: -50,
@@ -410,19 +361,9 @@ export default function MakhanaBenefitsScroll() {
       if (shieldRingRef.current) gsap.set(shieldRingRef.current, { strokeDashoffset: 660 });
       if (shieldBadgeRef.current) gsap.set(shieldBadgeRef.current, { autoAlpha: 0, y: 10, scale: 0.85 });
 
-      // --- Beat 6 (Finale Bowl) Initial States ---
-      if (beat6BowlWrapRef.current) gsap.set(beat6BowlWrapRef.current, { autoAlpha: 0, y: 55, scale: 0.86 });
-      if (beat6BurstRef.current) gsap.set(beat6BurstRef.current, { autoAlpha: 0, rotation: -25, scale: 0.82 });
-      if (beat6TagRef.current) gsap.set(beat6TagRef.current, { autoAlpha: 0, y: 16, scale: 0.92 });
-      gsap.set(b6Words, { yPercent: 115, scale: 0.92, autoAlpha: 0 });
-      gsap.set(b6Chips, { autoAlpha: 0, y: 12, scale: 0.88 });
-      if (beat6BodyRef.current) gsap.set(beat6BodyRef.current, { autoAlpha: 0, y: 14 });
-      if (beat6CtaRef.current) gsap.set(beat6CtaRef.current, { autoAlpha: 0, y: 16, scale: 0.94 });
-
-      // Shared right-column text initial states for Beats 2..5
+      // Shared right-column text initial states for Beats 2, 4, 5
       [
         { b: b2, tag: beat2TagRef.current, box: beat2CompareBoxRef.current, iR: beat2InRef.current, nR: beat2NotRef.current },
-        { b: b3, tag: beat3TagRef.current, box: beat3CompareBoxRef.current, iR: beat3InRef.current, nR: beat3NotRef.current },
         { b: b4, tag: beat4TagRef.current, box: beat4CompareBoxRef.current, iR: beat4InRef.current, nR: beat4NotRef.current },
         { b: b5, tag: beat5TagRef.current, box: beat5CompareBoxRef.current, iR: beat5InRef.current, nR: beat5NotRef.current },
       ].forEach(({ b, tag, box, iR, nR }) => {
@@ -465,7 +406,7 @@ export default function MakhanaBenefitsScroll() {
         scrollTrigger: {
           trigger: container,
           start: "top top",
-          end: () => (typeof window !== "undefined" && window.innerWidth < 768 ? "+=4800" : "+=7200"),
+          end: () => (typeof window !== "undefined" && window.innerWidth < 768 ? "+=3400" : "+=4800"),
           pin: pinSection,
           pinSpacing: true,
           scrub: 0.45,
@@ -586,59 +527,9 @@ export default function MakhanaBenefitsScroll() {
       }
 
       // =====================================================================
-      // BEAT 3: Low GI ~22 + Steady Energy Wave Card
+      // BEAT 4: Heart Health + Strictly Bounded HTML Mineral Monitor Card (Benefit 02)
       // =====================================================================
-      const t3A = t2B + 1.98;
-      const t3B = t3A + 0.95;
-
-      if (beat3StageRef.current) tl.to(beat3StageRef.current, { autoAlpha: 1, duration: 0.12 }, t3A);
-      if (beat3MakhanaDropRef.current) {
-        tl.to(beat3MakhanaDropRef.current, { y: 0, autoAlpha: 1, duration: 0.58, ease: "power2.out", force3D: true }, t3A);
-      }
-      if (beat3MakhanaSpinRef.current) {
-        tl.to(beat3MakhanaSpinRef.current, { rotation: 0, duration: 0.62, ease: "power2.out", force3D: true }, t3A);
-      }
-      if (beat3PropsFloatRef.current) {
-        tl.to(beat3PropsFloatRef.current, { autoAlpha: 1, scale: 1, duration: 0.38, ease: "back.out(1.4)" }, t3A + 0.24);
-      }
-
-      scheduleBenefitCopy(
-        t3A,
-        t3B,
-        b3,
-        beat3TagRef.current,
-        beat3CompareBoxRef.current,
-        beat3InRef.current,
-        beat3NotRef.current
-      );
-
-      if (beat3PropsFloatRef.current) {
-        tl.to(beat3PropsFloatRef.current, { autoAlpha: 0, scale: 0.85, duration: 0.22, ease: "power2.in" }, t3B);
-      }
-      if (beat3MakhanaDropRef.current) {
-        tl.to(beat3MakhanaDropRef.current, { yPercent: -82, y: 0, scale: 0.82, duration: 0.42, ease: "power2.inOut" }, t3B + 0.05);
-      }
-      if (giChartWrapRef.current) {
-        tl.to(giChartWrapRef.current, { autoAlpha: 1, y: 0, duration: 0.38, ease: "power3.out" }, t3B + 0.08);
-      }
-      if (giSpikePathRef.current) {
-        tl.to(giSpikePathRef.current, { strokeDashoffset: 0, duration: 0.45, ease: "power2.out" }, t3B + 0.26);
-      }
-      if (giSteadyPathRef.current) {
-        tl.to(giSteadyPathRef.current, { strokeDashoffset: 0, duration: 0.52, ease: "power2.out" }, t3B + 0.38);
-      }
-      if (giBadgeRef.current) {
-        tl.to(giBadgeRef.current, { autoAlpha: 1, scale: 1, duration: 0.32, ease: "back.out(1.4)" }, t3B + 0.7);
-      }
-
-      if (beat3StageRef.current) {
-        tl.to(beat3StageRef.current, { y: -40, autoAlpha: 0, duration: 0.38, ease: "power2.inOut", force3D: true }, t3B + 1.5);
-      }
-
-      // =====================================================================
-      // BEAT 4: Heart Health + Strictly Bounded HTML Mineral Monitor Card
-      // =====================================================================
-      const t4A = t3B + 1.92;
+      const t4A = t2B + 1.95;
       const t4B = t4A + 0.95;
 
       if (beat4StageRef.current) tl.to(beat4StageRef.current, { autoAlpha: 1, duration: 0.12 }, t4A);
@@ -767,35 +658,7 @@ export default function MakhanaBenefitsScroll() {
         tl.to(promiseStageRef.current, { y: -40, autoAlpha: 0, duration: 0.38, ease: "power2.inOut", force3D: true }, tP + 1.65);
       }
 
-      // =====================================================================
-      // BEAT 6: Grand Finale — Overflowing Bowl & 4 Bold Flavours CTA
-      // =====================================================================
-      const t6 = tP + 2.08;
-
-      if (beat6StageRef.current) tl.to(beat6StageRef.current, { autoAlpha: 1, duration: 0.12 }, t6);
-      if (beat6BurstRef.current) {
-        tl.to(beat6BurstRef.current, { autoAlpha: 1, rotation: 0, scale: 1, duration: 0.55, ease: "power2.out" }, t6 + 0.05);
-      }
-      if (beat6BowlWrapRef.current) {
-        tl.to(beat6BowlWrapRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.25)", force3D: true }, t6 + 0.08);
-      }
-      if (beat6TagRef.current) {
-        tl.to(beat6TagRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.32, ease: "back.out(1.3)" }, t6 + 0.15);
-      }
-      if (b6Words.length > 0) {
-        tl.to(b6Words, { yPercent: 0, scale: 1, autoAlpha: 1, duration: 0.44, stagger: 0.06, ease: "power3.out", force3D: true }, t6 + 0.24);
-      }
-      if (b6Chips.length > 0) {
-        tl.to(b6Chips, { autoAlpha: 1, y: 0, scale: 1, duration: 0.3, stagger: 0.06, ease: "back.out(1.3)" }, t6 + 0.45);
-      }
-      if (beat6BodyRef.current) {
-        tl.to(beat6BodyRef.current, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" }, t6 + 0.55);
-      }
-      if (beat6CtaRef.current) {
-        tl.to(beat6CtaRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.38, ease: "back.out(1.4)" }, t6 + 0.68);
-      }
-
-      tl.to({}, { duration: 0.8 }, t6 + 1.05);
+      tl.to({}, { duration: 0.6 }, tP + 1.9);
 
       const refreshTimer = setTimeout(() => {
         ScrollTrigger.refresh();
@@ -819,10 +682,6 @@ export default function MakhanaBenefitsScroll() {
       ctx.revert();
     };
   }, []);
-
-  const scrollToFlavours = () => {
-    instantJumpTo("#flavours");
-  };
 
   return (
     <section
@@ -1037,133 +896,7 @@ export default function MakhanaBenefitsScroll() {
         </div>
 
         {/* =================================================================
-            BEAT 3: Low GI ~22 + Steady Energy Wave Card (Bounded HTML+SVG)
-            ================================================================= */}
-        <div
-          ref={beat3StageRef}
-          className="absolute inset-0 pt-14 sm:pt-16 pb-4 z-20 flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
-        >
-          <div className="w-full max-w-6xl mx-auto -translate-y-1 sm:-translate-y-4 flex flex-col md:flex-row items-center justify-center gap-2 min-[400px]:gap-3 sm:gap-6 md:gap-10 lg:gap-14">
-            <div className="relative w-[235px] min-[400px]:w-[275px] sm:w-[340px] md:w-[385px] lg:w-[410px] shrink-0">
-              <div className="relative w-full aspect-[380/275] sm:aspect-[380/265]">
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[78%] h-[78%] rounded-full bg-[radial-gradient(circle,rgba(255,213,158,0.45)_0%,rgba(255,231,196,0.22)_50%,transparent_75%)]" />
-
-                <div ref={beat3PropsFloatRef} className="absolute inset-0 z-10">
-                  <div className="absolute left-[4%] top-[12%] inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border-2 border-[#1976D2] text-[#0D47A1] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-sm -rotate-6">
-                    <Activity className="w-3.5 h-3.5 text-[#1976D2]" />
-                    <span>Low GI ~22</span>
-                  </div>
-                  <div className="absolute right-[4%] top-[16%] inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border-2 border-[#E88938] text-[#9A4A0B] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-sm rotate-6">
-                    <Zap className="w-3.5 h-3.5 text-[#E88938]" />
-                    <span>Slow Release</span>
-                  </div>
-                  <div className="absolute left-[18%] bottom-[8%] inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border-2 border-[#3CA837] text-[#236B20] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-sm rotate-3">
-                    <Flame className="w-3.5 h-3.5 text-[#D73B3A]" />
-                    <span>Clean Fuel</span>
-                  </div>
-                </div>
-
-                {/* Cracked Makhana */}
-                <div
-                  ref={beat3MakhanaDropRef}
-                  className="absolute left-1/2 top-[43%] w-[33%] aspect-square z-10 will-change-transform"
-                >
-                  <img
-                    ref={beat3MakhanaSpinRef}
-                    src="/scroll/asset/03_cracked_makhana.png"
-                    alt="Cracked Crispy Roasted Makhana"
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-contain drop-shadow-[0_10px_14px_rgba(82,44,40,0.22)] will-change-transform"
-                  />
-                </div>
-
-                {/* Phase 3B Strictly Bounded Energy Chart Card */}
-                <div
-                  ref={giChartWrapRef}
-                  className="absolute left-1.5 right-1.5 sm:left-2 sm:right-2 bottom-1 rounded-2xl border-[3px] border-[#522C28] bg-[#FFF8EE]/95 p-2 sm:p-3 shadow-sm overflow-hidden will-change-transform"
-                >
-                  <div className="flex items-center justify-between gap-2 mb-0.5 sm:mb-1">
-                    <span className="text-[8.5px] sm:text-[10px] font-black uppercase tracking-wider text-[#522C28]">
-                      Blood Energy Response
-                    </span>
-                    <div
-                      ref={giBadgeRef}
-                      className="px-2 py-0.5 rounded-full bg-[#3CA837] border-2 border-[#522C28] text-[#FFF8EE] text-[8.5px] sm:text-[10px] font-black leading-none shrink-0"
-                    >
-                      GI ~22
-                    </div>
-                  </div>
-                  <svg viewBox="0 0 300 62" fill="none" className="w-full h-9 sm:h-12">
-                    <line x1="6" y1="22" x2="294" y2="22" stroke="#522C28" strokeOpacity="0.1" strokeDasharray="4 4" />
-                    <line x1="6" y1="42" x2="294" y2="42" stroke="#522C28" strokeOpacity="0.1" strokeDasharray="4 4" />
-                    <path
-                      ref={giSpikePathRef}
-                      d="M8 50 C34 50 54 8 88 10 C122 12 146 56 196 54 C236 52 266 44 292 48"
-                      stroke="#D73B3A"
-                      strokeOpacity="0.55"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeDasharray="360"
-                    />
-                    <path
-                      ref={giSteadyPathRef}
-                      d="M8 44 C64 26 128 24 198 25 C244 26 270 23 292 24"
-                      stroke="#3CA837"
-                      strokeWidth="4.5"
-                      strokeLinecap="round"
-                      strokeDasharray="320"
-                    />
-                  </svg>
-                  <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-extrabold mt-0.5">
-                    <span className="inline-flex items-center gap-1 text-[#236B20]">
-                      <span className="w-2 h-2 rounded-full bg-[#3CA837]" />
-                      Makhana: Steady Fuel
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[#D73B3A]">
-                      <span className="w-2 h-2 rounded-full bg-[#D73B3A]/70" />
-                      Chips: Spike &amp; Crash
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <BenefitCopyColumn
-              wordClass="beat3-word-in"
-              compareWordClass="beat3-compare-word-in"
-              chipClass="beat3-prop-chip"
-              inItemClass="beat3-in-item"
-              outItemClass="beat3-out-item"
-              tagRef={beat3TagRef}
-              tagBgClass="bg-[#1976D2]/12 border-[#1976D2]/30 text-[#0D47A1]"
-              tagIcon={<Activity className="w-3.5 h-3.5 text-[#1976D2]" />}
-              tagText="BENEFIT 02 • LOW GLYCEMIC INDEX ~22"
-              headlineLine1={[{ text: "SLOW" }, { text: "CLEAN" }, { text: "FUEL." }]}
-              headlineLine2={[{ text: "LOW" }, { text: "GI" }, { text: "~22." }]}
-              propsList={[
-                { icon: <Activity className="w-3 h-3 text-[#1976D2]" />, label: "Low GI ~22" },
-                { icon: <Zap className="w-3 h-3 text-[#E88938]" />, label: "Steady Vitality" },
-                { icon: <ShieldCheck className="w-3 h-3 text-[#3CA837]" />, label: "Diabetic Friendly" },
-              ]}
-              compareBoxRef={beat3CompareBoxRef}
-              compareWords={[
-                { text: "STEADY" },
-                { text: "ENERGY," },
-                { text: "ZERO" },
-                { text: "4 PM" },
-                { text: "CRASH.", accent: true },
-              ]}
-              whatsInRef={beat3InRef}
-              whatsInList={["Slow-Release Carbs", "Clean Metabolic Fuel", "Long-Lasting Focus"]}
-              whatsNotRef={beat3NotRef}
-              whatsNotList={["Zero Sugar Spikes", "Zero Insulin Surge", "Zero Afternoon Brain Fog"]}
-            />
-          </div>
-        </div>
-
-        {/* =================================================================
-            BEAT 4: Heart Health + Strictly Bounded HTML Mineral Bars Card
+            BEAT 4: Heart Health + Strictly Bounded HTML Mineral Bars Card (Benefit 02)
             ================================================================= */}
         <div
           ref={beat4StageRef}
@@ -1259,7 +992,7 @@ export default function MakhanaBenefitsScroll() {
               tagRef={beat4TagRef}
               tagBgClass="bg-[#FCE4EC] border-[#D73B3A]/30 text-[#B82928]"
               tagIcon={<Heart className="w-3.5 h-3.5 text-[#D73B3A]" />}
-              tagText="BENEFIT 03 • HEART HEALTH"
+              tagText="BENEFIT 02 • HEART HEALTH"
               headlineLine1={[{ text: "ZERO" }, { text: "CHOLESTEROL." }]}
               headlineLine2={[{ text: "PURE" }, { text: "HEART" }, { text: "LOVE." }]}
               propsList={[
@@ -1284,7 +1017,7 @@ export default function MakhanaBenefitsScroll() {
         </div>
 
         {/* =================================================================
-            BEAT 5: Antioxidant Glow + Bounded Aura Ring & Crest Badge
+            BEAT 5: Antioxidant Glow + Bounded Aura Ring & Crest Badge (Benefit 03)
             ================================================================= */}
         <div
           ref={beat5StageRef}
@@ -1365,7 +1098,7 @@ export default function MakhanaBenefitsScroll() {
               tagRef={beat5TagRef}
               tagBgClass="bg-[#F3E5F5] border-[#7B1FA2]/30 text-[#6A1B9A]"
               tagIcon={<ShieldCheck className="w-3.5 h-3.5 text-[#7B1FA2]" />}
-              tagText="BENEFIT 04 • ANTIOXIDANT DEFENSE"
+              tagText="BENEFIT 03 • ANTIOXIDANT DEFENSE"
               headlineLine1={[{ text: "BOTANICAL" }, { text: "DEFENSE." }]}
               headlineLine2={[{ text: "CELLULAR" }, { text: "GLOW." }]}
               propsList={[
@@ -1479,113 +1212,7 @@ export default function MakhanaBenefitsScroll() {
           </div>
         </div>
 
-        {/* =================================================================
-            BEAT 6: Grand Finale — Strictly Bounded Bowl & 4 Bold Flavours CTA
-            ================================================================= */}
-        <div
-          ref={beat6StageRef}
-          className="absolute inset-0 pt-14 sm:pt-16 pb-4 z-20 flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
-        >
-          <div className="w-full max-w-5xl mx-auto -translate-y-1 sm:-translate-y-4 flex flex-col md:flex-row items-center justify-center gap-2.5 min-[400px]:gap-4 sm:gap-6 md:gap-10 lg:gap-12">
-            {/* Overflowing Bowl Visual (Strict Aspect-Square Keeps Bowl Inside Rays!) */}
-            <div className="relative w-[170px] min-[400px]:w-[205px] sm:w-[290px] md:w-[340px] lg:w-[370px] aspect-square shrink-0 flex items-center justify-center overflow-hidden">
-              <svg
-                ref={beat6BurstRef}
-                viewBox="0 0 320 320"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute inset-0 w-full h-full"
-              >
-                {[0, 30, 60, 90, 120, 150].map((deg) => (
-                  <line
-                    key={deg}
-                    x1="160"
-                    y1="16"
-                    x2="160"
-                    y2="304"
-                    stroke="#FAC537"
-                    strokeOpacity="0.45"
-                    strokeWidth="12"
-                    strokeLinecap="round"
-                    transform={`rotate(${deg} 160 160)`}
-                  />
-                ))}
-                <circle cx="160" cy="160" r="102" fill="#FFF8EE" fillOpacity="0.88" />
-              </svg>
-
-              <div ref={beat6BowlWrapRef} className="relative z-10 w-[78%] aspect-square will-change-transform">
-                <img
-                  src="/scroll/asset/04_makhana_bowl.png"
-                  alt="Overflowing Wooden Bowl of Pop Culture Makhana"
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-contain drop-shadow-[0_14px_22px_rgba(82,44,40,0.26)]"
-                />
               </div>
-            </div>
-
-            {/* Finale Copy + Flavour Pills + Clickable CTA */}
-            <div className="w-full md:flex-1 flex flex-col items-center md:items-start text-center md:text-left">
-              <div ref={beat6TagRef} className="mb-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF3E0] border border-[#E65100]/30 text-[#D8661E] text-[10px] sm:text-xs font-black uppercase tracking-wider">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#E65100]" />
-                  <span>THE GOLD STANDARD OF SNACKING</span>
-                </span>
-              </div>
-
-              <h3 className="font-display uppercase tracking-tight flex flex-col gap-1 sm:gap-1.5">
-                <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-2 sm:gap-x-3 text-[#522C28] text-[26px] min-[400px]:text-[30px] sm:text-[40px] md:text-[44px] lg:text-[52px] leading-[1.06]">
-                  {["ALL", "THE", "CRUNCH."].map((w) => (
-                    <span key={w} className="inline-block overflow-hidden py-1 -my-1">
-                      <span className="beat6-word-in font-display inline-block will-change-transform">{w}</span>
-                    </span>
-                  ))}
-                </span>
-                <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-2 sm:gap-x-3 text-[#D73B3A] text-[28px] min-[400px]:text-[32px] sm:text-[44px] md:text-[48px] lg:text-[56px] leading-[1.06]">
-                  {["POP", "CULTURE", "WAY."].map((w) => (
-                    <span key={w} className="inline-block overflow-hidden py-1 -my-1">
-                      <span className="beat6-word-in font-display inline-block will-change-transform">{w}</span>
-                    </span>
-                  ))}
-                </span>
-              </h3>
-
-              <div className="mt-3 flex flex-wrap items-center justify-center md:justify-start gap-1.5 sm:gap-2">
-                <span className="beat6-flavour-chip px-2.5 py-1 rounded-full bg-[#D73B3A] text-[#FFF8EE] text-[10px] sm:text-xs font-black uppercase tracking-wide">
-                  🌶️ Peri Peri
-                </span>
-                <span className="beat6-flavour-chip px-2.5 py-1 rounded-full bg-[#FAC537] text-[#522C28] text-[10px] sm:text-xs font-black uppercase tracking-wide">
-                  🧀 Cheddar Cheese
-                </span>
-                <span className="beat6-flavour-chip px-2.5 py-1 rounded-full bg-[#E1366C] text-[#FFF8EE] text-[10px] sm:text-xs font-black uppercase tracking-wide">
-                  🧂 Pink Salt
-                </span>
-                <span className="beat6-flavour-chip px-2.5 py-1 rounded-full bg-[#3CA837] text-[#FFF8EE] text-[10px] sm:text-xs font-black uppercase tracking-wide">
-                  🌱 Pure Raw
-                </span>
-              </div>
-
-              <p
-                ref={beat6BodyRef}
-                className="mt-3 text-xs sm:text-sm md:text-base font-bold text-[#522C28]/85 max-w-lg"
-              >
-                Hand-sorted, slow-roasted lotus seeds in 4 bold flavours — light on your stomach, big on real crunch.
-              </p>
-
-              <div ref={beat6CtaRef} className="mt-4 sm:mt-5 pointer-events-auto">
-                <button
-                  type="button"
-                  onClick={scrollToFlavours}
-                  className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-[#D73B3A] hover:bg-[#B82928] text-[#FFF8EE] font-black text-xs sm:text-sm tracking-wider uppercase shadow-[0_10px_24px_rgba(215,59,58,0.35)] hover:scale-105 active:scale-95 transition-[transform,background-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer flex items-center gap-2"
-                >
-                  <span>EXPLORE ALL 4 FLAVOURS</span>
-                  <ArrowUpRight className="w-4 h-4 stroke-[3]" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </section>
   );
 }
