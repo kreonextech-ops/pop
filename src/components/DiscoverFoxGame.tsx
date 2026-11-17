@@ -17,6 +17,7 @@ interface ObstacleData {
   type: "samosa" | "jalebi";
   x: number;
   slotIndex: number;
+  cleared?: boolean;
 }
 
 // Complete 16-frame pre-rendered sprite deck (ZERO runtime .src mutations)
@@ -142,7 +143,8 @@ export default function DiscoverFoxGame() {
 
   // Slide Mechanism
   const slideTimerRef = useRef(0);
-  const SLIDE_DURATION_FRAMES = 32;
+  const pendingSlideRef = useRef(false);
+  const SLIDE_DURATION_FRAMES = 36;
 
   // Crash Mechanism
   const crashTimerRef = useRef(0);
@@ -294,6 +296,8 @@ export default function DiscoverFoxGame() {
       slideTimerRef.current = 0;
     }
 
+    pendingSlideRef.current = false;
+
     if (isGroundedRef.current) {
       isGroundedRef.current = false;
       const isDesktop = isDesktopRef.current;
@@ -319,11 +323,13 @@ export default function DiscoverFoxGame() {
     }
 
     if (!isGroundedRef.current) {
-      velocityYRef.current = Math.max(velocityYRef.current, 13.5);
+      velocityYRef.current = Math.max(velocityYRef.current, 14.0);
+      pendingSlideRef.current = true;
       return;
     }
 
     // Refresh slide timer even if already sliding to allow continuous sliding
+    pendingSlideRef.current = false;
     modeRef.current = "slide";
     setCurrentMode("slide");
     slideTimerRef.current = SLIDE_DURATION_FRAMES;
@@ -442,6 +448,7 @@ export default function DiscoverFoxGame() {
     velocityYRef.current = 0;
     isGroundedRef.current = true;
     slideTimerRef.current = 0;
+    pendingSlideRef.current = false;
     crashTimerRef.current = 0;
     runFrameIdxRef.current = 0;
     distanceRef.current = 0;
@@ -552,9 +559,17 @@ export default function DiscoverFoxGame() {
               foxYRef.current = 0;
               velocityYRef.current = 0;
               isGroundedRef.current = true;
-              modeRef.current = "run";
-              setCurrentMode("run");
-              switchSprite("run-0");
+              if (pendingSlideRef.current) {
+                pendingSlideRef.current = false;
+                modeRef.current = "slide";
+                setCurrentMode("slide");
+                slideTimerRef.current = SLIDE_DURATION_FRAMES;
+                switchSprite("slide-0");
+              } else {
+                modeRef.current = "run";
+                setCurrentMode("run");
+                switchSprite("run-0");
+              }
             } else {
               const vy = velocityYRef.current;
               if (vy < -7) {
@@ -674,10 +689,10 @@ export default function DiscoverFoxGame() {
             }
           }
 
-          // Obstacle Translation & Hitbox Collision (Tight, responsive hitboxes)
+          // Obstacle Translation & Hitbox Collision (Tight, fair core hitboxes)
           const foxX = arenaW * (isDesktop ? 0.17 : 0.22);
-          const foxHitboxLeft = foxX + (isDesktop ? 45 : 12);
-          const foxHitboxRight = foxX + (isDesktop ? 115 : 52);
+          const foxHitboxLeft = foxX + (isDesktop ? 45 : 22);
+          const foxHitboxRight = foxX + (isDesktop ? 115 : 46);
 
           let collision = false;
           const survivingObstacles: ObstacleData[] = [];
@@ -691,18 +706,27 @@ export default function DiscoverFoxGame() {
               slot.style.transform = `translate3d(${obs.x}px, 0, 0)`;
             }
 
-            const obsHitboxLeft = obs.x + (isDesktop ? 16 : 4);
-            const obsHitboxRight = obs.x + (isDesktop ? 64 : 32);
+            const obsHitboxLeft = obs.x + (isDesktop ? 16 : 8);
+            const obsHitboxRight = obs.x + (isDesktop ? 64 : 26);
 
             if (foxHitboxRight > obsHitboxLeft && foxHitboxLeft < obsHitboxRight) {
-              if (obs.type === "samosa") {
-                const jumpSafeThreshold = isDesktop ? -30 : -14;
-                const safe = !isGroundedRef.current && foxYRef.current < jumpSafeThreshold;
-                if (!safe) collision = true;
+              if (obs.cleared) {
+                // Successfully cleared earlier in this dodge - immune to landing or slide ending
+              } else if (obs.type === "samosa") {
+                const jumpSafeThreshold = isDesktop ? -28 : -10;
+                if (!isGroundedRef.current && foxYRef.current < jumpSafeThreshold) {
+                  // Active jump clears the samosa! Mark cleared immediately so landing never crashes
+                  obs.cleared = true;
+                } else {
+                  collision = true;
+                }
               } else if (obs.type === "jalebi") {
-                // Must be actively sliding under the jalebi. Running or jumping into it crashes.
-                const safe = modeRef.current === "slide";
-                if (!safe) collision = true;
+                if (modeRef.current === "slide") {
+                  // Active slide ducks under the jalebi! Mark cleared immediately so exiting slide never crashes
+                  obs.cleared = true;
+                } else {
+                  collision = true;
+                }
               }
             }
 
