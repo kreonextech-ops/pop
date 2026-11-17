@@ -84,8 +84,6 @@ export default function CartDrawer() {
 
   useEffect(() => {
     let loaded = false;
-    let idleId: number | null = null;
-    let timerId: ReturnType<typeof setTimeout> | null = null;
 
     const loadShiprocket = () => {
       if (loaded) return;
@@ -114,28 +112,9 @@ export default function CartDrawer() {
         });
     };
 
-    if (isCartOpen) {
-      loadShiprocket();
-      return;
-    }
-
-    const winWithIdle = window as Window & {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-      cancelIdleCallback?: (id: number) => void;
-    };
-    if (typeof winWithIdle.requestIdleCallback === "function") {
-      idleId = winWithIdle.requestIdleCallback(loadShiprocket, { timeout: 3500 });
-    } else {
-      timerId = setTimeout(loadShiprocket, 2600);
-    }
-
-    return () => {
-      if (idleId !== null && typeof winWithIdle.cancelIdleCallback === "function") {
-        winWithIdle.cancelIdleCallback(idleId);
-      }
-      if (timerId !== null) clearTimeout(timerId);
-    };
-  }, [isCartOpen]);
+    // Preload Shiprocket script immediately so it is ready whenever checkout is clicked
+    loadShiprocket();
+  }, []);
 
   const maxRedeemablePoints =
     user && user.loyaltyPoints > 0
@@ -174,25 +153,32 @@ export default function CartDrawer() {
       }
 
       if (data.mode === "shiprocket" && data.token) {
-        if (window.HeadlessCheckout?.addToCart) {
-          closeCart();
-          window.HeadlessCheckout.addToCart(e.nativeEvent, data.token, {
-            fallbackUrl: data.fallbackUrl,
-            isInitiatedFromApp: true,
-          });
-        } else {
-          setCheckoutError(
-            "Shiprocket checkout script is still loading or blocked. Redirecting to fallback..."
-          );
-          if (data.fallbackUrl) router.push(data.fallbackUrl);
-        }
+        const triggerCheckout = (attemptsLeft = 15) => {
+          if (window.HeadlessCheckout?.addToCart) {
+            closeCart();
+            window.HeadlessCheckout.addToCart(e.nativeEvent, data.token, {
+              fallbackUrl: data.fallbackUrl,
+              isInitiatedFromApp: true,
+            });
+            setLoadingCheckout(false);
+          } else if (attemptsLeft > 0) {
+            setTimeout(() => triggerCheckout(attemptsLeft - 1), 200);
+          } else {
+            setLoadingCheckout(false);
+            setCheckoutError(
+              "Shiprocket checkout window could not be opened. If you have an ad/popup blocker active, please disable it and try again."
+            );
+          }
+        };
+        triggerCheckout();
+        return;
       } else {
         // Credentials not set yet -> reveal Sandbox Demo Checkout form
         setShowDemoForm(true);
+        setLoadingCheckout(false);
       }
     } catch {
       setCheckoutError("Network error while initiating checkout.");
-    } finally {
       setLoadingCheckout(false);
     }
   };
@@ -261,7 +247,11 @@ export default function CartDrawer() {
       <input
         type="hidden"
         id="sellerDomain"
-        value={config?.sellerDomain || "localhost:3001"}
+        value={
+          (config?.sellerDomain && config.sellerDomain !== "localhost:3001")
+            ? config.sellerDomain
+            : (typeof window !== "undefined" && window.location.host ? window.location.host : "localhost:3001")
+        }
       />
 
       {/* Backdrop */}

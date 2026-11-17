@@ -414,18 +414,27 @@ export function readStore(): StoreData {
     if (!Array.isArray(parsed.users)) parsed.users = [];
     if (!Array.isArray(parsed.coupons)) parsed.coupons = seed.coupons;
     if (!Array.isArray(parsed.gameRuns)) parsed.gameRuns = [];
-    // Overlay env variables if settings fields are blank
-    if (!parsed.settings.apiKey && process.env.SHIPROCKET_API_KEY) {
-      parsed.settings.apiKey = process.env.SHIPROCKET_API_KEY;
+    // Prioritize process.env variables (e.g. from Vercel Production Environment)
+    if (process.env.SHIPROCKET_API_KEY) {
+      parsed.settings.apiKey = process.env.SHIPROCKET_API_KEY.trim();
     }
-    if (!parsed.settings.apiSecret && process.env.SHIPROCKET_API_SECRET) {
-      parsed.settings.apiSecret = process.env.SHIPROCKET_API_SECRET;
+    if (process.env.SHIPROCKET_API_SECRET) {
+      parsed.settings.apiSecret = process.env.SHIPROCKET_API_SECRET.trim();
     }
-    if (!parsed.settings.gmailUser && process.env.GMAIL_USER) {
-      parsed.settings.gmailUser = process.env.GMAIL_USER;
+    if (process.env.SHIPROCKET_ENV) {
+      parsed.settings.environment = (process.env.SHIPROCKET_ENV.trim() === "staging" ? "staging" : "production") as ShiprocketEnv;
     }
-    if (!parsed.settings.adminNotifyEmail && process.env.ADMIN_NOTIFY_EMAIL) {
-      parsed.settings.adminNotifyEmail = process.env.ADMIN_NOTIFY_EMAIL;
+    if (process.env.SHIPROCKET_SELLER_DOMAIN) {
+      parsed.settings.sellerDomain = process.env.SHIPROCKET_SELLER_DOMAIN.trim();
+    }
+    if (process.env.NEXT_PUBLIC_SITE_URL) {
+      parsed.settings.redirectBaseUrl = process.env.NEXT_PUBLIC_SITE_URL.trim();
+    }
+    if (process.env.GMAIL_USER) {
+      parsed.settings.gmailUser = process.env.GMAIL_USER.trim();
+    }
+    if (process.env.ADMIN_NOTIFY_EMAIL) {
+      parsed.settings.adminNotifyEmail = process.env.ADMIN_NOTIFY_EMAIL.trim();
     }
     return parsed;
   } catch {

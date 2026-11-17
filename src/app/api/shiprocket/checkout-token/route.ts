@@ -182,6 +182,7 @@ export async function POST(req: Request) {
     });
 
     if (!res.ok || !res.data?.result?.token) {
+      console.error("[Shiprocket Token Error]", res.status, res.error, res.data);
       writeStore(store);
       return NextResponse.json(
         {
@@ -233,7 +234,10 @@ export async function POST(req: Request) {
       token: res.data.result.token,
       expires_at: res.data.result.expires_at,
       order_id: srOrderId,
-      sellerDomain: sellerDomain || "localhost:3001",
+      sellerDomain:
+        sellerDomain && sellerDomain !== "localhost:3001"
+          ? sellerDomain
+          : (req.headers.get("x-forwarded-host") || req.headers.get("host") || "localhost:3001"),
       checkoutScriptUrl: assets.jsUrl,
       checkoutCssUrl: assets.cssUrl,
       fallbackUrl: `${redirectUrl}?oid=${encodeURIComponent(srOrderId)}&ost=INITIATED`,
