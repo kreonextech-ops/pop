@@ -645,7 +645,7 @@ export default function BiteJoyPage() {
       {/* =========================================================================
           HERO SECTION WITH MINIMAL CTAs, 4 CASCADING PACKETS, FOX & GRAVITY MAKHANA
           ========================================================================= */}
-      <section className="relative w-full min-h-[480px] min-[420px]:min-h-[545px] min-[500px]:min-h-[600px] sm:min-h-[calc(100svh-72px)] bg-[#F9F3EA] flex flex-col justify-between [contain:layout_paint]">
+      <section className="relative w-full min-h-[620px] min-[400px]:min-h-[680px] min-[480px]:min-h-[740px] min-h-[calc(100svh-64px)] sm:min-h-[calc(100svh-72px)] bg-[#F9F3EA] flex flex-col justify-between [contain:layout_paint]">
         {/* Interactive Stage above the Red Marquee (Floor sits directly on top of the marquee) */}
         <div
           ref={heroStageRef}
