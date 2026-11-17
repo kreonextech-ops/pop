@@ -186,13 +186,19 @@ export default function DiscoverFoxGame() {
     const handleResize = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
-      setIsDevicePortrait(h > w);
+      const isPortrait = h > w;
+      setIsDevicePortrait(isPortrait);
 
       // Desktop: screen width >= 768 and height >= 480 (mobile phones in landscape have height < 450)
       const isTouchPhone = typeof navigator !== "undefined" && navigator.maxTouchPoints > 1 && (h < 480 || w < 600);
       const isDesktop = w >= 768 && h >= 480 && !isTouchPhone;
       setIsDesktopScreen(isDesktop);
       isDesktopRef.current = isDesktop;
+
+      // Auto-switch to landscape mode if the user physically turns their phone sideways
+      if (!isDesktop && !isPortrait) {
+        setIsLandscapeMode(true);
+      }
 
       if (arenaRef.current) {
         arenaWidthRef.current = arenaRef.current.clientWidth;
@@ -205,7 +211,14 @@ export default function DiscoverFoxGame() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);
     };
-  }, [isLandscapeMode]);
+  }, []);
+
+  // Track software rotated portrait mode for touch gesture remapping
+  const isRotatedPortrait = isLandscapeMode && isDevicePortrait;
+  const isRotatedPortraitRef = useRef(false);
+  useEffect(() => {
+    isRotatedPortraitRef.current = isRotatedPortrait;
+  }, [isRotatedPortrait]);
 
   // Lock body scroll when in Landscape Fullscreen Mode
   useEffect(() => {
@@ -223,9 +236,17 @@ export default function DiscoverFoxGame() {
   const enterLandscape = useCallback(async () => {
     setIsLandscapeMode(true);
     try {
-      if (document.documentElement.requestFullscreen) {
-        await document.documentElement.requestFullscreen();
+      const docEl = document.documentElement as any;
+      const reqFs =
+        docEl.requestFullscreen ||
+        docEl.webkitRequestFullscreen ||
+        docEl.mozRequestFullScreen ||
+        docEl.msRequestFullscreen;
+      if (reqFs && !document.fullscreenElement) {
+        await reqFs.call(docEl);
       }
+    } catch {}
+    try {
       if (screen.orientation && "lock" in screen.orientation) {
         await (screen.orientation as any).lock("landscape");
       }
@@ -234,7 +255,7 @@ export default function DiscoverFoxGame() {
       if (arenaRef.current) {
         arenaWidthRef.current = arenaRef.current.clientWidth;
       }
-    }, 120);
+    }, 150);
   }, []);
 
   // Exit Fullscreen Landscape Mode
@@ -252,7 +273,7 @@ export default function DiscoverFoxGame() {
       if (arenaRef.current) {
         arenaWidthRef.current = arenaRef.current.clientWidth;
       }
-    }, 120);
+    }, 150);
   }, []);
 
   // =========================================================================
@@ -276,7 +297,7 @@ export default function DiscoverFoxGame() {
     if (isGroundedRef.current) {
       isGroundedRef.current = false;
       const isDesktop = isDesktopRef.current;
-      velocityYRef.current = isDesktop ? -15.2 : -12.0;
+      velocityYRef.current = isDesktop ? -15.2 : -9.2;
       modeRef.current = "jump";
       setCurrentMode("jump");
       switchSprite("jump-0");
@@ -302,20 +323,40 @@ export default function DiscoverFoxGame() {
       return;
     }
 
-    if (modeRef.current !== "slide") {
-      modeRef.current = "slide";
-      setCurrentMode("slide");
-      slideTimerRef.current = SLIDE_DURATION_FRAMES;
-      switchSprite("slide-0");
-    }
+    // Refresh slide timer even if already sliding to allow continuous sliding
+    modeRef.current = "slide";
+    setCurrentMode("slide");
+    slideTimerRef.current = SLIDE_DURATION_FRAMES;
+    switchSprite("slide-0");
   }, [switchSprite]);
 
   // =========================================================================
-  // TOUCH SWIPE GESTURES FOR MOBILE (No buttons - pure swipe up/down & tap)
+  // TOUCH SWIPE GESTURES FOR MOBILE (Supports physical landscape & 90deg rotation)
   // =========================================================================
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
 
+  const getGameDelta = useCallback((startX: number, startY: number, currentX: number, currentY: number) => {
+    const rawDx = currentX - startX;
+    const rawDy = currentY - startY;
+    if (isRotatedPortraitRef.current) {
+      // 90deg clockwise software rotation:
+      // What user perceives as visual DOWN is raw screen -X
+      // What user perceives as visual UP is raw screen +X
+      // What user perceives as visual RIGHT is raw screen +Y
+      // What user perceives as visual LEFT is raw screen -Y
+      return {
+        dx: rawDy,
+        dy: -rawDx,
+      };
+    }
+    return {
+      dx: rawDx,
+      dy: rawDy,
+    };
+  }, []);
+
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if ((e.target as HTMLElement)?.closest("button, a, input, select")) return;
     if (e.touches.length !== 1) return;
     const t = e.touches[0];
     touchStartRef.current = { x: t.clientX, y: t.clientY, time: performance.now() };
@@ -324,20 +365,20 @@ export default function DiscoverFoxGame() {
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!touchStartRef.current) return;
     const t = e.touches[0];
-    const dy = t.clientY - touchStartRef.current.y;
-    const dx = t.clientX - touchStartRef.current.x;
+    const { dx, dy } = getGameDelta(touchStartRef.current.x, touchStartRef.current.y, t.clientX, t.clientY);
 
-    // Fast-trigger downward swipe (Slide)
-    if (dy > 25 && dy > Math.abs(dx) * 1.1) {
+    // Responsive downward swipe -> Slide immediately
+    if (dy > 14 && dy > Math.abs(dx) * 0.75) {
       triggerSlide();
       touchStartRef.current = null; // consume gesture
-    } else if (dy < -25 && Math.abs(dy) > Math.abs(dx) * 1.1 && isGroundedRef.current) {
+    } else if (dy < -14 && Math.abs(dy) > Math.abs(dx) * 0.75 && isGroundedRef.current) {
       triggerJump();
       touchStartRef.current = null; // consume gesture
     }
-  }, [triggerSlide, triggerJump]);
+  }, [triggerSlide, triggerJump, getGameDelta]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if ((e.target as HTMLElement)?.closest("button, a, input, select")) return;
     if (!touchStartRef.current) return;
     const start = touchStartRef.current;
     touchStartRef.current = null;
@@ -350,21 +391,25 @@ export default function DiscoverFoxGame() {
     const end = e.changedTouches[0];
     if (!end) return;
 
-    const dx = end.clientX - start.x;
-    const dy = end.clientY - start.y;
+    const { dx, dy } = getGameDelta(start.x, start.y, end.clientX, end.clientY);
     const dt = performance.now() - start.time;
 
-    if (Math.abs(dy) > 20 && Math.abs(dy) > Math.abs(dx)) {
+    if (Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx) * 0.75) {
       if (dy > 0) {
         triggerSlide();
       } else {
         triggerJump();
       }
-    } else if (dt < 300 && Math.abs(dx) < 20 && Math.abs(dy) < 20) {
-      // Tap anywhere to jump
+    } else if (dt < 320 && Math.hypot(dx, dy) < 18) {
+      // Clean tap on arena to jump
       triggerJump();
     }
-  }, [triggerJump, triggerSlide]);
+  }, [triggerJump, triggerSlide, getGameDelta]);
+
+  const handleArenaClick = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement)?.closest("button, a, input, select")) return;
+    triggerJump();
+  }, [triggerJump]);
 
   // =========================================================================
   // CRASH / GAME OVER
@@ -471,7 +516,7 @@ export default function DiscoverFoxGame() {
 
         const arenaW = arenaWidthRef.current || 1200;
         const isDesktop = isDesktopRef.current;
-        const GRAVITY = isDesktop ? 0.74 : 0.60;
+        const GRAVITY = isDesktop ? 0.74 : 0.68;
 
         if (modeRef.current !== "crash") {
           // Ground motion
@@ -603,7 +648,7 @@ export default function DiscoverFoxGame() {
                     slot.style.display = "flex";
                     slot.style.transform = `translate3d(${newObs.x}px, 0, 0)`;
 
-                    const groundBaseline = isDesktop ? 48 : 26;
+                    const groundBaseline = isDesktop ? 48 : (isLandscapeMode ? 54 : 28);
                     if (type === "samosa") {
                       slot.style.bottom = `${groundBaseline}px`;
                       samosaImg.style.display = "block";
@@ -612,7 +657,7 @@ export default function DiscoverFoxGame() {
                       badge.style.background = "#FFCD3C";
                       badge.style.color = "#522C28";
                     } else {
-                      slot.style.bottom = `${groundBaseline + (isDesktop ? 70 : 30)}px`;
+                      slot.style.bottom = `${groundBaseline + (isDesktop ? 70 : 32)}px`;
                       samosaImg.style.display = "none";
                       jalebiImg.style.display = "block";
                       badge.textContent = "SLIDE!";
@@ -630,9 +675,9 @@ export default function DiscoverFoxGame() {
           }
 
           // Obstacle Translation & Hitbox Collision (Tight, responsive hitboxes)
-          const foxX = arenaW * (isDesktop ? 0.17 : 0.12);
+          const foxX = arenaW * (isDesktop ? 0.17 : 0.22);
           const foxHitboxLeft = foxX + (isDesktop ? 45 : 12);
-          const foxHitboxRight = foxX + (isDesktop ? 115 : 48);
+          const foxHitboxRight = foxX + (isDesktop ? 115 : 52);
 
           let collision = false;
           const survivingObstacles: ObstacleData[] = [];
@@ -651,7 +696,7 @@ export default function DiscoverFoxGame() {
 
             if (foxHitboxRight > obsHitboxLeft && foxHitboxLeft < obsHitboxRight) {
               if (obs.type === "samosa") {
-                const jumpSafeThreshold = isDesktop ? -30 : -16;
+                const jumpSafeThreshold = isDesktop ? -30 : -14;
                 const safe = !isGroundedRef.current && foxYRef.current < jumpSafeThreshold;
                 if (!safe) collision = true;
               } else if (obs.type === "jalebi") {
@@ -764,12 +809,10 @@ export default function DiscoverFoxGame() {
     night: "from-[#1B1A47] via-[#482868] to-[#8C3E7B]",
   };
 
-  const isRotatedPortrait = isLandscapeMode && isDevicePortrait;
-
   return (
     <div
       ref={arenaRef}
-      onClick={triggerJump}
+      onClick={handleArenaClick}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -1054,14 +1097,16 @@ export default function DiscoverFoxGame() {
           className={`absolute left-0 w-full bg-white border-b-2 border-[#522C28]/25 z-15 shadow-sm ${
             isDesktopScreen
               ? "bottom-[48px] h-[6px]"
-              : "bottom-[26px] h-[4px]"
+              : isLandscapeMode
+              ? "bottom-[54px] h-[5px]"
+              : "bottom-[28px] h-[4px]"
           }`}
         />
 
         {/* RUNNING TRACK GROUND TURF */}
         <div
           className={`absolute bottom-0 left-0 w-full overflow-hidden z-10 bg-gradient-to-t from-black/20 to-transparent ${
-            isDesktopScreen ? "h-[48px]" : "h-[26px]"
+            isDesktopScreen ? "h-[48px]" : isLandscapeMode ? "h-[54px]" : "h-[28px]"
           }`}
         >
           <div ref={groundStripRef} className="w-[2400px] h-full flex will-change-transform">
@@ -1144,7 +1189,9 @@ export default function DiscoverFoxGame() {
           className={`absolute z-25 flex items-end justify-center pointer-events-none will-change-transform ${
             isDesktopScreen
               ? "bottom-[48px] left-[17%] w-[190px] h-[190px]"
-              : "bottom-[26px] left-[12%] w-[72px] h-[72px]"
+              : isLandscapeMode
+              ? "bottom-[54px] left-[22%] w-[76px] h-[76px]"
+              : "bottom-[28px] left-[22%] w-[72px] h-[72px]"
           }`}
         >
           {ALL_SPRITES.map((sprite) => (
@@ -1169,7 +1216,9 @@ export default function DiscoverFoxGame() {
           className={`absolute z-10 bg-black/35 rounded-full blur-[2px] pointer-events-none will-change-transform ${
             isDesktopScreen
               ? "bottom-[44px] left-[17%] translate-x-[45px] w-32 h-3.5"
-              : "bottom-[24px] left-[12%] translate-x-[8px] w-14 h-2"
+              : isLandscapeMode
+              ? "bottom-[50px] left-[22%] translate-x-[8px] w-14 h-2.5"
+              : "bottom-[24px] left-[22%] translate-x-[8px] w-14 h-2"
           }`}
         />
 
@@ -1178,7 +1227,10 @@ export default function DiscoverFoxGame() {
             ========================================================================= */}
         {!gameStarted && !gameOver && (
           <div
-            onClick={triggerJump}
+            onClick={(e) => {
+              if ((e.target as HTMLElement)?.closest("button, a")) return;
+              triggerJump();
+            }}
             className="absolute inset-0 z-35 flex items-center justify-center cursor-pointer pointer-events-auto px-4"
           >
             <div className="px-5 sm:px-7 py-3 sm:py-4 rounded-3xl bg-white/95 backdrop-blur-md shadow-2xl border-2 border-[#522C28]/15 flex flex-col items-center gap-2 sm:gap-3 text-center max-w-sm sm:max-w-md hover:scale-105 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
@@ -1199,11 +1251,16 @@ export default function DiscoverFoxGame() {
 
               {!isDesktopScreen && !isLandscapeMode && (
                 <button
+                  type="button"
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    enterLandscape();
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                     enterLandscape();
                   }}
-                  className="w-full sm:w-auto mt-1 sm:mt-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#FFCD3C] to-[#F37D20] text-[#522C28] font-display text-[11px] uppercase tracking-wider shadow-sm font-black flex items-center justify-center gap-1 active:scale-95"
+                  className="w-full sm:w-auto mt-1 sm:mt-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#FFCD3C] to-[#F37D20] text-[#522C28] font-display text-[11px] uppercase tracking-wider shadow-sm font-black flex items-center justify-center gap-1 active:scale-95 cursor-pointer z-50 relative pointer-events-auto"
                 >
                   <span>🎮 Play Landscape</span>
                 </button>
