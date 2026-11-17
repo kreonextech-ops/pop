@@ -93,28 +93,28 @@ interface BoxTierConfig {
 const BOX_TIERS: Record<BoxSize, BoxTierConfig> = {
   4: {
     size: 4,
-    title: "4-Pack Sampler",
-    price: 160,
-    originalPrice: 180,
-    savings: "SAVE 11%",
-    perks: "Great for quick trials",
+    title: "4-Pack Box",
+    price: 596,
+    originalPrice: 596,
+    savings: "",
+    perks: "4 × 55g Pouches (220g)",
   },
   6: {
     size: 6,
-    title: "6-Pack Party Box",
-    price: 220,
-    originalPrice: 270,
-    savings: "SAVE 18%",
-    perks: "FREE Shipping Included",
+    title: "6-Pack Box",
+    price: 894,
+    originalPrice: 894,
+    savings: "",
+    perks: "6 × 55g Pouches (330g) • FREE Shipping",
     isPopular: true,
   },
   12: {
     size: 12,
-    title: "12-Pack Mega Stash",
-    price: 399,
-    originalPrice: 540,
-    savings: "SAVE 26%",
-    perks: "FREE Shipping + Sticker Pack",
+    title: "12-Pack Box",
+    price: 1788,
+    originalPrice: 1788,
+    savings: "",
+    perks: "12 × 55g Pouches (660g) • FREE Shipping",
   },
 };
 
@@ -386,14 +386,9 @@ export default function BuildABoxPage() {
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-current/10 flex items-baseline justify-between">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl sm:text-2xl font-black">₹{t.price}</span>
-                      <span className={`text-xs line-through ${active ? "text-white/50" : "text-[#522C28]/40"}`}>
-                        ₹{t.originalPrice}
-                      </span>
-                    </div>
+                    <span className="text-xl sm:text-2xl font-black">₹{t.price}</span>
                     <span className="text-[11px] font-bold opacity-80">
-                      ₹{Math.round(t.price / t.size)} / pack
+                      ₹149 / pack
                     </span>
                   </div>
                 </button>
@@ -712,23 +707,22 @@ export default function BuildABoxPage() {
           </div>
         </div>
 
-        {/* STEP 4: Transparent Box Calculation Breakdown */}
+        {/* STEP 4: Box Calculation Breakdown */}
         <div className="mb-14 rounded-3xl bg-white border-2 border-[#25100E]/15 p-5 sm:p-7 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#25100E]/10 pb-4">
             <div>
               <span className="text-[10px] font-black uppercase tracking-widest text-[#E53925]">
-                ✦ VALUE &amp; SAVINGS CALCULATION ✦
+                ✦ BOX SUMMARY &amp; PRICING ✦
               </span>
               <h3 className="font-display text-lg sm:text-2xl font-black uppercase text-[#25100E] mt-0.5">
                 {tier.title} Breakdown
               </h3>
             </div>
             <div className="flex items-center gap-2 bg-[#FFF8EE] px-4 py-1.5 rounded-full border border-[#25100E]/10">
-              <span className="text-xs font-bold text-[#522C28]/70">Effective Price:</span>
+              <span className="text-xs font-bold text-[#522C28]/70">Pack Price:</span>
               <span className="font-display text-base font-black text-[#E53925]">
-                ₹{(tier.price / selectedSize).toFixed(0)} / pack
+                ₹149 / pack
               </span>
-              <span className="text-xs text-[#522C28]/50 line-through">₹45 / pack</span>
             </div>
           </div>
 
@@ -743,26 +737,28 @@ export default function BuildABoxPage() {
               </span>
             </div>
             <div className="bg-[#FFF8EE]/60 p-3.5 rounded-2xl border border-[#25100E]/08">
-              <span className="text-[10px] font-bold uppercase text-[#522C28]/60 block">Retail Value</span>
-              <span className="font-display text-base sm:text-lg font-black text-[#522C28]/50 line-through mt-0.5 block">
-                ₹{tier.originalPrice}
+              <span className="text-[10px] font-bold uppercase text-[#522C28]/60 block">Price Per Pack</span>
+              <span className="font-display text-base sm:text-lg font-black text-[#25100E] mt-0.5 block">
+                ₹149
               </span>
-              <span className="text-[10px] text-[#522C28]/70">{selectedSize} × ₹45 standard MRP</span>
+              <span className="text-[10px] text-[#522C28]/70">Standard ₹149 per 55g pack</span>
             </div>
             <div className="bg-[#FFF8EE]/60 p-3.5 rounded-2xl border border-[#25100E]/08">
-              <span className="text-[10px] font-bold uppercase text-[#522C28]/60 block">Bundle Savings</span>
-              <span className="font-display text-base sm:text-lg font-black text-[#E53925] mt-0.5 block">
-                -₹{tier.originalPrice - tier.price} ({tier.savings})
+              <span className="text-[10px] font-bold uppercase text-[#522C28]/60 block">Shipping</span>
+              <span className="font-display text-base sm:text-lg font-black text-[#3CA837] mt-0.5 block">
+                {selectedSize >= 6 ? "FREE" : "Standard"}
               </span>
-              <span className="text-[10px] text-[#E53925] font-bold">Automatic box discount</span>
+              <span className="text-[10px] text-[#522C28]/70">
+                {selectedSize >= 6 ? "FREE express shipping" : "Standard delivery"}
+              </span>
             </div>
             <div className="bg-[#25100E] p-3.5 rounded-2xl text-white">
-              <span className="text-[10px] font-bold uppercase text-white/60 block">Final Box Total</span>
+              <span className="text-[10px] font-bold uppercase text-white/60 block">Total Box Price</span>
               <span className="font-display text-xl sm:text-2xl font-black text-[#FFCD3C] mt-0.5 block">
                 ₹{tier.price}
               </span>
               <span className="text-[10px] text-white/80">
-                {selectedSize >= 6 ? "FREE Shipping Included" : "+ Standard Delivery"}
+                {selectedSize} × ₹149
               </span>
             </div>
           </div>
@@ -823,15 +819,9 @@ export default function BuildABoxPage() {
                 <span className="font-display text-xl sm:text-2xl font-black text-[#25100E]">
                   ₹{tier.price}
                 </span>
-                <span className="text-xs text-[#522C28]/50 line-through font-semibold">
-                  ₹{tier.originalPrice}
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-[#E53925] text-white text-[9px] font-black uppercase tracking-wider">
-                  Save ₹{tier.originalPrice - tier.price} ({tier.savings})
-                </span>
               </div>
               <p className="text-[11px] text-[#522C28]/70 font-semibold mt-0.5">
-                {slots.length} of {selectedSize} packs chosen • <span className="text-[#E53925] font-black">₹{Math.round(tier.price / selectedSize)} / pack</span> • {tier.title}
+                {slots.length} of {selectedSize} packs chosen • <span className="text-[#E53925] font-black">₹149 / pack</span> • {tier.title}
               </p>
             </div>
 

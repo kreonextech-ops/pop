@@ -548,11 +548,6 @@ export default function CartDrawer() {
                         <span className="text-sm font-black text-[#25100E]">
                           ₹{item.price * item.quantity}
                         </span>
-                        {item.originalPrice && item.originalPrice > item.price && (
-                          <span className="block text-[10px] text-[#522C28]/50 line-through font-bold">
-                            ₹{item.originalPrice * item.quantity}
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>

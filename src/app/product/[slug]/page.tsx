@@ -86,22 +86,19 @@ export default function ProductDetailPage() {
               label: staticCombo.badge,
               count: staticCombo.packCountText,
               price: staticCombo.price,
-              originalPrice: staticCombo.originalPrice,
-              badge: staticCombo.savingsBadge || "SPECIAL BUNDLE",
+              originalPrice: staticCombo.price,
             },
             trio: {
               label: `2 × ${staticCombo.name}`,
               count: `Double Bundle (${staticCombo.packCountText} × 2)`,
-              price: Math.round(staticCombo.price * 1.9),
-              originalPrice: staticCombo.originalPrice * 2,
-              badge: "DOUBLE STASH",
+              price: staticCombo.price * 2,
+              originalPrice: staticCombo.price * 2,
             },
             party: {
               label: `3 × ${staticCombo.name}`,
               count: `Triple Stash (${staticCombo.packCountText} × 3)`,
-              price: Math.round(staticCombo.price * 2.75),
-              originalPrice: staticCombo.originalPrice * 3,
-              badge: "BEST VALUE",
+              price: staticCombo.price * 3,
+              originalPrice: staticCombo.price * 3,
             },
           },
           faqs: [
@@ -193,20 +190,20 @@ export default function ProductDetailPage() {
                 packImage: found.image || "/packets/peri peri.svg",
                 pricing: {
                   single: {
-                    label: v0?.title || "1 Pouch (60g)",
-                    count: "60g Pouch",
+                    label: v0?.title || (found.slug === "raw-makhana" ? "1 Pouch" : "1 Pouch (55g)"),
+                    count: found.slug === "raw-makhana" ? "1 Pouch (Raw Makhana)" : "55g Pouch",
                     price: singlePrice,
                     originalPrice: singleOrig,
                   },
                   trio: {
                     label: found.variants[1]?.title || "Pack of 3",
-                    count: "3 × 60g (180g)",
+                    count: found.slug === "raw-makhana" ? "Pack of 3 (Raw Makhana)" : "3 × 55g (165g)",
                     price: found.variants[1] ? parseFloat(found.variants[1].price) : singlePrice * 3,
                     originalPrice: singleOrig * 3,
                   },
                   party: {
                     label: found.variants[2]?.title || "Pack of 6",
-                    count: "6 × 60g (360g)",
+                    count: found.slug === "raw-makhana" ? "Pack of 6 (Raw Makhana)" : "6 × 55g (330g)",
                     price: found.variants[2] ? parseFloat(found.variants[2].price) : singlePrice * 6,
                     originalPrice: singleOrig * 6,
                   },
@@ -474,12 +471,9 @@ export default function ProductDetailPage() {
                             {option.count}
                           </p>
                         </div>
-                        <div className="mt-2 flex items-baseline gap-1.5">
+                        <div className="mt-2 flex items-baseline">
                           <span className="text-sm sm:text-base font-black text-[#25100E]">
                             ₹{option.price}
-                          </span>
-                          <span className="text-[10px] text-[#522C28]/50 line-through font-bold">
-                            ₹{option.originalPrice}
                           </span>
                         </div>
                       </button>
@@ -515,11 +509,6 @@ export default function ProductDetailPage() {
                   <div className="text-base sm:text-xl font-black text-[#25100E]">
                     ₹{totalPrice}
                   </div>
-                  {totalSavings > 0 && (
-                    <div className="text-[10px] text-emerald-700 font-bold">
-                      You save ₹{totalSavings}!
-                    </div>
-                  )}
                 </div>
               </div>
 

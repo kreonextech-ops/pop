@@ -298,17 +298,8 @@ export default function BiteJoyPage() {
   const packetStageRef = useRef<HTMLDivElement | null>(null);
   const [resetScatterTrigger, setResetScatterTrigger] = useState(0);
   const [isTransitioningFlavour, setIsTransitioningFlavour] = useState(false);
-  const [heroBg, setHeroBg] = useState<"pop-art" | "sunset">("pop-art");
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const bgParam = params.get("bg");
-    if (bgParam === "2" || bgParam === "sunset") {
-      setHeroBg("sunset");
-    } else if (bgParam === "1" || bgParam === "pop-art") {
-      setHeroBg("pop-art");
-    }
-
     const mobileViewport = window.innerWidth < 640;
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     handleResize();
@@ -660,15 +651,11 @@ export default function BiteJoyPage() {
           ref={heroStageRef}
           className="relative flex-1 w-full flex flex-col justify-between sm:justify-center overflow-hidden"
         >
-          {/* Full-bleed Hero Background Artwork (dual-layer zero-flicker smooth crossfade) */}
-          <picture
-            className={`pointer-events-none select-none absolute inset-0 z-0 w-full h-full transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              heroBg === "pop-art" ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <source media="(max-width: 639px)" srcSet="/hero/mobile-pop-art-wave.jpg" />
+          {/* Full-bleed Hero Background Artwork */}
+          <picture className="pointer-events-none select-none absolute inset-0 z-0 w-full h-full">
+            <source media="(max-width: 639px)" srcSet="/hero/mobile-sunset-wave.jpg" />
             <img
-              src="/hero/pop-art-wave.jpg"
+              src="/hero/sunset-wave.jpg"
               alt=""
               aria-hidden="true"
               loading="eager"
@@ -677,51 +664,6 @@ export default function BiteJoyPage() {
               className="w-full h-full object-cover object-bottom"
             />
           </picture>
-          <picture
-            className={`pointer-events-none select-none absolute inset-0 z-0 w-full h-full transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              heroBg === "sunset" ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <source media="(max-width: 639px)" srcSet="/hero/mobile-sunset-wave.jpg" />
-            <img
-              src="/hero/sunset-wave.jpg"
-              alt=""
-              aria-hidden="true"
-              loading="eager"
-              decoding="async"
-              className="w-full h-full object-cover object-bottom"
-            />
-          </picture>
-          {/* Quick Background Switcher Pill for A/B Testing Both Backgrounds (top right compact) */}
-          <div
-            style={{ zIndex: 50 }}
-            className="absolute top-2 right-2 sm:top-4 sm:right-5 flex justify-end pointer-events-auto"
-          >
-            <div className="flex items-center gap-1 p-0.5 sm:p-1 rounded-full bg-white/95 backdrop-blur-sm border border-[#522C28]/15 shadow-sm">
-              <button
-                type="button"
-                onClick={() => setHeroBg("pop-art")}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[9px] sm:text-xs font-extrabold uppercase tracking-wide transition-colors cursor-pointer ${
-                  heroBg === "pop-art"
-                    ? "bg-[#D73B3A] text-[#FFF8EE]"
-                    : "text-[#522C28]/75 hover:text-[#522C28]"
-                }`}
-              >
-                BG 1
-              </button>
-              <button
-                type="button"
-                onClick={() => setHeroBg("sunset")}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[9px] sm:text-xs font-extrabold uppercase tracking-wide transition-colors cursor-pointer ${
-                  heroBg === "sunset"
-                    ? "bg-[#D73B3A] text-[#FFF8EE]"
-                    : "text-[#522C28]/75 hover:text-[#522C28]"
-                }`}
-              >
-                BG 2
-              </button>
-            </div>
-          </div>
 
           {/* Main Hero Grid: Minimal Brand-Deck Copy/CTAs (Left) + Canva-Style Stack + Front-Left Fox (Right) */}
           <div className="relative z-20 w-full max-w-[1440px] mx-auto px-3 sm:px-8 lg:px-14 flex-1 flex flex-col lg:flex-row items-center justify-between sm:justify-evenly lg:justify-between gap-3 sm:gap-8 lg:gap-6 pt-8 min-[440px]:pt-6 sm:pt-6 pointer-events-none">
@@ -888,6 +830,11 @@ export default function BiteJoyPage() {
             </div>
           </div>
       </section>
+
+      {/* =========================================================================
+          SECTION 4: KEY HEALTH BENEFITS SCROLL ANIMATION (Makhana vs The Fryer)
+          ========================================================================= */}
+      <MakhanaBenefitsScroll />
 
       {/* =========================================================================
           SECTION 3: FIND YOUR FLAVOUR / 3D PLANET CAROUSEL
@@ -1095,6 +1042,29 @@ export default function BiteJoyPage() {
       </section>
 
       {/* =========================================================================
+          SECTION 5: DISCOVER SOMETHING NEW (Game Arena - Full Bleed Seamless Sky)
+          ========================================================================= */}
+      <section id="discover" className="relative w-full overflow-hidden">
+        {/* Seamless Fox Game (Edge-to-edge sky, no box boundary) */}
+        <DiscoverFoxGame />
+
+        {/* Transition wave at the bottom of the sky section returning cleanly to Footer #FCF5EB */}
+        <div className="w-full overflow-hidden leading-none pointer-events-none -mt-2 translate-y-[2px] relative z-20">
+          <svg
+            viewBox="0 0 1440 60"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-8 sm:h-12 md:h-14 block"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,25 C360,55 720,5 1080,35 C1260,50 1380,20 1440,25 L1440,60 L0,60 Z"
+              fill="#FFF8EE"
+            />
+          </svg>
+        </div>
+      </section>
+      {/* =========================================================================
           SECTION: HOT COMBOS & CURATED BUNDLES (Light Brand-Coloured Compact Showcase)
           ========================================================================= */}
       <section id="hot-combos" className="relative w-full bg-[#FFF8EE] py-8 sm:py-12 px-4 sm:px-6 lg:px-8 border-t border-b border-[#25100E]/10 overflow-hidden select-none">
@@ -1169,9 +1139,8 @@ export default function BiteJoyPage() {
 
               {/* Price & Buy */}
               <div className="mt-3 pt-2.5 border-t border-[#25100E]/10 flex items-center justify-between">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-base sm:text-lg font-black text-[#25100E]">₹115</span>
-                  <span className="text-xs text-[#522C28]/50 line-through font-semibold">₹135</span>
+                <div className="flex items-baseline">
+                  <span className="text-base sm:text-lg font-black text-[#25100E]">₹447</span>
                 </div>
                 <button
                   type="button"
@@ -1182,9 +1151,9 @@ export default function BiteJoyPage() {
                         variantId: 10000401,
                         slug: "ultimate-trio-pack",
                         name: "ULTIMATE TRIO VARIETY PACK",
-                        variantLabel: "3 × 20g Pouches (60g)",
-                        price: 115,
-                        originalPrice: 135,
+                        variantLabel: "3 × 55g Pouches (165g)",
+                        price: 447,
+                        originalPrice: 447,
                         image: "/packets/peri peri.svg",
                       },
                       1,
@@ -1204,10 +1173,6 @@ export default function BiteJoyPage() {
               <Link href="/product/party-crunch-box" className="block cursor-pointer">
                 {/* Image Frame */}
                 <div className="bg-[#FFF5E5] rounded-xl overflow-hidden h-32 sm:h-36 flex items-center justify-center p-2 relative border border-[#25100E]/08 group-hover:bg-[#FFF0D9] transition-colors">
-                  <span className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md bg-[#F79E1B] text-[#25100E] text-[9px] font-black uppercase tracking-wider shadow-sm">
-                    SAVE 18%
-                  </span>
-
                   <div className="relative flex items-center justify-center">
                     <img
                       src="/packets/cheese.svg"
@@ -1234,16 +1199,15 @@ export default function BiteJoyPage() {
                     PARTY CRUNCH BUNDLE
                   </h3>
                   <p className="text-[11px] text-[#522C28]/70 mt-0.5 line-clamp-1">
-                    2× Peri Peri + 2× Cheese + 2× Raw Makhana
+                    2× Peri Peri + 2× Cheese + 2× Pink Salt
                   </p>
                 </div>
               </Link>
 
               {/* Price & Buy */}
               <div className="mt-3 pt-2.5 border-t border-[#25100E]/10 flex items-center justify-between">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-base sm:text-lg font-black text-[#25100E]">₹220</span>
-                  <span className="text-xs text-[#522C28]/50 line-through font-semibold">₹270</span>
+                <div className="flex items-baseline">
+                  <span className="text-base sm:text-lg font-black text-[#25100E]">₹894</span>
                 </div>
                 <button
                   type="button"
@@ -1254,9 +1218,9 @@ export default function BiteJoyPage() {
                         variantId: 10000501,
                         slug: "party-crunch-box",
                         name: "PARTY CRUNCH BUNDLE",
-                        variantLabel: "6 × 20g Pouches (120g)",
-                        price: 220,
-                        originalPrice: 270,
+                        variantLabel: "6 × 55g Pouches (330g)",
+                        price: 894,
+                        originalPrice: 894,
                         image: "/packets/cheese.svg",
                       },
                       1,
@@ -1276,10 +1240,6 @@ export default function BiteJoyPage() {
               <Link href="/product/mega-muncher-stash" className="block cursor-pointer">
                 {/* Image Frame */}
                 <div className="bg-[#FFF5E5] rounded-xl overflow-hidden h-32 sm:h-36 flex items-center justify-center p-2 relative border border-[#25100E]/08 group-hover:bg-[#FFF0D9] transition-colors">
-                  <span className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md bg-[#2D6A4F] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
-                    SAVE 22%
-                  </span>
-
                   <div className="relative flex items-center justify-center">
                     <img
                       src="/packets/raw-makhana-pouch.png"
@@ -1306,16 +1266,15 @@ export default function BiteJoyPage() {
                     MEGA MUNCHER 12-PACK
                   </h3>
                   <p className="text-[11px] text-[#522C28]/70 mt-0.5 line-clamp-1">
-                    4× Peri Peri + 4× Cheese + 4× Raw Makhana
+                    4× Peri Peri + 4× Cheese + 4× Pink Salt
                   </p>
                 </div>
               </Link>
 
               {/* Price & Buy */}
               <div className="mt-3 pt-2.5 border-t border-[#25100E]/10 flex items-center justify-between">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-base sm:text-lg font-black text-[#25100E]">₹420</span>
-                  <span className="text-xs text-[#522C28]/50 line-through font-semibold">₹540</span>
+                <div className="flex items-baseline">
+                  <span className="text-base sm:text-lg font-black text-[#25100E]">₹1,788</span>
                 </div>
                 <button
                   type="button"
@@ -1326,9 +1285,9 @@ export default function BiteJoyPage() {
                         variantId: 10000601,
                         slug: "mega-muncher-stash",
                         name: "MEGA MUNCHER 12-PACK STASH",
-                        variantLabel: "12 × 20g Pouches (240g)",
-                        price: 420,
-                        originalPrice: 540,
+                        variantLabel: "12 × 55g Pouches (660g)",
+                        price: 1788,
+                        originalPrice: 1788,
                         image: "/packets/raw-makhana-pouch.png",
                       },
                       1,
@@ -1359,7 +1318,7 @@ export default function BiteJoyPage() {
                   BUILD YOUR OWN BOX
                 </span>
                 <p className="text-[10px] text-[#522C28]/70 text-center mt-0.5 max-w-[170px] leading-tight">
-                  Mix 4, 6, or 12 packs &amp; unlock bulk savings!
+                  Mix 4, 6, or 12 packs of your favourite flavours!
                 </p>
 
                 {/* Animated Mini Pouches Pill */}
@@ -1390,7 +1349,7 @@ export default function BiteJoyPage() {
               {/* Price & CTA */}
               <div className="mt-3 pt-2.5 border-t border-[#25100E]/10 flex items-center justify-between">
                 <div className="flex items-baseline gap-1.5">
-                  <span className="text-base sm:text-lg font-black text-[#E53925]">From ₹160</span>
+                  <span className="text-base sm:text-lg font-black text-[#E53925]">From ₹596</span>
                 </div>
                 <div className="px-3 py-1.5 rounded-lg bg-[#FFCD3C] group-hover:bg-[#F79E1B] text-[#25100E] text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95">
                   <span>Build Box</span>
@@ -1402,34 +1361,6 @@ export default function BiteJoyPage() {
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 4: KEY HEALTH BENEFITS SCROLL ANIMATION (Makhana vs The Fryer)
-          ========================================================================= */}
-      <MakhanaBenefitsScroll />
-
-      {/* =========================================================================
-          SECTION 5: DISCOVER SOMETHING NEW (Game Arena - Full Bleed Seamless Sky)
-          ========================================================================= */}
-      <section id="discover" className="relative w-full overflow-hidden">
-        {/* Seamless Fox Game (Edge-to-edge sky, no box boundary) */}
-        <DiscoverFoxGame />
-
-        {/* Transition wave at the bottom of the sky section returning cleanly to Footer #FCF5EB */}
-        <div className="w-full overflow-hidden leading-none pointer-events-none -mt-2 translate-y-[2px] relative z-20">
-          <svg
-            viewBox="0 0 1440 60"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-8 sm:h-12 md:h-14 block"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0,25 C360,55 720,5 1080,35 C1260,50 1380,20 1440,25 L1440,60 L0,60 Z"
-              fill="#FCF5EB"
-            />
-          </svg>
-        </div>
-      </section>
 
     </div>
   );

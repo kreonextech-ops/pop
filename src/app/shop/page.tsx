@@ -72,7 +72,7 @@ export default function ShopPage() {
     ...extraStoreFlavours.map((sp) => {
       const v0 = sp.variants[0];
       const price = v0 ? parseFloat(v0.price) : 149;
-      const orig = v0 ? parseFloat(v0.compare_at_price) : price;
+      const orig = price;
       return {
         ...Object.values(PRODUCTS)[0],
         slug: sp.slug,
@@ -92,9 +92,24 @@ export default function ShopPage() {
         accentBg: sp.accentBg,
         packImage: sp.image,
         pricing: {
-          single: { label: v0?.title || "1 Pouch (60g)", count: "60g Pouch", price, originalPrice: orig },
-          trio: { label: "Pack of 3", count: "3 × 60g (180g)", price: price * 3, originalPrice: orig * 3 },
-          party: { label: "Pack of 6", count: "6 × 60g (360g)", price: price * 6, originalPrice: orig * 6 },
+          single: {
+            label: v0?.title || (sp.slug === "raw-makhana" ? "1 Pouch" : "1 Pouch (55g)"),
+            count: sp.slug === "raw-makhana" ? "1 Pouch (Raw Makhana)" : "55g Pouch",
+            price,
+            originalPrice: orig,
+          },
+          trio: {
+            label: "Pack of 3",
+            count: sp.slug === "raw-makhana" ? "Pack of 3 (Raw Makhana)" : "3 × 55g (165g)",
+            price: price * 3,
+            originalPrice: orig * 3,
+          },
+          party: {
+            label: "Pack of 6",
+            count: sp.slug === "raw-makhana" ? "Pack of 6 (Raw Makhana)" : "6 × 55g (330g)",
+            price: price * 6,
+            originalPrice: orig * 6,
+          },
         },
       };
     }),
@@ -107,6 +122,7 @@ export default function ShopPage() {
       return {
         ...c,
         price: parseFloat(live.variants[0].price) || c.price,
+        originalPrice: parseFloat(live.variants[0].price) || c.price,
       };
     }),
     ...extraStoreCombos.map((sp) => {
@@ -395,12 +411,9 @@ export default function ShopPage() {
                     {/* Price & Add to Cart */}
                     <div className="mt-5 pt-4 border-t border-[#522C28]/15 flex items-center justify-between">
                       <div>
-                        <div className="flex items-baseline gap-2">
+                        <div className="flex items-baseline">
                           <span className="text-2xl font-black text-[#25100E]">
                             ₹{combo.price}
-                          </span>
-                          <span className="text-xs text-[#522C28]/50 line-through font-bold">
-                            ₹{combo.originalPrice}
                           </span>
                         </div>
                         <span className="text-[10px] text-[#522C28]/70 font-semibold">
@@ -526,16 +539,13 @@ export default function ShopPage() {
                     <div className="mt-5 pt-4 border-t border-[#522C28]/15">
                       <div className="flex items-baseline justify-between mb-3">
                         <div>
-                          <div className="flex items-baseline gap-1.5">
+                          <div className="flex items-baseline">
                             <span className="text-2xl font-black text-[#25100E]">
                               ₹{product.pricing.single.price}
                             </span>
-                            <span className="text-xs text-[#522C28]/50 line-through font-bold">
-                              ₹{product.pricing.single.originalPrice}
-                            </span>
                           </div>
                           <span className="text-[10px] text-[#522C28]/70 font-semibold">
-                            {product.pricing.single.count} (Or get 3-pack for ₹{product.pricing.trio.price})
+                            {product.pricing.single.count} (Pack of 3: ₹{product.pricing.trio.price})
                           </span>
                         </div>
                       </div>

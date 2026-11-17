@@ -224,7 +224,14 @@ function buildSeedStore(): StoreData {
   ];
 
   const signatureProducts: StoreProduct[] = Object.values(PRODUCTS).map((p) => {
-    const packOptions = ["1 Pouch (60g)", "Pack of 3 (180g)", "Pack of 6 (360g)"];
+    const isRaw = p.slug === "raw-makhana";
+    const singleTitle = isRaw ? "1 Pouch (Raw Makhana)" : "1 Pouch (55g)";
+    const trioTitle = isRaw ? "Pack of 3 (Raw Makhana)" : "Pack of 3 (165g)";
+    const partyTitle = isRaw ? "Pack of 6 (Raw Makhana)" : "Pack of 6 (330g)";
+    const singleWeight = isRaw ? 250 : 55;
+    const trioWeight = isRaw ? 750 : 165;
+    const partyWeight = isRaw ? 1500 : 330;
+    const packOptions = [singleTitle, trioTitle, partyTitle];
     return {
       id: p.numericId,
       slug: p.slug,
@@ -247,48 +254,48 @@ function buildSeedStore(): StoreData {
       variants: [
         {
           id: p.variantIds.single,
-          title: "1 Pouch (60g)",
+          title: singleTitle,
           price: p.pricing.single.price.toFixed(2),
           compare_at_price: p.pricing.single.originalPrice.toFixed(2),
           sku: `PC-${p.id.toUpperCase()}-1PK`,
           quantity: 150,
-          grams: 60,
-          weight: 60,
+          grams: singleWeight,
+          weight: singleWeight,
           weight_unit: "g",
           taxable: true,
-          option_values: { "Pack Size": "1 Pouch (60g)" },
+          option_values: { "Pack Size": singleTitle },
           image: p.packImage,
           created_at: ts,
           updated_at: ts,
         },
         {
           id: p.variantIds.trio,
-          title: "Pack of 3 (180g)",
+          title: trioTitle,
           price: p.pricing.trio.price.toFixed(2),
           compare_at_price: p.pricing.trio.originalPrice.toFixed(2),
           sku: `PC-${p.id.toUpperCase()}-3PK`,
           quantity: 100,
-          grams: 180,
-          weight: 180,
+          grams: trioWeight,
+          weight: trioWeight,
           weight_unit: "g",
           taxable: true,
-          option_values: { "Pack Size": "Pack of 3 (180g)" },
+          option_values: { "Pack Size": trioTitle },
           image: p.packImage,
           created_at: ts,
           updated_at: ts,
         },
         {
           id: p.variantIds.party,
-          title: "Pack of 6 (360g)",
+          title: partyTitle,
           price: p.pricing.party.price.toFixed(2),
           compare_at_price: p.pricing.party.originalPrice.toFixed(2),
           sku: `PC-${p.id.toUpperCase()}-6PK`,
           quantity: 80,
-          grams: 360,
-          weight: 360,
+          grams: partyWeight,
+          weight: partyWeight,
           weight_unit: "g",
           taxable: true,
-          option_values: { "Pack Size": "Pack of 6 (360g)" },
+          option_values: { "Pack Size": partyTitle },
           image: p.packImage,
           created_at: ts,
           updated_at: ts,
