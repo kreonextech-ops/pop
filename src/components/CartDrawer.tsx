@@ -11,7 +11,6 @@ import {
   ShoppingBag,
   Zap,
   ShieldCheck,
-  Tag,
   Loader2,
   Coins,
   Truck,
@@ -54,9 +53,6 @@ export default function CartDrawer() {
   const router = useRouter();
   const { user, refreshUser } = useAuth();
   const [config, setConfig] = useState<ShiprocketPublicConfig | null>(null);
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedDiscount, setAppliedDiscount] = useState(0);
-  const [couponMessage, setCouponMessage] = useState<string | null>(null);
   const [redeemPoints, setRedeemPoints] = useState(false);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -141,41 +137,12 @@ export default function CartDrawer() {
     };
   }, [isCartOpen]);
 
-  const handleApplyCoupon = async () => {
-    const code = couponCode.trim().toUpperCase();
-    setCheckoutError(null);
-    setCouponMessage(null);
-    if (!code) {
-      setAppliedDiscount(0);
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/coupons/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, subtotal }),
-      });
-      const data = await res.json();
-      if (data.valid) {
-        setAppliedDiscount(data.discount || 0);
-        setCouponMessage(data.message || `${code} applied!`);
-      } else {
-        setAppliedDiscount(0);
-        setCheckoutError(data.error || "Invalid coupon code");
-      }
-    } catch {
-      setCheckoutError("Could not validate coupon.");
-    }
-  };
-
-  const afterCoupon = Math.max(0, subtotal - appliedDiscount);
   const maxRedeemablePoints =
     user && user.loyaltyPoints > 0
-      ? Math.min(user.loyaltyPoints, Math.floor(afterCoupon * 0.2))
+      ? Math.min(user.loyaltyPoints, Math.floor(subtotal * 0.2))
       : 0;
   const pointsDiscount = redeemPoints ? maxRedeemablePoints : 0;
-  const finalTotal = Math.max(0, afterCoupon - pointsDiscount);
+  const finalTotal = Math.max(0, subtotal - pointsDiscount);
 
   const handleShiprocketCheckout = async (e: React.MouseEvent) => {
     if (items.length === 0) return;
@@ -194,8 +161,6 @@ export default function CartDrawer() {
             price: i.price,
             image_url: i.image,
           })),
-          coupon_code: appliedDiscount > 0 ? couponCode.trim().toUpperCase() : undefined,
-          discount_amount: appliedDiscount,
           redeem_points: redeemPoints,
         }),
       });
@@ -249,8 +214,6 @@ export default function CartDrawer() {
             price: i.price,
             image_url: i.image,
           })),
-          coupon_code: appliedDiscount > 0 ? couponCode.trim().toUpperCase() : undefined,
-          discount_amount: appliedDiscount,
           redeem_points: redeemPoints,
           demo_confirm: true,
           customer: demoCustomer,
@@ -554,28 +517,6 @@ export default function CartDrawer() {
                 </div>
               ))}
 
-              {/* Coupon Input */}
-              <div className="p-3 rounded-2xl bg-white border border-[#522C28]/15 flex items-center gap-2">
-                <Tag className="w-4 h-4 text-[#D73B3A] flex-shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Coupon code (try POP10)"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  className="flex-1 text-xs font-bold bg-transparent outline-none uppercase placeholder:normal-case"
-                />
-                <button
-                  type="button"
-                  onClick={handleApplyCoupon}
-                  className="px-3 py-1.5 rounded-full bg-[#25100E] text-[#FAC537] text-[10px] font-black uppercase cursor-pointer"
-                >
-                  Apply
-                </button>
-              </div>
-              {couponMessage && (
-                <p className="text-[11px] font-bold text-[#3CA837] px-1">✓ {couponMessage}</p>
-              )}
-
               {/* Crunch Points Redemption */}
               {user ? (
                 <div className="p-3 rounded-2xl bg-[#FFFDF9] border border-[#FAC537] flex items-center justify-between gap-2">
@@ -631,10 +572,10 @@ export default function CartDrawer() {
                 <span>Subtotal</span>
                 <span>₹{subtotal}</span>
               </div>
-              {(totalSavings > 0 || appliedDiscount > 0 || pointsDiscount > 0) && (
+              {pointsDiscount > 0 && (
                 <div className="flex justify-between text-[#3CA837]">
-                  <span>Total Savings {pointsDiscount > 0 ? "(incl. Points)" : ""}</span>
-                  <span>-₹{totalSavings + appliedDiscount + pointsDiscount}</span>
+                  <span>Crunch Points Discount</span>
+                  <span>-₹{pointsDiscount}</span>
                 </div>
               )}
               <div className="flex justify-between text-base font-black text-[#25100E] pt-1.5 border-t border-[#522C28]/10">
