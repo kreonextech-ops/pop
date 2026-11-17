@@ -247,11 +247,7 @@ export default function CartDrawer() {
       <input
         type="hidden"
         id="sellerDomain"
-        value={
-          (config?.sellerDomain && config.sellerDomain !== "localhost:3001")
-            ? config.sellerDomain
-            : (typeof window !== "undefined" && window.location.host ? window.location.host : "localhost:3001")
-        }
+        value={config?.sellerDomain || "snackpopculture.com"}
       />
 
       {/* Backdrop */}

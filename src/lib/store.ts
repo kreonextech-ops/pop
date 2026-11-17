@@ -362,8 +362,8 @@ function buildSeedStore(): StoreData {
       environment: (process.env.SHIPROCKET_ENV === "production" ? "production" : "staging") as ShiprocketEnv,
       apiKey: process.env.SHIPROCKET_API_KEY || "",
       apiSecret: process.env.SHIPROCKET_API_SECRET || "",
-      sellerDomain: process.env.SHIPROCKET_SELLER_DOMAIN || "localhost:3001",
-      redirectBaseUrl: process.env.NEXT_PUBLIC_SITE_URL || "",
+      sellerDomain: process.env.SHIPROCKET_SELLER_DOMAIN || "snackpopculture.com",
+      redirectBaseUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://snackpopculture.com",
       loyaltyEnabled: true,
       gmailUser: process.env.GMAIL_USER || "",
       adminNotifyEmail: process.env.ADMIN_NOTIFY_EMAIL || "",
@@ -543,5 +543,5 @@ export function getOriginFromRequest(req: Request, sellerDomain?: string): strin
   if (sellerDomain) {
     return sellerDomain.startsWith("http") ? sellerDomain : `https://${sellerDomain}`;
   }
-  return "http://localhost:3001";
+  return "https://snackpopculture.com";
 }
