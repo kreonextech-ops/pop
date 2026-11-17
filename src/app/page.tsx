@@ -20,7 +20,7 @@ import {
 import HeroMakhanaPhysics from "@/components/HeroMakhanaPhysics";
 import InteractiveScatterLayer, { ScatterPieceData } from "@/components/InteractiveScatterLayer";
 import Navbar from "@/components/Navbar";
-import { smoothScrollTo } from "@/components/LenisProvider";
+import { smoothScrollTo, instantJumpTo } from "@/components/LenisProvider";
 import { useCart } from "@/components/CartContext";
 import { PRODUCTS, COMBOS } from "@/data/products";
 
@@ -694,7 +694,7 @@ export default function BiteJoyPage() {
 
                 <button
                   type="button"
-                  onClick={() => smoothScrollTo("#flavours")}
+                  onClick={() => instantJumpTo("#flavours")}
                   className="px-3.5 min-[440px]:px-4.5 sm:px-6 py-2 min-[440px]:py-2.5 sm:py-3 rounded-full bg-[#FFF8EE] hover:bg-white text-[#522C28] border-2 border-[#522C28]/15 hover:border-[#522C28]/40 font-black text-[11px] min-[440px]:text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-[transform,background-color,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] flex items-center gap-1 sm:gap-1.5 cursor-pointer whitespace-nowrap"
                 >
                   <span className="sm:hidden">Flavours</span>
@@ -719,7 +719,7 @@ export default function BiteJoyPage() {
                     aria-label="Preview Cheddar Cheese"
                     onClick={() => {
                       changeFlavour(1);
-                      smoothScrollTo("#flavours");
+                      instantJumpTo("#flavours");
                     }}
                     className="relative z-40 pointer-events-auto cursor-pointer translate-y-[4px] -rotate-[7deg] hover:-translate-y-2 transition-transform duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] origin-bottom shrink-0 will-change-transform"
                   >
@@ -739,7 +739,7 @@ export default function BiteJoyPage() {
                     aria-label="Preview Peri Peri Punch"
                     onClick={() => {
                       changeFlavour(0);
-                      smoothScrollTo("#flavours");
+                      instantJumpTo("#flavours");
                     }}
                     className="relative z-20 pointer-events-auto cursor-pointer -ml-[22px] min-[460px]:-ml-[28px] sm:-ml-[34px] md:-ml-[42px] lg:-ml-[48px] xl:-ml-[54px] translate-y-[2px] -rotate-[1deg] hover:-translate-y-3 transition-transform duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] origin-bottom shrink-0 will-change-transform"
                   >
@@ -759,7 +759,7 @@ export default function BiteJoyPage() {
                     aria-label="Preview Himalayan Pink Salt"
                     onClick={() => {
                       changeFlavour(2);
-                      smoothScrollTo("#flavours");
+                      instantJumpTo("#flavours");
                     }}
                     className="relative z-30 pointer-events-auto cursor-pointer -ml-[24px] min-[460px]:-ml-[30px] sm:-ml-[36px] md:-ml-[44px] lg:-ml-[50px] xl:-ml-[56px] -translate-y-[3px] sm:-translate-y-[5px] rotate-[4deg] hover:-translate-y-4 transition-transform duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] origin-bottom shrink-0 will-change-transform"
                   >
@@ -779,7 +779,7 @@ export default function BiteJoyPage() {
                     aria-label="Preview Raw Makhana"
                     onClick={() => {
                       changeFlavour(3);
-                      smoothScrollTo("#flavours");
+                      instantJumpTo("#flavours");
                     }}
                     className="relative z-10 pointer-events-auto cursor-pointer -ml-[26px] min-[460px]:-ml-[32px] sm:-ml-[38px] md:-ml-[46px] lg:-ml-[52px] xl:-ml-[58px] translate-y-[3px] rotate-[9deg] hover:-translate-y-2 transition-transform duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] origin-bottom shrink-0 will-change-transform"
                   >

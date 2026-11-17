@@ -36,6 +36,29 @@ export function smoothScrollTo(target: string | HTMLElement | number, offset = 0
   }
 }
 
+/** Instantly jumps to a target selector, element, or Y position without scrolling through the page. */
+export function instantJumpTo(target: string | HTMLElement | number, offset = 0) {
+  if (typeof window === "undefined") return;
+  const el = typeof target === "string" ? document.querySelector<HTMLElement>(target) : target;
+  if (!el && typeof target !== "number") return;
+
+  const lenis = window.__lenis;
+  if (lenis) {
+    lenis.scrollTo(el as HTMLElement | number, {
+      offset,
+      immediate: true,
+      force: true,
+    });
+    return;
+  }
+
+  if (typeof el === "number") {
+    window.scrollTo({ top: el, behavior: "instant" as ScrollBehavior });
+  } else if (el) {
+    el.scrollIntoView({ behavior: "instant" as ScrollBehavior });
+  }
+}
+
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const lenisRef = useRef<Lenis | null>(null);
