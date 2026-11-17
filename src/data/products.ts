@@ -168,8 +168,8 @@ export const COMBOS: Record<string, ComboItem> = {
     tagline: "4 × Peri Peri + 4 × Cheddar Cheese + 4 × Pink Salt",
     shortDesc:
       "The ultimate pantry supply for healthy homes and offices. Maximum flavour variety and free express delivery.",
-    packImage: "/packets/raw-makhana-pouch.png",
-    secondaryImage: "/packets/cheese.svg",
+    packImage: "/packets/pink-salt-pouch.png",
+    secondaryImage: "/packets/peri peri.svg",
     includedFlavours: [
       "4 × Peri Peri Punch (55g)",
       "4 × Cheddar Cheese Melt (55g)",

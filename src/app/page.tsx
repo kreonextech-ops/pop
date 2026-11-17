@@ -1093,29 +1093,37 @@ export default function BiteJoyPage() {
             </Link>
           </div>
 
-          {/* Cards Grid: 4 items (Compact & Light Brand Aesthetic) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4.5">
+          {/* Cards Grid / Mobile Horizontal Snap Carousel */}
+          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4.5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory scrollbar-none pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
             {/* Card 1: Ultimate Trio Variety Pack */}
-            <div className="bg-white border border-[#25100E]/12 hover:border-[#E53925]/50 rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_16px_rgba(37,16,14,0.06)] hover:shadow-[0_12px_28px_rgba(229,57,37,0.12)] group relative">
+            <div className="w-[82vw] max-w-[290px] shrink-0 snap-center sm:w-auto sm:max-w-none bg-white border border-[#25100E]/12 hover:border-[#E53925]/50 rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_16px_rgba(37,16,14,0.06)] hover:shadow-[0_12px_28px_rgba(229,57,37,0.12)] group relative">
               <Link href="/product/ultimate-trio-pack" className="block cursor-pointer">
                 {/* Image Frame */}
-                <div className="bg-[#FFF5E5] rounded-xl overflow-hidden h-32 sm:h-36 flex items-center justify-center p-2 relative border border-[#25100E]/08 group-hover:bg-[#FFF0D9] transition-colors">
+                <div className="bg-[#FFF5E5] rounded-xl overflow-hidden h-34 sm:h-38 flex items-center justify-center p-2 relative border border-[#25100E]/08 group-hover:bg-[#FFF0D9] transition-colors">
                   {/* Badge Top Left */}
-                  <span className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md bg-[#E53925] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
+                  <span className="absolute top-2 left-2 z-30 px-2 py-0.5 rounded-md bg-[#E53925] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
                     BEST SELLER
                   </span>
 
-                  {/* Pouches Presentation */}
-                  <div className="relative flex items-center justify-center">
+                  {/* Clean 3-Flavour Trio Presentation */}
+                  <div className="relative flex items-end justify-center h-28 sm:h-32 w-full pt-1">
+                    {/* Left: Cheddar Cheese */}
+                    <img
+                      src="/packets/cheese.svg"
+                      alt="Cheddar Cheese"
+                      className="h-21 sm:h-25 w-auto object-contain drop-shadow-md -rotate-[10deg] -mr-3 sm:-mr-4 translate-y-1 z-10 transition-transform duration-300 group-hover:-translate-x-1"
+                    />
+                    {/* Center: Peri Peri (Hero) */}
                     <img
                       src="/packets/peri peri.svg"
                       alt="Ultimate Trio Variety Pack"
-                      className="h-28 sm:h-32 w-auto object-contain drop-shadow-xl z-10 transition-transform duration-300 group-hover:scale-105"
+                      className="h-27 sm:h-31 w-auto object-contain drop-shadow-xl z-20 transition-transform duration-300 group-hover:scale-105"
                     />
+                    {/* Right: Himalayan Pink Salt */}
                     <img
-                      src="/packets/cheese.svg"
-                      alt=""
-                      className="h-22 sm:h-26 w-auto object-contain drop-shadow-md -ml-6 z-0 opacity-80 group-hover:opacity-100 transition-all"
+                      src="/packets/pink-salt-pouch.png"
+                      alt="Himalayan Pink Salt"
+                      className="h-21 sm:h-25 w-auto object-contain drop-shadow-md rotate-[10deg] -ml-3 sm:-ml-4 translate-y-1 z-10 transition-transform duration-300 group-hover:translate-x-1"
                     />
                   </div>
                 </div>
@@ -1169,20 +1177,32 @@ export default function BiteJoyPage() {
             </div>
 
             {/* Card 2: Party Crunch Bundle */}
-            <div className="bg-white border border-[#25100E]/12 hover:border-[#E53925]/50 rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_16px_rgba(37,16,14,0.06)] hover:shadow-[0_12px_28px_rgba(229,57,37,0.12)] group relative">
+            <div className="w-[82vw] max-w-[290px] shrink-0 snap-center sm:w-auto sm:max-w-none bg-white border border-[#25100E]/12 hover:border-[#E53925]/50 rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_16px_rgba(37,16,14,0.06)] hover:shadow-[0_12px_28px_rgba(229,57,37,0.12)] group relative">
               <Link href="/product/party-crunch-box" className="block cursor-pointer">
                 {/* Image Frame */}
-                <div className="bg-[#FFF5E5] rounded-xl overflow-hidden h-32 sm:h-36 flex items-center justify-center p-2 relative border border-[#25100E]/08 group-hover:bg-[#FFF0D9] transition-colors">
-                  <div className="relative flex items-center justify-center">
+                <div className="bg-[#FFF5E5] rounded-xl overflow-hidden h-34 sm:h-38 flex items-center justify-center p-2 relative border border-[#25100E]/08 group-hover:bg-[#FFF0D9] transition-colors">
+                  <span className="absolute top-2 left-2 z-30 px-2 py-0.5 rounded-md bg-[#F79E1B] text-[#25100E] text-[9px] font-black uppercase tracking-wider shadow-sm">
+                    2× EACH FLAVOUR
+                  </span>
+
+                  <div className="relative flex items-end justify-center h-28 sm:h-32 w-full pt-1">
+                    {/* Left: Peri Peri */}
+                    <img
+                      src="/packets/peri peri.svg"
+                      alt="Peri Peri"
+                      className="h-21 sm:h-25 w-auto object-contain drop-shadow-md -rotate-[10deg] -mr-3 sm:-mr-4 translate-y-1 z-10 transition-transform duration-300 group-hover:-translate-x-1"
+                    />
+                    {/* Center: Cheddar Cheese (Hero) */}
                     <img
                       src="/packets/cheese.svg"
                       alt="Party Crunch Bundle"
-                      className="h-28 sm:h-32 w-auto object-contain drop-shadow-xl z-10 transition-transform duration-300 group-hover:scale-105"
+                      className="h-27 sm:h-31 w-auto object-contain drop-shadow-xl z-20 transition-transform duration-300 group-hover:scale-105"
                     />
+                    {/* Right: Himalayan Pink Salt */}
                     <img
-                      src="/packets/peri peri.svg"
-                      alt=""
-                      className="h-22 sm:h-26 w-auto object-contain drop-shadow-md -ml-6 z-0 opacity-80 group-hover:opacity-100 transition-all"
+                      src="/packets/pink-salt-pouch.png"
+                      alt="Himalayan Pink Salt"
+                      className="h-21 sm:h-25 w-auto object-contain drop-shadow-md rotate-[10deg] -ml-3 sm:-ml-4 translate-y-1 z-10 transition-transform duration-300 group-hover:translate-x-1"
                     />
                   </div>
                 </div>
@@ -1236,20 +1256,32 @@ export default function BiteJoyPage() {
             </div>
 
             {/* Card 3: Mega Muncher 12-Pack */}
-            <div className="bg-white border border-[#25100E]/12 hover:border-[#E53925]/50 rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_16px_rgba(37,16,14,0.06)] hover:shadow-[0_12px_28px_rgba(229,57,37,0.12)] group relative">
+            <div className="w-[82vw] max-w-[290px] shrink-0 snap-center sm:w-auto sm:max-w-none bg-white border border-[#25100E]/12 hover:border-[#E53925]/50 rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_16px_rgba(37,16,14,0.06)] hover:shadow-[0_12px_28px_rgba(229,57,37,0.12)] group relative">
               <Link href="/product/mega-muncher-stash" className="block cursor-pointer">
                 {/* Image Frame */}
-                <div className="bg-[#FFF5E5] rounded-xl overflow-hidden h-32 sm:h-36 flex items-center justify-center p-2 relative border border-[#25100E]/08 group-hover:bg-[#FFF0D9] transition-colors">
-                  <div className="relative flex items-center justify-center">
-                    <img
-                      src="/packets/raw-makhana-pouch.png"
-                      alt="Mega Muncher 12-Pack Stash"
-                      className="h-28 sm:h-32 w-auto object-contain drop-shadow-xl z-10 transition-transform duration-300 group-hover:scale-105"
-                    />
+                <div className="bg-[#FFF5E5] rounded-xl overflow-hidden h-34 sm:h-38 flex items-center justify-center p-2 relative border border-[#25100E]/08 group-hover:bg-[#FFF0D9] transition-colors">
+                  <span className="absolute top-2 left-2 z-30 px-2 py-0.5 rounded-md bg-[#3CA837] text-white text-[9px] font-black uppercase tracking-wider shadow-sm">
+                    MEGA STASH • 12 PACKS
+                  </span>
+
+                  <div className="relative flex items-end justify-center h-28 sm:h-32 w-full pt-1">
+                    {/* Left: Cheddar Cheese */}
                     <img
                       src="/packets/cheese.svg"
-                      alt=""
-                      className="h-22 sm:h-26 w-auto object-contain drop-shadow-md -ml-6 z-0 opacity-80 group-hover:opacity-100 transition-all"
+                      alt="Cheddar Cheese"
+                      className="h-21 sm:h-25 w-auto object-contain drop-shadow-md -rotate-[10deg] -mr-3 sm:-mr-4 translate-y-1 z-10 transition-transform duration-300 group-hover:-translate-x-1"
+                    />
+                    {/* Center: Himalayan Pink Salt (Hero) */}
+                    <img
+                      src="/packets/pink-salt-pouch.png"
+                      alt="Mega Muncher 12-Pack Stash"
+                      className="h-27 sm:h-31 w-auto object-contain drop-shadow-xl z-20 transition-transform duration-300 group-hover:scale-105"
+                    />
+                    {/* Right: Peri Peri */}
+                    <img
+                      src="/packets/peri peri.svg"
+                      alt="Peri Peri"
+                      className="h-21 sm:h-25 w-auto object-contain drop-shadow-md rotate-[10deg] -ml-3 sm:-ml-4 translate-y-1 z-10 transition-transform duration-300 group-hover:translate-x-1"
                     />
                   </div>
                 </div>
@@ -1288,7 +1320,7 @@ export default function BiteJoyPage() {
                         variantLabel: "12 × 55g Pouches (660g)",
                         price: 1788,
                         originalPrice: 1788,
-                        image: "/packets/raw-makhana-pouch.png",
+                        image: "/packets/pink-salt-pouch.png",
                       },
                       1,
                       true
@@ -1305,16 +1337,20 @@ export default function BiteJoyPage() {
             {/* Card 4: Build Your Own Box (Interactive Custom Box CTA) */}
             <Link
               href="/build-a-box"
-              className="bg-gradient-to-b from-[#FFFDF9] to-[#FFF3DC] border-2 border-dashed border-[#F79E1B]/70 hover:border-[#E53925] rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_16px_rgba(247,158,27,0.12)] hover:shadow-[0_12px_28px_rgba(247,158,27,0.22)] group cursor-pointer relative"
+              className="w-[82vw] max-w-[290px] shrink-0 snap-center sm:w-auto sm:max-w-none bg-gradient-to-b from-[#FFFDF9] to-[#FFF3DC] border-2 border-dashed border-[#F79E1B]/70 hover:border-[#E53925] rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-[0_4px_16px_rgba(247,158,27,0.12)] hover:shadow-[0_12px_28px_rgba(247,158,27,0.22)] group cursor-pointer relative"
             >
               {/* Teaser Frame */}
-              <div className="bg-white/80 rounded-xl overflow-hidden h-32 sm:h-36 flex flex-col items-center justify-center p-2 relative border border-[#F79E1B]/30 group-hover:bg-white transition-colors">
+              <div className="bg-white/80 rounded-xl overflow-hidden h-34 sm:h-38 flex flex-col items-center justify-center p-2 relative border border-[#F79E1B]/30 group-hover:bg-white transition-colors">
                 <span className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md bg-[#FFCD3C] text-[#25100E] text-[9px] font-black uppercase tracking-wider shadow-sm">
                   CUSTOMIZE
                 </span>
 
-                <span className="text-3xl mb-1 animate-bounce">🎁</span>
-                <span className="font-display text-sm font-black uppercase text-[#25100E] tracking-wide text-center">
+                <img
+                  src="/assets/goodness-box.png"
+                  alt="Custom Snack Crate"
+                  className="h-16 sm:h-18 w-auto object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="font-display text-sm font-black uppercase text-[#25100E] tracking-wide text-center mt-1">
                   BUILD YOUR OWN BOX
                 </span>
                 <p className="text-[10px] text-[#522C28]/70 text-center mt-0.5 max-w-[170px] leading-tight">
@@ -1322,7 +1358,7 @@ export default function BiteJoyPage() {
                 </p>
 
                 {/* Animated Mini Pouches Pill */}
-                <div className="flex items-center gap-1.5 mt-2 bg-[#FFF8EE] px-2.5 py-0.5 rounded-full border border-[#25100E]/10">
+                <div className="flex items-center gap-1.5 mt-1 bg-[#FFF8EE] px-2.5 py-0.5 rounded-full border border-[#25100E]/10">
                   <span className="text-xs">🌶️</span>
                   <span className="text-xs">🧀</span>
                   <span className="text-xs">🌸</span>
@@ -1357,6 +1393,11 @@ export default function BiteJoyPage() {
                 </div>
               </div>
             </Link>
+          </div>
+
+          {/* Mobile Swipe Cue */}
+          <div className="flex sm:hidden items-center justify-center gap-1.5 mt-3 text-[#522C28]/60 text-[11px] font-mono uppercase tracking-wider">
+            <span>← Swipe to explore combos (4) →</span>
           </div>
         </div>
       </section>

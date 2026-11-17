@@ -352,20 +352,25 @@ export default function ShopPage() {
                       className="absolute inset-8 rounded-full opacity-15 blur-2xl group-hover:opacity-25 transition-opacity"
                     />
 
-                    {/* Dual or Single Presentation */}
-                    <div className="relative flex items-center justify-center">
-                      <img
-                        src={combo.packImage}
-                        alt={combo.name}
-                        className="h-44 sm:h-52 w-auto object-contain drop-shadow-xl z-10 transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
-                      />
+                    {/* Balanced Variety Showcase */}
+                    <div className="relative flex items-end justify-center h-48 sm:h-56 w-full pt-4">
                       {combo.secondaryImage && (
                         <img
                           src={combo.secondaryImage}
                           alt=""
-                          className="h-36 sm:h-44 w-auto object-contain drop-shadow-lg -ml-10 z-0 opacity-80 group-hover:opacity-95 transition-opacity"
+                          className="h-38 sm:h-44 w-auto object-contain drop-shadow-md -rotate-[10deg] -mr-6 sm:-mr-8 translate-y-2 z-10 transition-transform duration-300 group-hover:-translate-x-1"
                         />
                       )}
+                      <img
+                        src={combo.packImage}
+                        alt={combo.name}
+                        className="h-44 sm:h-52 w-auto object-contain drop-shadow-xl z-20 transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+                      />
+                      <img
+                        src="/packets/pink-salt-pouch.png"
+                        alt=""
+                        className="h-38 sm:h-44 w-auto object-contain drop-shadow-md rotate-[10deg] -ml-6 sm:-ml-8 translate-y-2 z-10 transition-transform duration-300 group-hover:translate-x-1"
+                      />
                     </div>
                   </div>
 
