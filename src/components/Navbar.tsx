@@ -218,25 +218,19 @@ export default function Navbar() {
         />
 
         <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-3">
-          {/* Left: Mobile hamburger + Brand Logo */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1 md:flex-initial overflow-hidden">
-            <button
-              type="button"
-              onClick={() => setMobileOpen((v) => !v)}
-              className={`md:hidden p-1.5 sm:p-2 rounded-xl border shrink-0 transition-colors ${t.iconBtn}`}
-              aria-label="Toggle Menu"
-            >
-              {mobileOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5" />}
-            </button>
+          {/* Mobile Spacer (Left) to ensure Logo is dead center on mobile */}
+          <div className="w-8 min-[360px]:w-9 md:hidden shrink-0 pointer-events-none" aria-hidden="true" />
 
+          {/* Center Brand Logo: Centered and larger on mobile, Left-aligned on desktop */}
+          <div className="flex items-center justify-center md:justify-start min-w-0 flex-1 md:flex-initial">
             <Link
               href="/"
-              className={`flex items-center group min-w-0 max-w-full transition-transform hover:scale-[1.03] ${t.logoWrap}`}
+              className={`flex items-center justify-center group min-w-0 max-w-full transition-transform hover:scale-[1.03] ${t.logoWrap}`}
             >
               <img
                 src="/pop-culture-logo.svg"
                 alt="Pop Culture"
-                className="w-[84px] min-[360px]:w-[104px] sm:w-auto sm:h-9 md:h-10 h-auto max-w-full object-contain object-left"
+                className="w-[115px] min-[360px]:w-[135px] sm:w-[155px] md:w-auto md:h-10 h-auto max-w-full object-contain"
               />
             </Link>
           </div>
@@ -259,21 +253,21 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Right: Search, Account / Login, Admin, Cart */}
+          {/* Right Actions: Desktop buttons + Mobile Hamburger */}
           <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
-            {/* Live Search Button */}
+            {/* Live Search Button (Desktop Only) */}
             <button
               type="button"
               onClick={() => setSearchOpen((v) => !v)}
-              className={`p-1.5 sm:p-2 rounded-full border backdrop-blur-md transition-[transform,background-color,color,border-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 active:scale-95 cursor-pointer shadow-2xs ${t.iconBtn}`}
+              className={`hidden md:inline-flex p-1.5 sm:p-2 rounded-full border backdrop-blur-md transition-[transform,background-color,color,border-color] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 active:scale-95 cursor-pointer shadow-2xs ${t.iconBtn}`}
               aria-label="Search Products"
               title="Search flavours & combos"
             >
               <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
             </button>
 
-            {/* Top-Right Corner Customer Profile & Login Menu */}
-            <div className="relative" ref={accountMenuRef}>
+            {/* Top-Right Customer Profile & Login Menu (Desktop Only) */}
+            <div className="hidden md:block relative" ref={accountMenuRef}>
               {!loading && user ? (
                 <button
                   type="button"
@@ -455,11 +449,11 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Admin Console shortcut (hidden on < sm; available in mobile drawer) */}
+          {/* Admin Console shortcut (Desktop Only) */}
           <Link
             href="/admin"
             title={user?.role === "admin" ? "Store Admin Console" : "Admin Login"}
-            className={`hidden sm:inline-flex p-2 rounded-full border transition-colors ${
+            className={`hidden md:inline-flex p-2 rounded-full border transition-colors ${
               pathname === "/admin" ? t.pillActive : t.iconBtn
             }`}
             aria-label="Admin Panel"
@@ -467,11 +461,11 @@ export default function Navbar() {
             <ShieldCheck className="w-4 h-4 stroke-[2.3]" />
           </Link>
 
-          {/* Cart Button */}
+          {/* Cart Button (Desktop Only) */}
           <button
             type="button"
             onClick={openCart}
-            className={`relative px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-[transform,background-color,box-shadow] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 active:scale-95 shadow-sm cursor-pointer inline-flex items-center gap-1.5 ${t.cartBtn}`}
+            className={`hidden md:inline-flex relative px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-[transform,background-color,box-shadow] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 active:scale-95 shadow-sm cursor-pointer items-center gap-1.5 ${t.cartBtn}`}
             aria-label="Open Cart"
           >
             <ShoppingBag className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -483,6 +477,16 @@ export default function Navbar() {
             >
               {totalCount}
             </span>
+          </button>
+
+          {/* Mobile Hamburger Menu Button (Mobile Only) */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen((v) => !v)}
+            className={`md:hidden p-1.5 sm:p-2 rounded-xl border shrink-0 transition-colors ${t.iconBtn}`}
+            aria-label="Toggle Menu"
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
@@ -556,56 +560,172 @@ export default function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       {mobileOpen && (
-        <div className="animate-panel-pop md:hidden relative z-20 border-t border-[#522C28]/10 bg-[#FFF8EE]/95 backdrop-blur-xl text-[#522C28] px-4 py-4 space-y-2 shadow-lg">
-          {navLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={(e) => handleHashNavClick(e, item.href, true)}
-              className={`block px-3 py-2.5 rounded-xl text-sm font-black transition-colors duration-200 ${
-                isActive(item.href)
-                  ? "bg-[#D73B3A] text-white"
-                  : "text-[#522C28] hover:bg-white"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <div className="animate-panel-pop md:hidden relative z-20 border-t border-[#522C28]/10 bg-[#FFF8EE]/98 backdrop-blur-xl text-[#522C28] px-4 py-4 space-y-3 shadow-xl max-h-[85vh] overflow-y-auto">
+          {/* 1. Mobile Search Bar */}
+          <div className="relative flex items-center">
+            <Search className="w-4 h-4 text-[#522C28]/50 absolute left-3 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search flavours, combos..."
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-white border border-[#522C28]/15 text-xs font-semibold text-[#522C28] focus:outline-none focus:border-[#D73B3A]"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 text-[#522C28]/50 hover:text-[#D73B3A]"
+                aria-label="Clear Search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
 
+          {/* Quick Search Results if user is searching in mobile drawer */}
+          {searchQuery.trim() && (
+            <div className="rounded-xl bg-white p-2 border border-[#522C28]/10 max-h-48 overflow-y-auto space-y-1">
+              {filteredProducts.slice(0, 4).map((p) => {
+                const price = p.variants?.[0]?.price || "149";
+                const dest = p.isCombo ? "/shop#combos" : `/product/${p.slug}`;
+                return (
+                  <Link
+                    key={p.id}
+                    href={dest}
+                    onClick={() => {
+                      setMobileOpen(false);
+                      setSearchQuery("");
+                    }}
+                    className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-[#FFF8EE] text-xs font-bold text-[#522C28]"
+                  >
+                    <img src={p.image} alt={p.title} className="w-8 h-8 object-contain rounded bg-[#FFF8EE] p-0.5" />
+                    <span className="truncate flex-1">{p.title}</span>
+                    <span className="text-[#D73B3A] font-black shrink-0">₹{price}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          {/* 2. Mobile Cart Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setMobileOpen(false);
+              openCart();
+            }}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#D73B3A] hover:bg-[#B82928] text-white font-black text-xs uppercase tracking-wider shadow-sm transition-transform active:scale-98 cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4" />
+              <span>Shopping Cart</span>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-[#FAC537] text-[#522C28] text-[11px] font-black">
+              {totalCount} {totalCount === 1 ? "pack" : "packs"}
+            </span>
+          </button>
+
+          {/* 3. Main Navigation Links */}
+          <div className="space-y-1 pt-1">
+            {navLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={(e) => handleHashNavClick(e, item.href, true)}
+                className={`block px-3 py-2 rounded-xl text-xs font-black transition-colors duration-200 ${
+                  isActive(item.href)
+                    ? "bg-[#25100E] text-[#FAC537]"
+                    : "text-[#522C28] hover:bg-white"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* 4. Customer Account & Authentication Area */}
           <div className="pt-2 border-t border-[#522C28]/10 flex flex-col gap-2">
             {user ? (
-              <Link
-                href="/account"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white border border-[#FAC537] text-[#522C28]"
-              >
-                <span className="flex items-center gap-2 text-xs font-black">
-                  <User className="w-4 h-4 text-[#D73B3A]" />
-                  {user.fullName} — My Dashboard
-                </span>
-                <span className="inline-flex items-center gap-1 text-xs font-black text-[#D73B3A]">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  {user.loyaltyPoints} pts
-                </span>
-              </Link>
+              <div className="space-y-1.5 bg-white rounded-xl p-2.5 border border-[#FAC537]">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-xs font-black text-[#25100E]">
+                    <User className="w-3.5 h-3.5 text-[#D73B3A]" />
+                    {user.fullName}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-[#D73B3A] bg-[#FFF8EE] px-2 py-0.5 rounded-full border border-[#FAC537]">
+                    <Coins className="w-3 h-3" />
+                    {user.loyaltyPoints} pts
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-1 pt-1">
+                  <Link
+                    href="/account?tab=orders"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center gap-1 py-1.5 rounded-lg bg-[#FFF8EE] text-[11px] font-bold text-[#522C28]"
+                  >
+                    <Package className="w-3 h-3 text-[#D73B3A]" />
+                    <span>My Orders</span>
+                  </Link>
+                  <Link
+                    href="/account?tab=rewards"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center gap-1 py-1.5 rounded-lg bg-[#FFF8EE] text-[11px] font-bold text-[#522C28]"
+                  >
+                    <Gamepad2 className="w-3 h-3 text-[#D73B3A]" />
+                    <span>Game Points</span>
+                  </Link>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setMobileOpen(false);
+                    await logout();
+                    router.push("/");
+                  }}
+                  className="w-full text-center text-[10px] font-black text-[#D73B3A] pt-1 cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </div>
             ) : (
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#FAC537] text-[#522C28] text-xs font-black uppercase"
-              >
-                <LogIn className="w-4 h-4" />
-                Sign In / Join Crunch Club
-              </Link>
+              <div className="space-y-1.5">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setMobileOpen(false);
+                    await handleCornerGoogleLogin();
+                  }}
+                  disabled={googleBusy}
+                  className="w-full py-2 px-3 rounded-xl bg-white text-[#25100E] border border-[#522C28]/20 font-black text-xs flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
+                >
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z" />
+                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z" />
+                    <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z" />
+                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z" />
+                  </svg>
+                  <span>Continue with Google</span>
+                </button>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#FAC537] text-[#522C28] text-xs font-black uppercase shadow-2xs"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Email Sign In</span>
+                </Link>
+              </div>
             )}
 
+            {/* Admin Console Shortcut */}
             <Link
               href="/admin"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-[#522C28]/70 hover:bg-white"
+              className="flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-bold text-[#522C28]/60 hover:text-[#D73B3A]"
             >
-              <ShieldCheck className="w-4 h-4" />
-              Store Admin Console
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Store Admin Console</span>
             </Link>
           </div>
         </div>
