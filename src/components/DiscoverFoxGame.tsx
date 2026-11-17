@@ -927,18 +927,19 @@ export default function DiscoverFoxGame() {
                   </span>
                 </div>
                 {user ? (
-                  <Link
-                    href="/account"
-                    className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAC537] text-[#522C28] text-[11px] font-black shadow-xs hover:scale-105 transition-transform"
+                  <button
+                    type="button"
+                    onClick={() => setShowLeaderboard(true)}
+                    className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAC537] text-[#522C28] text-[11px] font-black shadow-xs hover:scale-105 transition-transform cursor-pointer"
                   >
-                    <span>🪙 {user.loyaltyPoints} pts</span>
-                  </Link>
+                    <span>🎁 Win Monthly Hamper</span>
+                  </button>
                 ) : (
                   <Link
                     href="/login?next=/#discover"
                     className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold border border-white/20"
                   >
-                    <span>Sign in to Earn Pts</span>
+                    <span>🎁 Sign in to Win Hamper</span>
                   </Link>
                 )}
               </div>
@@ -1318,10 +1319,8 @@ export default function DiscoverFoxGame() {
                 {user ? (
                   <div className="mt-2.5 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-black">
                     {savingScore
-                      ? "Saving score & Crunch Points..."
-                      : earnedPoints !== null
-                      ? `+${earnedPoints} Crunch Points Earned! (Total: ${user.loyaltyPoints} pts)`
-                      : `Signed in as ${user.fullName} — Run saved!`}
+                      ? "Submitting run to Monthly Leaderboard..."
+                      : `Signed in as ${user.fullName} — Score recorded for Monthly Hamper! 🎁`}
                   </div>
                 ) : (
                   <Link
@@ -1329,7 +1328,7 @@ export default function DiscoverFoxGame() {
                     onClick={(e) => e.stopPropagation()}
                     className="mt-2.5 block px-3 py-2 rounded-xl bg-[#FAC537]/30 border border-[#FAC537] text-[#522C28] text-[11px] font-black hover:bg-[#FAC537]/50 transition-colors"
                   >
-                    Sign in to save high scores & earn Crunch Points (₹ discount) →
+                    Sign in to join Monthly Hamper Contest (Top runner wins a Snack Hamper!) 🎁 →
                   </Link>
                 )}
               </div>
@@ -1376,9 +1375,14 @@ export default function DiscoverFoxGame() {
               className="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-sm shadow-2xl border-2 border-[#FAC537] text-[#522C28]"
             >
               <div className="flex items-center justify-between mb-3">
-                <h4 className="font-display text-xl uppercase text-[#25100E]">
-                  🏆 Fox Runner Hall of Fame
-                </h4>
+                <div>
+                  <h4 className="font-display text-xl uppercase text-[#25100E]">
+                    🏆 Monthly Hamper Contest
+                  </h4>
+                  <p className="text-[10px] font-bold text-[#D73B3A]">
+                    🎁 Longest runner each month wins a curated Snack Hamper!
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowLeaderboard(false)}

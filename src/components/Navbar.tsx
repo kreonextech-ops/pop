@@ -176,13 +176,10 @@ export default function Navbar() {
     : catalog.slice(0, 6);
 
   const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/#flavours", label: "Flavours" },
     { href: "/shop", label: "Shop All" },
     { href: "/build-a-box", label: "Build a Box" },
     { href: "/about", label: "Our Story" },
-    { href: "/#discover", label: "Play & Earn" },
-    { href: "/contact", label: "Contact" },
+    { href: "/#discover", label: "Play" },
   ];
 
   const isActive = (href: string) => {
@@ -287,10 +284,6 @@ export default function Navbar() {
                   <span className="hidden sm:inline text-xs font-extrabold max-w-[96px] truncate">
                     {user.fullName.split(" ")[0]}
                   </span>
-                  <span className="hidden sm:inline-flex items-center gap-0.5 bg-[#FFF8EE] text-[#D73B3A] px-1.5 py-0.5 rounded-full text-[10px] font-black border border-[#FAC537]">
-                    <Coins className="w-3 h-3" />
-                    {user.loyaltyPoints}
-                  </span>
                   <ChevronDown
                     className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${
                       accountOpen ? "rotate-180" : ""
@@ -329,8 +322,8 @@ export default function Navbar() {
                         {user.fullName}
                       </p>
                       <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAC537]/30 border border-[#FAC537] text-[11px] font-black text-[#522C28]">
-                        <Coins className="w-3.5 h-3.5 text-[#D73B3A]" />
-                        <span>{user.loyaltyPoints} Crunch Points (₹{user.loyaltyPoints})</span>
+                        <Gamepad2 className="w-3.5 h-3.5 text-[#D73B3A]" />
+                        <span>Best Run: {user.gameHighScore || 0}m • Hamper Contest</span>
                       </div>
                     </div>
 
@@ -365,8 +358,18 @@ export default function Navbar() {
                         className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#FFF8EE] hover:text-[#D73B3A] transition-colors"
                       >
                         <Gamepad2 className="w-4 h-4 text-[#D73B3A]" />
-                        <span>Fox Runner &amp; Points</span>
+                        <span>Fox Runner &amp; Hamper Contest</span>
                       </Link>
+                      {user.role === "admin" && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setAccountOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-[#D73B3A] transition-colors border-t border-[#522C28]/10"
+                        >
+                          <ShieldCheck className="w-4 h-4 text-[#D73B3A]" />
+                          <span>Store Admin Console</span>
+                        </Link>
+                      )}
                     </div>
 
                     <div className="border-t border-[#522C28]/10 p-2">
@@ -388,13 +391,13 @@ export default function Navbar() {
                   <div className="p-4 space-y-3">
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-wider text-[#D73B3A]">
-                        ✦ Crunch Club Account
+                        ✦ Pop Culture Account
                       </p>
                       <p className="text-sm font-black text-[#25100E] mt-0.5">
-                        Sign in to track orders &amp; rewards
+                        Sign in to track orders &amp; contest rank
                       </p>
                       <p className="text-[11px] font-semibold text-[#522C28]/70">
-                        Get 50 welcome Crunch Points on signup.
+                        Monthly longest runner wins a curated Snack Hamper!
                       </p>
                     </div>
 
@@ -449,17 +452,19 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Admin Console shortcut (Desktop Only) */}
-          <Link
-            href="/admin"
-            title={user?.role === "admin" ? "Store Admin Console" : "Admin Login"}
-            className={`hidden md:inline-flex p-2 rounded-full border transition-colors ${
-              pathname === "/admin" ? t.pillActive : t.iconBtn
-            }`}
-            aria-label="Admin Panel"
-          >
-            <ShieldCheck className="w-4 h-4 stroke-[2.3]" />
-          </Link>
+          {/* Admin Console shortcut (Only visible when signed in as admin) */}
+          {user?.role === "admin" && (
+            <Link
+              href="/admin"
+              title="Store Admin Console"
+              className={`hidden md:inline-flex p-2 rounded-full border transition-colors ${
+                pathname === "/admin" ? t.pillActive : t.iconBtn
+              }`}
+              aria-label="Admin Panel"
+            >
+              <ShieldCheck className="w-4 h-4 stroke-[2.3]" />
+            </Link>
+          )}
 
           {/* Cart Button (Desktop Only) */}
           <button
@@ -654,8 +659,8 @@ export default function Navbar() {
                     {user.fullName}
                   </span>
                   <span className="inline-flex items-center gap-1 text-[11px] font-black text-[#D73B3A] bg-[#FFF8EE] px-2 py-0.5 rounded-full border border-[#FAC537]">
-                    <Coins className="w-3 h-3" />
-                    {user.loyaltyPoints} pts
+                    <Gamepad2 className="w-3 h-3" />
+                    {user.gameHighScore || 0}m
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-1 pt-1">
@@ -673,7 +678,7 @@ export default function Navbar() {
                     className="flex items-center justify-center gap-1 py-1.5 rounded-lg bg-[#FFF8EE] text-[11px] font-bold text-[#522C28]"
                   >
                     <Gamepad2 className="w-3 h-3 text-[#D73B3A]" />
-                    <span>Game Points</span>
+                    <span>Hamper Contest</span>
                   </Link>
                 </div>
                 <button
@@ -718,15 +723,17 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Admin Console Shortcut */}
-            <Link
-              href="/admin"
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-bold text-[#522C28]/60 hover:text-[#D73B3A]"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Store Admin Console</span>
-            </Link>
+            {/* Admin Console Shortcut (Only visible to admin users) */}
+            {user?.role === "admin" && (
+              <Link
+                href="/admin"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-bold text-[#522C28]/60 hover:text-[#D73B3A]"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Store Admin Console</span>
+              </Link>
+            )}
           </div>
         </div>
       )}

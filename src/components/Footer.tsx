@@ -134,12 +134,12 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href="/#discover" className="hover:text-[#A5151C] transition-colors">
-                    Play & Earn
+                    Fox Runner Game
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account" className="hover:text-[#A5151C] transition-colors">
-                    Crunch Club Rewards
+                  <Link href="/account?tab=rewards" className="hover:text-[#A5151C] transition-colors">
+                    Monthly Hamper Contest
                   </Link>
                 </li>
               </ul>
@@ -376,12 +376,12 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href="/#discover" className="hover:text-[#A5151C] transition-colors">
-                    Play & Earn
+                    Fox Runner Game
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account" className="hover:text-[#A5151C] transition-colors">
-                    Crunch Rewards
+                  <Link href="/account?tab=rewards" className="hover:text-[#A5151C] transition-colors">
+                    Monthly Hamper Contest
                   </Link>
                 </li>
               </ul>

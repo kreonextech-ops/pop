@@ -633,12 +633,12 @@ function AccountDashboardContent() {
                       href="/#discover"
                       className="text-xs font-black text-[#D73B3A] hover:underline"
                     >
-                      Play & Earn →
+                      Play Fox Runner →
                     </Link>
                   </div>
                   {recentRuns.length === 0 ? (
                     <p className="text-xs font-semibold text-[#522C28]/70 py-2">
-                      Play Fox Runner on the homepage while signed in to earn 1 Crunch Point per 25m!
+                      Play Fox Runner on the homepage while signed in to submit your high score for the Monthly Free Snack Hamper!
                     </p>
                   ) : (
                     <div className="grid grid-cols-2 gap-2.5">
@@ -787,11 +787,10 @@ function AccountDashboardContent() {
               <div>
                 <h2 className="font-display text-2xl uppercase text-[#25100E] flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-[#D73B3A]" />
-                  <span>Fox Runner & Crunch Points History</span>
+                  <span>Fox Runner Monthly Hamper Contest</span>
                 </h2>
                 <p className="text-xs font-semibold text-[#522C28]/70 mt-0.5">
-                  Earn 1 Crunch Point per 25m run (up to 100 pts/run) and 1 pt per ₹20 spent on
-                  orders. Redeem up to 20% of your cart at checkout!
+                  Run as far as you can in the Fox Runner game. Every month, the player with the longest run wins a curated Pop Culture Snack Hamper delivered to their doorstep!
                 </p>
               </div>
               <Link
