@@ -521,8 +521,9 @@ export default function DiscoverFoxGame() {
         lastTime = now;
         const timeFactor = delta / 16.67;
 
-        const arenaW = arenaWidthRef.current || 1200;
         const isDesktop = isDesktopRef.current;
+        const arenaW = arenaRef.current?.clientWidth || arenaWidthRef.current || (isDesktop ? 1200 : 400);
+        arenaWidthRef.current = arenaW;
         const GRAVITY = isDesktop ? 0.74 : 0.68;
 
         if (modeRef.current !== "crash") {
@@ -758,6 +759,7 @@ export default function DiscoverFoxGame() {
               try {
                 localStorage.setItem("bitedash_high_score", best.toString());
               } catch {}
+              if (bestTextRef.current) bestTextRef.current.textContent = `${best}m`;
               return best;
             });
 
