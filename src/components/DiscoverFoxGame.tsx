@@ -547,7 +547,7 @@ export default function DiscoverFoxGame() {
                       badge.style.background = "#FFCD3C";
                       badge.style.color = "#522C28";
                     } else {
-                      slot.style.bottom = `${groundBaseline + (isDesktop ? 80 : (isLandscapeMode ? 36 : 38))}px`;
+                      slot.style.bottom = `${groundBaseline + (isDesktop ? 80 : (isLandscapeMode ? 54 : 38))}px`;
                       samosaImg.style.display = "none";
                       jalebiImg.style.display = "block";
                       badge.textContent = "SLIDE!";
@@ -565,7 +565,7 @@ export default function DiscoverFoxGame() {
           }
 
           // Obstacle Translation & Hitbox Collision (Tight, responsive hitboxes)
-          const foxX = arenaW * (isDesktop ? 0.17 : 0.08);
+          const foxX = arenaW * (isDesktop ? 0.17 : (isLandscapeMode ? 0.20 : 0.08));
           const foxHitboxLeft = foxX + (isDesktop ? 45 : (isLandscapeMode ? 14 : 12));
           const foxHitboxRight = foxX + (isDesktop ? 115 : (isLandscapeMode ? 52 : 48));
 
@@ -590,7 +590,8 @@ export default function DiscoverFoxGame() {
                 const safe = !isGroundedRef.current && foxYRef.current < jumpSafeThreshold;
                 if (!safe) collision = true;
               } else if (obs.type === "jalebi") {
-                const safe = modeRef.current === "slide" || slideTimerRef.current > -6;
+                // Must be actively sliding under the jalebi. Running or jumping into it crashes.
+                const safe = modeRef.current === "slide";
                 if (!safe) collision = true;
               }
             }
@@ -1059,7 +1060,7 @@ export default function DiscoverFoxGame() {
           ref={foxContainerRef}
           className={`absolute z-25 flex items-end justify-center pointer-events-none will-change-transform ${
             isLandscapeMode
-              ? "bottom-[22px] left-[8%] w-[68px] h-[68px]"
+              ? "bottom-[22px] left-[20%] w-[68px] h-[68px]"
               : "bottom-[26px] sm:bottom-[48px] left-[8%] sm:left-[17%] w-[64px] sm:w-[190px] h-[64px] sm:h-[190px]"
           }`}
         >
@@ -1084,7 +1085,7 @@ export default function DiscoverFoxGame() {
           ref={shadowRef}
           className={`absolute z-10 bg-black/35 rounded-full blur-[2px] pointer-events-none will-change-transform ${
             isLandscapeMode
-              ? "bottom-[20px] left-[8%] translate-x-[8px] w-12 h-2"
+              ? "bottom-[20px] left-[20%] translate-x-[8px] w-12 h-2"
               : "bottom-[24px] sm:bottom-[44px] left-[8%] sm:left-[17%] translate-x-[8px] sm:translate-x-[45px] w-12 sm:w-32 h-2 sm:h-3.5"
           }`}
         />
