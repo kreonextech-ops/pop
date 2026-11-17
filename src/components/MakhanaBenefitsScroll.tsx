@@ -11,162 +11,12 @@ import {
   Check,
   X,
   Feather,
-  Activity,
-  Zap,
   Heart,
   Droplets,
-  Shield,
+  Zap,
   ArrowUpRight,
   CheckCircle2,
 } from "lucide-react";
-
-type WordSegment = {
-  text: string;
-  accent?: boolean;
-};
-
-type BenefitDualProps = {
-  stageRef: React.RefObject<HTMLDivElement>;
-  tagBgClass: string;
-  tagIcon: React.ReactNode;
-  tagText: string;
-  headlineLine1: WordSegment[];
-  headlineLine2: WordSegment[];
-  wordsClass: string;
-  pills: { icon: React.ReactNode; label: string }[];
-  pillsClass: string;
-  compareBoxRef: React.RefObject<HTMLDivElement>;
-  whatsInList: string[];
-  whatsNotList: string[];
-  visualComponent: React.ReactNode;
-};
-
-function BenefitSlideLayout({
-  stageRef,
-  tagBgClass,
-  tagIcon,
-  tagText,
-  headlineLine1,
-  headlineLine2,
-  wordsClass,
-  pills,
-  pillsClass,
-  compareBoxRef,
-  whatsInList,
-  whatsNotList,
-  visualComponent,
-}: BenefitDualProps) {
-  return (
-    <div
-      ref={stageRef}
-      className="absolute inset-0 pt-14 sm:pt-16 pb-4 z-20 flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
-    >
-      <div className="w-full max-w-6xl mx-auto -translate-y-1 sm:-translate-y-3 flex flex-col md:flex-row items-center justify-center gap-3 min-[400px]:gap-4 sm:gap-6 md:gap-10 lg:gap-14">
-        {/* Left Column: Visual Graphics Stage */}
-        <div className="relative w-[240px] min-[400px]:w-[280px] sm:w-[350px] md:w-[400px] lg:w-[430px] shrink-0">
-          {visualComponent}
-        </div>
-
-        {/* Right Column: Display Copy + Comparison Matrix */}
-        <div className="w-full md:flex-1 flex flex-col items-center md:items-start text-center md:text-left">
-          {/* Category Tag */}
-          <div className="mb-1.5 sm:mb-2">
-            <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider border ${tagBgClass}`}
-            >
-              {tagIcon}
-              <span>{tagText}</span>
-            </span>
-          </div>
-
-          {/* Dual Headline */}
-          <h3 className="font-display uppercase tracking-tight leading-[1.06]">
-            <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-1.5 min-[400px]:gap-x-2 sm:gap-x-2.5 text-[#522C28] text-[22px] min-[400px]:text-[26px] sm:text-[34px] md:text-[38px] lg:text-[44px]">
-              {headlineLine1.map((w, idx) => (
-                <span key={`${w.text}-${idx}`} className="inline-block overflow-hidden py-1 -my-1">
-                  <span
-                    className={`${wordsClass} font-display inline-block will-change-transform ${
-                      w.accent ? "text-[#D73B3A]" : ""
-                    }`}
-                  >
-                    {w.text}
-                  </span>
-                </span>
-              ))}
-            </span>
-            <span className="block" />
-            <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-1.5 min-[400px]:gap-x-2 sm:gap-x-2.5 text-[#D73B3A] text-[22px] min-[400px]:text-[26px] sm:text-[34px] md:text-[38px] lg:text-[44px]">
-              {headlineLine2.map((w, idx) => (
-                <span key={`${w.text}-${idx}`} className="inline-block overflow-hidden py-1 -my-1">
-                  <span
-                    className={`${wordsClass} font-display inline-block will-change-transform ${
-                      w.accent ? "text-[#E88938]" : ""
-                    }`}
-                  >
-                    {w.text}
-                  </span>
-                </span>
-              ))}
-            </span>
-          </h3>
-
-          {/* Quick Pillar Pills */}
-          <div className="mt-2.5 flex flex-wrap items-center justify-center md:justify-start gap-1.5 sm:gap-2">
-            {pills.map((p, idx) => (
-              <span
-                key={idx}
-                className={`${pillsClass} inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-xs`}
-              >
-                {p.icon}
-                <span>{p.label}</span>
-              </span>
-            ))}
-          </div>
-
-          {/* Comparison Matrix (What's In vs What's Out) */}
-          <div
-            ref={compareBoxRef}
-            className="mt-3 sm:mt-4 w-full max-w-xl rounded-2xl border border-[#522C28]/15 bg-[#FFF8EE]/90 backdrop-blur-[2px] p-2.5 sm:p-4 shadow-sm"
-          >
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left">
-              {/* Pop Culture Side */}
-              <div className="rounded-xl bg-[#E8F5E9]/80 border border-[#3CA837]/30 p-2 sm:p-3">
-                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#2E7D32] flex items-center gap-1">
-                  <Check className="w-3 h-3 text-[#3CA837] stroke-[3]" />
-                  Pop Culture Makhana
-                </span>
-                <ul className="mt-1.5 space-y-1 text-[10px] sm:text-[11px] font-bold text-[#25100E]">
-                  {whatsInList.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-1">
-                      <span className="text-[#3CA837] font-black shrink-0">✦</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Conventional Fried Snacks Side */}
-              <div className="rounded-xl bg-[#FFEBEE]/80 border border-[#D73B3A]/25 p-2 sm:p-3">
-                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#C62828] flex items-center gap-1">
-                  <X className="w-3 h-3 text-[#D73B3A] stroke-[3]" />
-                  Conventional Snacks
-                </span>
-                <ul className="mt-1.5 space-y-1 text-[10px] sm:text-[11px] font-medium text-[#522C28]/80">
-                  {whatsNotList.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-1">
-                      <X className="w-2.5 h-2.5 text-[#D73B3A] shrink-0 mt-0.5 stroke-[3]" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function MakhanaBenefitsScroll() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -176,40 +26,42 @@ export default function MakhanaBenefitsScroll() {
   const introLine1OutRef = useRef<HTMLDivElement>(null);
   const introLine2OutRef = useRef<HTMLDivElement>(null);
 
-  // Stop 1: Benefits 1 (Gluten-Free & Low GI)
-  const slide1StageRef = useRef<HTMLDivElement>(null);
-  const slide1CompareBoxRef = useRef<HTMLDivElement>(null);
+  // Stop 1: 100% Gluten-Free + Feather-Light Clean Seesaw
+  const s1StageRef = useRef<HTMLDivElement>(null);
+  const s1PropsFloatRef = useRef<HTMLDivElement>(null);
   const seesawBaseRef = useRef<HTMLDivElement>(null);
   const seesawBeamRef = useRef<HTMLDivElement>(null);
   const seesawPlankRef = useRef<HTMLDivElement>(null);
   const leftSeatRef = useRef<HTMLDivElement>(null);
   const cloudDropRef = useRef<HTMLDivElement>(null);
   const rightSeatRef = useRef<HTMLDivElement>(null);
-  const makhanaSpin1Ref = useRef<HTMLImageElement>(null);
-  const giChartWrapRef = useRef<HTMLDivElement>(null);
-  const giSteadyPathRef = useRef<SVGPathElement>(null);
-  const giSpikePathRef = useRef<SVGPathElement>(null);
+  const s1MakhanaSpinRef = useRef<HTMLImageElement>(null);
+  const s1TagRef = useRef<HTMLDivElement>(null);
+  const s1CompareBoxRef = useRef<HTMLDivElement>(null);
 
-  // Stop 2: Benefits 2 (Heart Health & Antioxidants)
-  const slide2StageRef = useRef<HTMLDivElement>(null);
-  const slide2CompareBoxRef = useRef<HTMLDivElement>(null);
+  // Stop 2: Heart Health + Potassium/Magnesium EKG Monitor
+  const s2StageRef = useRef<HTMLDivElement>(null);
+  const s2PropsFloatRef = useRef<HTMLDivElement>(null);
+  const s2MakhanaDropRef = useRef<HTMLDivElement>(null);
+  const s2MakhanaSpinRef = useRef<HTMLImageElement>(null);
   const heartMeterWrapRef = useRef<HTMLDivElement>(null);
   const ekgPathRef = useRef<SVGPathElement>(null);
   const barKRef = useRef<HTMLDivElement>(null);
   const barMgRef = useRef<HTMLDivElement>(null);
-  const shieldWrapRef = useRef<HTMLDivElement>(null);
-  const shieldRingRef = useRef<SVGCircleElement>(null);
-  const makhanaSpin2Ref = useRef<HTMLImageElement>(null);
+  const s2TagRef = useRef<HTMLDivElement>(null);
+  const s2CompareBoxRef = useRef<HTMLDivElement>(null);
 
-  // Stop 3: 5 Sutta Promise + Grand Flavour Bowl & CTA
-  const slide3StageRef = useRef<HTMLDivElement>(null);
+  // Stop 3: 5 Sutta Promise + Grand Flavour Bowl & CTA (Merged Slides 5 & 6)
+  const s3StageRef = useRef<HTMLDivElement>(null);
   const promiseRingRef = useRef<HTMLDivElement>(null);
   const promiseMakhanaDropRef = useRef<HTMLDivElement>(null);
   const promiseMakhanaSpinRef = useRef<HTMLImageElement>(null);
   const promiseSealRef = useRef<HTMLDivElement>(null);
-  const bowlWrapRef = useRef<HTMLDivElement>(null);
+  const s3TagRef = useRef<HTMLDivElement>(null);
+  const s3QuoteRef = useRef<HTMLDivElement>(null);
   const bowlBurstRef = useRef<SVGSVGElement>(null);
-  const ctaWrapRef = useRef<HTMLDivElement>(null);
+  const bowlWrapRef = useRef<HTMLDivElement>(null);
+  const ctaBtnRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -237,57 +89,83 @@ export default function MakhanaBenefitsScroll() {
 
       const introWords = gsap.utils.toArray<HTMLElement>(".scroll-intro-word-in");
       const introExitLines = [introLine1OutRef.current, introLine2OutRef.current].filter(Boolean);
-      const s1Words = gsap.utils.toArray<HTMLElement>(".slide1-word");
-      const s1Pills = gsap.utils.toArray<HTMLElement>(".slide1-pill");
-      const s2Words = gsap.utils.toArray<HTMLElement>(".slide2-word");
-      const s2Pills = gsap.utils.toArray<HTMLElement>(".slide2-pill");
-      const s3Words = gsap.utils.toArray<HTMLElement>(".slide3-word");
-      const s3Pills = gsap.utils.toArray<HTMLElement>(".slide3-pill");
+      const s1Words = gsap.utils.toArray<HTMLElement>(".s1-word");
+      const s1Pills = gsap.utils.toArray<HTMLElement>(".s1-pill");
+      const s2Words = gsap.utils.toArray<HTMLElement>(".s2-word");
+      const s2Pills = gsap.utils.toArray<HTMLElement>(".s2-pill");
+      const s3Words = gsap.utils.toArray<HTMLElement>(".s3-word");
+      const s3Pills = gsap.utils.toArray<HTMLElement>(".s3-pill");
 
       // =====================================================================
-      // 1. Initial State Setup
+      // 1. Initial State Definitions
       // =====================================================================
       gsap.set(introWords, { yPercent: 110, scale: 0.94, autoAlpha: 0 });
 
-      [slide1StageRef.current, slide2StageRef.current, slide3StageRef.current].forEach((el) => {
+      [s1StageRef.current, s2StageRef.current, s3StageRef.current].forEach((el) => {
         if (el) gsap.set(el, { autoAlpha: 0, y: 0 });
       });
 
-      // Slide 1 Initial
+      // --- Stop 1 (Seesaw) ---
       gsap.set(s1Words, { yPercent: 110, autoAlpha: 0 });
       gsap.set(s1Pills, { autoAlpha: 0, y: 8, scale: 0.92 });
-      if (slide1CompareBoxRef.current) gsap.set(slide1CompareBoxRef.current, { autoAlpha: 0, y: 12 });
-      if (seesawBaseRef.current) gsap.set(seesawBaseRef.current, { autoAlpha: 0, y: 15 });
+      if (s1TagRef.current) gsap.set(s1TagRef.current, { autoAlpha: 0, y: -10 });
+      if (s1CompareBoxRef.current) gsap.set(s1CompareBoxRef.current, { autoAlpha: 0, y: 14 });
+      if (seesawBaseRef.current) gsap.set(seesawBaseRef.current, { autoAlpha: 0, y: 20 });
       if (seesawPlankRef.current) gsap.set(seesawPlankRef.current, { autoAlpha: 0 });
-      if (seesawBeamRef.current) gsap.set(seesawBeamRef.current, { rotation: 0 });
-      if (cloudDropRef.current) gsap.set(cloudDropRef.current, { autoAlpha: 0, y: -40 });
-      if (rightSeatRef.current) gsap.set(rightSeatRef.current, { autoAlpha: 0, y: -60, scale: 1.2 });
-      if (giChartWrapRef.current) gsap.set(giChartWrapRef.current, { autoAlpha: 0, y: 16 });
-      if (giSteadyPathRef.current) gsap.set(giSteadyPathRef.current, { strokeDashoffset: 300 });
-      if (giSpikePathRef.current) gsap.set(giSpikePathRef.current, { strokeDashoffset: 300 });
+      if (seesawBeamRef.current) gsap.set(seesawBeamRef.current, { rotation: 0, transformOrigin: "50% 50%" });
+      if (leftSeatRef.current) gsap.set(leftSeatRef.current, { rotation: 0, transformOrigin: "50% 100%" });
+      if (cloudDropRef.current) gsap.set(cloudDropRef.current, { autoAlpha: 0, y: -45 });
+      if (rightSeatRef.current) {
+        gsap.set(rightSeatRef.current, {
+          xPercent: -110,
+          yPercent: -35,
+          y: -190,
+          scale: 1.45,
+          rotation: 0,
+          autoAlpha: 0,
+          transformOrigin: "50% 100%",
+        });
+      }
+      if (s1MakhanaSpinRef.current) gsap.set(s1MakhanaSpinRef.current, { rotation: -280 });
+      if (s1PropsFloatRef.current) gsap.set(s1PropsFloatRef.current, { autoAlpha: 0, scale: 0.86 });
 
-      // Slide 2 Initial
+      // --- Stop 2 (Heart Health / Minerals) ---
       gsap.set(s2Words, { yPercent: 110, autoAlpha: 0 });
       gsap.set(s2Pills, { autoAlpha: 0, y: 8, scale: 0.92 });
-      if (slide2CompareBoxRef.current) gsap.set(slide2CompareBoxRef.current, { autoAlpha: 0, y: 12 });
-      if (heartMeterWrapRef.current) gsap.set(heartMeterWrapRef.current, { autoAlpha: 0, y: 16 });
+      if (s2TagRef.current) gsap.set(s2TagRef.current, { autoAlpha: 0, y: -10 });
+      if (s2CompareBoxRef.current) gsap.set(s2CompareBoxRef.current, { autoAlpha: 0, y: 14 });
+      if (s2MakhanaDropRef.current) {
+        gsap.set(s2MakhanaDropRef.current, {
+          xPercent: -50,
+          yPercent: -50,
+          y: -190,
+          scale: 1.25,
+          autoAlpha: 0,
+        });
+      }
+      if (s2MakhanaSpinRef.current) gsap.set(s2MakhanaSpinRef.current, { rotation: -240 });
+      if (s2PropsFloatRef.current) gsap.set(s2PropsFloatRef.current, { autoAlpha: 0, scale: 0.86 });
+      if (heartMeterWrapRef.current) gsap.set(heartMeterWrapRef.current, { autoAlpha: 0, y: 18 });
       if (ekgPathRef.current) gsap.set(ekgPathRef.current, { strokeDashoffset: 260 });
       if (barKRef.current) gsap.set(barKRef.current, { scaleX: 0, transformOrigin: "left center" });
       if (barMgRef.current) gsap.set(barMgRef.current, { scaleX: 0, transformOrigin: "left center" });
-      if (shieldWrapRef.current) gsap.set(shieldWrapRef.current, { autoAlpha: 0, scale: 0.88 });
-      if (shieldRingRef.current) gsap.set(shieldRingRef.current, { strokeDashoffset: 280 });
 
-      // Slide 3 Initial
+      // --- Stop 3 (5 Sutta Promise + Bowl & CTA) ---
       gsap.set(s3Words, { yPercent: 110, autoAlpha: 0 });
       gsap.set(s3Pills, { autoAlpha: 0, y: 8, scale: 0.92 });
-      if (promiseRingRef.current) gsap.set(promiseRingRef.current, { autoAlpha: 0, scale: 0.85 });
-      if (promiseMakhanaDropRef.current) gsap.set(promiseMakhanaDropRef.current, { autoAlpha: 0, y: -80, scale: 0.9 });
-      if (promiseSealRef.current) gsap.set(promiseSealRef.current, { autoAlpha: 0, y: 10, scale: 0.9 });
-      if (bowlBurstRef.current) gsap.set(bowlBurstRef.current, { autoAlpha: 0, scale: 0.8, rotation: -30 });
+      if (s3TagRef.current) gsap.set(s3TagRef.current, { autoAlpha: 0, y: -10 });
+      if (promiseRingRef.current) gsap.set(promiseRingRef.current, { autoAlpha: 0, scale: 0.84 });
+      if (promiseMakhanaDropRef.current) {
+        gsap.set(promiseMakhanaDropRef.current, { y: -160, scale: 0.9, autoAlpha: 0 });
+      }
+      if (promiseMakhanaSpinRef.current) gsap.set(promiseMakhanaSpinRef.current, { rotation: -200 });
+      if (promiseSealRef.current) gsap.set(promiseSealRef.current, { autoAlpha: 0, y: 12, scale: 0.85 });
+      if (s3QuoteRef.current) gsap.set(s3QuoteRef.current, { autoAlpha: 0, y: 16 });
+      if (bowlBurstRef.current) gsap.set(bowlBurstRef.current, { autoAlpha: 0, scale: 0.75, rotation: -30 });
       if (bowlWrapRef.current) gsap.set(bowlWrapRef.current, { autoAlpha: 0, y: 30, scale: 0.92 });
-      if (ctaWrapRef.current) gsap.set(ctaWrapRef.current, { autoAlpha: 0, y: 15, scale: 0.95 });
+      if (ctaBtnRef.current) gsap.set(ctaBtnRef.current, { autoAlpha: 0, y: 15, scale: 0.95 });
 
-      // Intro Entrance when user approaches section
+      // Intro Entrance on Scroll Approach
       gsap.to(introWords, {
         yPercent: 0,
         scale: 1,
@@ -305,13 +183,15 @@ export default function MakhanaBenefitsScroll() {
       });
 
       // =====================================================================
-      // 2. Main Timeline: Heading + 3 Content Slides (Tight & Fast Pin)
+      // 2. Continuous Story Timeline: Heading -> S1 -> S2 -> S3
+      // Total Timeline Duration: 12.0s
+      // Stop 0: 0.5s | Stop 1: 4.2s | Stop 2: 7.8s | Stop 3: 11.4s
       // =====================================================================
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container,
           start: "top top",
-          end: "+=3600",
+          end: "+=4200",
           pin: pinSection,
           pinSpacing: true,
           scrub: 0.35,
@@ -320,162 +200,220 @@ export default function MakhanaBenefitsScroll() {
         },
       });
 
-      // Time Normalized Positions (Total duration: 10.0 seconds)
-      // Stop 0 (Heading): 0.0 - 1.2
-      // Stop 1 (Slide 1): 2.4 - 4.4
-      // Stop 2 (Slide 2): 5.4 - 7.4
-      // Stop 3 (Slide 3): 8.4 - 10.0
+      // --- STOP 0 HOLD ---
+      tl.to({}, { duration: 0.8 });
 
-      // --- TRANSITION 0 -> 1: Heading Out, Slide 1 In ---
-      tl.to({}, { duration: 1.2 }); // Hold Heading at start
-
+      // --- EXIT STOP 0 (Heading Out) ---
       tl.to(
         introExitLines,
         {
-          y: -36,
+          y: -40,
           scale: 0.95,
           autoAlpha: 0,
-          duration: 0.6,
+          duration: 0.55,
           stagger: 0.06,
           ease: "power2.inOut",
         },
-        1.2
+        0.8
       );
 
-      // Slide 1 Entrance (1.8 -> 2.6)
-      if (slide1StageRef.current) {
-        tl.to(slide1StageRef.current, { autoAlpha: 1, duration: 0.2 }, 1.7);
+      // =====================================================================
+      // FULL ANIMATION SEQUENCE FOR SLIDE 1 (Seesaw Drop & Balance)
+      // Entrance window: 1.35s -> 3.2s | Rest: 3.2s -> 4.8s
+      // =====================================================================
+      if (s1StageRef.current) {
+        tl.to(s1StageRef.current, { autoAlpha: 1, duration: 0.15 }, 1.35);
       }
-      tl.to(s1Words, { yPercent: 0, autoAlpha: 1, duration: 0.5, stagger: 0.05, ease: "power3.out" }, 1.8);
-      tl.to(s1Pills, { autoAlpha: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.05, ease: "back.out(1.3)" }, 2.0);
-      if (slide1CompareBoxRef.current) {
-        tl.to(slide1CompareBoxRef.current, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 2.15);
+      if (s1TagRef.current) {
+        tl.to(s1TagRef.current, { autoAlpha: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" }, 1.45);
+      }
+      tl.to(s1Words, { yPercent: 0, autoAlpha: 1, duration: 0.48, stagger: 0.05, ease: "power3.out" }, 1.5);
+      tl.to(s1Pills, { autoAlpha: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.05, ease: "back.out(1.3)" }, 1.7);
+
+      // Phase 1A: Makhana Drops from Sky Spinning into Center View
+      if (rightSeatRef.current) {
+        tl.to(rightSeatRef.current, { y: 0, autoAlpha: 1, duration: 0.6, ease: "power2.out" }, 1.55);
+      }
+      if (s1MakhanaSpinRef.current) {
+        tl.to(s1MakhanaSpinRef.current, { rotation: 0, duration: 0.65, ease: "power2.out" }, 1.55);
+      }
+      if (s1PropsFloatRef.current) {
+        tl.to(s1PropsFloatRef.current, { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(1.4)" }, 1.75);
       }
 
-      // Slide 1 Graphics: Seesaw & Energy Curve
-      if (seesawBaseRef.current) tl.to(seesawBaseRef.current, { autoAlpha: 1, y: 0, duration: 0.35 }, 1.8);
-      if (seesawPlankRef.current) tl.to(seesawPlankRef.current, { autoAlpha: 1, duration: 0.2 }, 1.9);
-      if (cloudDropRef.current) tl.to(cloudDropRef.current, { autoAlpha: 1, y: 0, duration: 0.45, ease: "power2.out" }, 1.95);
+      // Phase 1B: Seesaw Beam appears, Makhana glides to Right Pad, Beam Tilts +6deg!
+      if (seesawBaseRef.current) tl.to(seesawBaseRef.current, { autoAlpha: 1, y: 0, duration: 0.35 }, 2.15);
+      if (seesawPlankRef.current) tl.to(seesawPlankRef.current, { autoAlpha: 1, duration: 0.3 }, 2.2);
+
       if (rightSeatRef.current) {
         tl.to(
           rightSeatRef.current,
-          { autoAlpha: 1, y: 0, scale: 1, duration: 0.5, ease: "bounce.out" },
-          2.05
+          { xPercent: 0, yPercent: 0, y: 0, scale: 1, duration: 0.45, ease: "power2.inOut" },
+          2.25
         );
       }
-      if (makhanaSpin1Ref.current) {
-        tl.to(makhanaSpin1Ref.current, { rotation: 180, duration: 0.8, ease: "power2.out" }, 2.05);
+
+      // Beam tilts toward Makhana (+6deg)
+      if (seesawBeamRef.current && leftSeatRef.current && rightSeatRef.current) {
+        tl.to(seesawBeamRef.current, { rotation: 6, duration: 0.28, ease: "sine.inOut" }, 2.5);
+        tl.to(leftSeatRef.current, { rotation: -6, duration: 0.28, ease: "sine.inOut" }, 2.5);
+        tl.to(rightSeatRef.current, { rotation: -6, duration: 0.28, ease: "sine.inOut" }, 2.5);
       }
-      if (seesawBeamRef.current) {
-        tl.to(seesawBeamRef.current, { rotation: -7, duration: 0.45, ease: "power2.out" }, 2.15);
+
+      // Feather drops softly onto Left Pad
+      if (cloudDropRef.current) {
+        tl.to(cloudDropRef.current, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 2.6);
       }
-      if (giChartWrapRef.current) tl.to(giChartWrapRef.current, { autoAlpha: 1, y: 0, duration: 0.4 }, 2.2);
-      if (giSteadyPathRef.current) {
-        tl.to(giSteadyPathRef.current, { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut" }, 2.25);
+
+      // Seesaw balances level to 0deg (Feather balances single Foxnut!)
+      if (seesawBeamRef.current && leftSeatRef.current && rightSeatRef.current) {
+        tl.to(seesawBeamRef.current, { rotation: -2, duration: 0.25, ease: "sine.inOut" }, 2.85);
+        tl.to(leftSeatRef.current, { rotation: 2, duration: 0.25, ease: "sine.inOut" }, 2.85);
+        tl.to(rightSeatRef.current, { rotation: 2, duration: 0.25, ease: "sine.inOut" }, 2.85);
+
+        tl.to(seesawBeamRef.current, { rotation: 0, duration: 0.3, ease: "power2.out" }, 3.1);
+        tl.to(leftSeatRef.current, { rotation: 0, duration: 0.3, ease: "power2.out" }, 3.1);
+        tl.to(rightSeatRef.current, { rotation: 0, duration: 0.3, ease: "power2.out" }, 3.1);
       }
-      if (giSpikePathRef.current) {
-        tl.to(giSpikePathRef.current, { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut" }, 2.3);
+
+      // Slide 1 Comparison Box reveals
+      if (s1CompareBoxRef.current) {
+        tl.to(s1CompareBoxRef.current, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 2.45);
       }
 
       // --- HOLD SLIDE 1 ---
-      tl.to({}, { duration: 1.8 }, 2.6); // Steady rest at Stop 1 until 4.4
+      tl.to({}, { duration: 1.5 }); // Steady at Stop 1 until 4.8s
 
       // --- TRANSITION 1 -> 2: Slide 1 Out, Slide 2 In ---
-      if (slide1StageRef.current) {
+      if (s1StageRef.current) {
+        tl.to(s1StageRef.current, { y: -38, autoAlpha: 0, duration: 0.5, ease: "power2.inOut" }, 4.8);
+      }
+
+      // =====================================================================
+      // FULL ANIMATION SEQUENCE FOR SLIDE 2 (Heart Health & Mineral Monitor)
+      // Entrance window: 5.2s -> 6.8s | Rest: 6.8s -> 8.4s
+      // =====================================================================
+      if (s2StageRef.current) {
+        tl.to(s2StageRef.current, { autoAlpha: 1, duration: 0.15 }, 5.2);
+      }
+      if (s2TagRef.current) {
+        tl.to(s2TagRef.current, { autoAlpha: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" }, 5.25);
+      }
+      tl.to(s2Words, { yPercent: 0, autoAlpha: 1, duration: 0.48, stagger: 0.05, ease: "power3.out" }, 5.3);
+      tl.to(s2Pills, { autoAlpha: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.05, ease: "back.out(1.3)" }, 5.45);
+
+      // 3-Makhana Cluster Drops & Spins from Sky
+      if (s2MakhanaDropRef.current) {
+        tl.to(s2MakhanaDropRef.current, { y: 0, autoAlpha: 1, duration: 0.58, ease: "power2.out" }, 5.35);
+      }
+      if (s2MakhanaSpinRef.current) {
+        tl.to(s2MakhanaSpinRef.current, { rotation: 0, duration: 0.62, ease: "power2.out" }, 5.35);
+      }
+      if (s2PropsFloatRef.current) {
+        tl.to(s2PropsFloatRef.current, { autoAlpha: 1, scale: 1, duration: 0.38, ease: "back.out(1.4)" }, 5.55);
+      }
+
+      // Makhana glides into position above Monitor Card
+      if (s2MakhanaDropRef.current) {
         tl.to(
-          slide1StageRef.current,
-          { y: -36, autoAlpha: 0, duration: 0.5, ease: "power2.inOut" },
-          4.4
+          s2MakhanaDropRef.current,
+          { yPercent: -82, y: 0, scale: 0.82, duration: 0.45, ease: "power2.inOut" },
+          5.95
         );
       }
 
-      // Slide 2 Entrance (4.8 -> 5.6)
-      if (slide2StageRef.current) {
-        tl.to(slide2StageRef.current, { autoAlpha: 1, duration: 0.2 }, 4.7);
-      }
-      tl.to(s2Words, { yPercent: 0, autoAlpha: 1, duration: 0.5, stagger: 0.05, ease: "power3.out" }, 4.8);
-      tl.to(s2Pills, { autoAlpha: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.05, ease: "back.out(1.3)" }, 5.0);
-      if (slide2CompareBoxRef.current) {
-        tl.to(slide2CompareBoxRef.current, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 5.15);
+      // Heart Monitor Card Pops Up
+      if (heartMeterWrapRef.current) {
+        tl.to(heartMeterWrapRef.current, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 6.1);
       }
 
-      // Slide 2 Graphics: EKG Heart Pulse & Antioxidant Shield
-      if (heartMeterWrapRef.current) tl.to(heartMeterWrapRef.current, { autoAlpha: 1, y: 0, duration: 0.4 }, 4.8);
+      // EKG Live Line Draws In
       if (ekgPathRef.current) {
-        tl.to(ekgPathRef.current, { strokeDashoffset: 0, duration: 0.65, ease: "power1.inOut" }, 4.9);
+        tl.to(ekgPathRef.current, { strokeDashoffset: 0, duration: 0.65, ease: "power1.inOut" }, 6.2);
       }
-      if (barKRef.current) tl.to(barKRef.current, { scaleX: 1, duration: 0.45, ease: "power2.out" }, 5.1);
-      if (barMgRef.current) tl.to(barMgRef.current, { scaleX: 1, duration: 0.45, ease: "power2.out" }, 5.2);
-      if (shieldWrapRef.current) {
-        tl.to(shieldWrapRef.current, { autoAlpha: 1, scale: 1, duration: 0.45, ease: "back.out(1.2)" }, 5.05);
+
+      // Potassium (K) and Magnesium (Mg) Bars Fill Up!
+      if (barKRef.current) {
+        tl.to(barKRef.current, { scaleX: 1, duration: 0.45, ease: "power2.out" }, 6.45);
       }
-      if (shieldRingRef.current) {
-        tl.to(shieldRingRef.current, { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut" }, 5.15);
+      if (barMgRef.current) {
+        tl.to(barMgRef.current, { scaleX: 1, duration: 0.45, ease: "power2.out" }, 6.55);
       }
-      if (makhanaSpin2Ref.current) {
-        tl.to(makhanaSpin2Ref.current, { rotation: 220, duration: 0.8, ease: "power2.out" }, 5.0);
+
+      // Slide 2 Comparison Box reveals
+      if (s2CompareBoxRef.current) {
+        tl.to(s2CompareBoxRef.current, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 6.3);
       }
 
       // --- HOLD SLIDE 2 ---
-      tl.to({}, { duration: 1.8 }, 5.6); // Steady rest at Stop 2 until 7.4
+      tl.to({}, { duration: 1.5 }); // Steady at Stop 2 until 8.4s
 
-      // --- TRANSITION 2 -> 3: Slide 2 Out, Slide 3 (Promise + Finale) In ---
-      if (slide2StageRef.current) {
-        tl.to(
-          slide2StageRef.current,
-          { y: -36, autoAlpha: 0, duration: 0.5, ease: "power2.inOut" },
-          7.4
-        );
+      // --- TRANSITION 2 -> 3: Slide 2 Out, Slide 3 In ---
+      if (s2StageRef.current) {
+        tl.to(s2StageRef.current, { y: -38, autoAlpha: 0, duration: 0.5, ease: "power2.inOut" }, 8.4);
       }
 
-      // Slide 3 Entrance (7.8 -> 8.6)
-      if (slide3StageRef.current) {
-        tl.to(slide3StageRef.current, { autoAlpha: 1, duration: 0.2 }, 7.7);
+      // =====================================================================
+      // FULL ANIMATION SEQUENCE FOR SLIDE 3 (5 Sutta Promise + Bowl & CTA)
+      // Entrance window: 8.8s -> 10.4s | Rest: 10.4s -> 12.0s
+      // =====================================================================
+      if (s3StageRef.current) {
+        tl.to(s3StageRef.current, { autoAlpha: 1, duration: 0.15 }, 8.8);
       }
-      tl.to(s3Words, { yPercent: 0, autoAlpha: 1, duration: 0.5, stagger: 0.05, ease: "power3.out" }, 7.8);
-      tl.to(s3Pills, { autoAlpha: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.05, ease: "back.out(1.3)" }, 8.0);
+      if (s3TagRef.current) {
+        tl.to(s3TagRef.current, { autoAlpha: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" }, 8.85);
+      }
+      tl.to(s3Words, { yPercent: 0, autoAlpha: 1, duration: 0.48, stagger: 0.05, ease: "power3.out" }, 8.9);
+      tl.to(s3Pills, { autoAlpha: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.05, ease: "back.out(1.3)" }, 9.1);
+
+      // Jumbo 5 Sutta Makhana drops spinning into golden aura ring!
       if (promiseRingRef.current) {
-        tl.to(promiseRingRef.current, { autoAlpha: 1, scale: 1, duration: 0.45, ease: "back.out(1.2)" }, 7.85);
+        tl.to(promiseRingRef.current, { autoAlpha: 1, scale: 1, duration: 0.45, ease: "back.out(1.2)" }, 8.95);
       }
       if (promiseMakhanaDropRef.current) {
         tl.to(
           promiseMakhanaDropRef.current,
-          { autoAlpha: 1, y: 0, scale: 1, duration: 0.55, ease: "bounce.out" },
-          7.9
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "power2.out" },
+          9.0
         );
       }
       if (promiseMakhanaSpinRef.current) {
-        tl.to(promiseMakhanaSpinRef.current, { rotation: 180, duration: 0.8, ease: "power2.out" }, 7.9);
+        tl.to(promiseMakhanaSpinRef.current, { rotation: 0, duration: 0.65, ease: "power2.out" }, 9.0);
       }
       if (promiseSealRef.current) {
-        tl.to(promiseSealRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.3)" }, 8.1);
+        tl.to(promiseSealRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.4)" }, 9.3);
       }
+
+      // Pop Culture Bowl & Sunburst Rays Radiate
       if (bowlBurstRef.current) {
-        tl.to(bowlBurstRef.current, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.6, ease: "back.out(1.2)" }, 7.95);
+        tl.to(bowlBurstRef.current, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.65, ease: "back.out(1.3)" }, 9.25);
       }
       if (bowlWrapRef.current) {
-        tl.to(bowlWrapRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" }, 8.05);
+        tl.to(bowlWrapRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.55, ease: "power2.out" }, 9.35);
       }
-      if (ctaWrapRef.current) {
-        tl.to(ctaWrapRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.4)" }, 8.25);
+
+      // Brand Quote & Action CTA Button Pop In
+      if (s3QuoteRef.current) {
+        tl.to(s3QuoteRef.current, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 9.45);
+      }
+      if (ctaBtnRef.current) {
+        tl.to(ctaBtnRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.5)" }, 9.6);
       }
 
       // --- HOLD SLIDE 3 FINALE ---
-      tl.to({}, { duration: 1.4 }, 8.6); // Steady rest at Stop 3 until 10.0
+      tl.to({}, { duration: 1.6 }); // Steady at Stop 3 until 12.0s
 
       // =====================================================================
-      // 3. ZERO-STUCK STRICT SNAP & GESTURE STEPPING
-      // (Impossible to stop mid-animation; snaps squarely to nearest slide)
+      // 3. ZERO-STUCK HARDWARE SNAPPING (Never Pause in Middle of Any Slide)
       // =====================================================================
-      const stopTimes = [0.4, 3.4, 6.4, 9.4];
-      const totalDur = tl.duration(); // 10.0
+      const stopTimes = [0.4, 3.8, 7.4, 11.0];
+      const totalDur = tl.duration(); // 12.0
       const snapPoints = stopTimes.map((t) => t / totalDur);
 
-      // Attach ScrollTrigger Snap so any native scroll release automatically locks onto nearest slide
       if (tl.scrollTrigger) {
         tl.scrollTrigger.vars.snap = {
           snapTo: snapPoints,
-          duration: { min: 0.28, max: 0.6 },
+          duration: { min: 0.35, max: 0.65 },
           delay: 0.04,
           ease: "power2.inOut",
         };
@@ -517,11 +455,11 @@ export default function MakhanaBenefitsScroll() {
       const goToStep = (nextIdx: number) => {
         const clamped = Math.max(0, Math.min(stopTimes.length - 1, nextIdx));
         lockedIdx = clamped;
-        lockUntil = performance.now() + 680;
+        lockUntil = performance.now() + 720;
         const targetY = getStopScrollY(clamped);
         if (window.__lenis) {
           window.__lenis.scrollTo(targetY, {
-            duration: 0.65,
+            duration: 0.72,
             easing: (t: number) => 1 - Math.pow(1 - t, 3),
             force: true,
           });
@@ -536,7 +474,6 @@ export default function MakhanaBenefitsScroll() {
         const activeIdx = now < lockUntil ? lockedIdx : getNearestStepIndex(window.scrollY);
         const dir = e.deltaY > 0 ? 1 : -1;
 
-        // Release at boundaries so user can naturally scroll to other sections
         if ((dir < 0 && activeIdx <= 0) || (dir > 0 && activeIdx >= stopTimes.length - 1)) {
           return;
         }
@@ -607,7 +544,7 @@ export default function MakhanaBenefitsScroll() {
         ref={pinSectionRef}
         className="relative w-full h-[100svh] min-h-[580px] sm:min-h-[640px] flex items-center justify-center overflow-hidden"
       >
-        {/* Background Layer (Clean Desert Horizon) */}
+        {/* Clean Desert Horizon Background */}
         <div className="absolute inset-0 z-0 pointer-events-none select-none">
           <img
             src="/scroll/scroll.webp"
@@ -657,268 +594,366 @@ export default function MakhanaBenefitsScroll() {
         </div>
 
         {/* =================================================================
-            STOP 1: BENEFITS 1 — LIGHTNESS & SUSTAINED FUEL
+            STOP 1: 100% GLUTEN-FREE & LIGHT AS A CLOUD SEESAW
             ================================================================= */}
-        <BenefitSlideLayout
-          stageRef={slide1StageRef}
-          tagBgClass="bg-[#FFF8EE] border-[#3CA837]/40 text-[#2E7D32]"
-          tagIcon={<WheatOff className="w-3.5 h-3.5 text-[#3CA837]" />}
-          tagText="100% GLUTEN-FREE • LOW GI ~22"
-          headlineLine1={[{ text: "LIGHT" }, { text: "AS" }, { text: "A" }, { text: "CLOUD,", accent: true }]}
-          headlineLine2={[{ text: "STEADY" }, { text: "ALL-DAY" }, { text: "ENERGY." }]}
-          wordsClass="slide1-word"
-          pills={[
-            { icon: <Feather className="w-3 h-3 text-[#E88938]" />, label: "Water Lily Pops" },
-            { icon: <Zap className="w-3 h-3 text-[#FAC537]" />, label: "Low GI (~22)" },
-            { icon: <Check className="w-3 h-3 text-[#3CA837] stroke-[3]" />, label: "Zero Wheat Bloat" },
-          ]}
-          pillsClass="slide1-pill"
-          compareBoxRef={slide1CompareBoxRef}
-          whatsInList={[
-            "100% Handpicked Water Lily Seeds",
-            "Slow-roasted in olive & rice bran oil mist",
-            "Sustained slow-burn complex carbohydrates",
-            "Zero bloated heaviness after snacking",
-          ]}
-          whatsNotList={[
-            "Deep-fried in palm oil vats",
-            "Refined wheat (Maida) & gluten fillers",
-            "Rapid sugar spikes and sluggish crashes",
-            "Greasy oily film on your fingers",
-          ]}
-          visualComponent={
-            <div className="relative w-full aspect-[380/280] flex flex-col items-center justify-end pb-2">
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] rounded-full bg-[radial-gradient(circle,rgba(255,213,158,0.45)_0%,rgba(255,231,196,0.22)_50%,transparent_75%)]" />
+        <div
+          ref={s1StageRef}
+          className="absolute inset-0 pt-14 sm:pt-16 pb-4 z-20 flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
+        >
+          <div className="w-full max-w-6xl mx-auto -translate-y-1 sm:-translate-y-4 flex flex-col md:flex-row items-center justify-center gap-3 min-[400px]:gap-4 sm:gap-6 md:gap-10 lg:gap-14">
+            {/* Visual Stage: Spacious Seesaw with Real Feather & Falling Makhana */}
+            <div className="relative w-[235px] min-[400px]:w-[275px] sm:w-[340px] md:w-[390px] lg:w-[420px] shrink-0">
+              <div className="relative w-full aspect-[380/260] flex items-end justify-center pb-6 sm:pb-7">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[82%] h-[82%] rounded-full bg-[radial-gradient(circle,rgba(255,213,158,0.45)_0%,rgba(255,231,196,0.22)_50%,transparent_75%)]" />
 
-              {/* Top: Seesaw Graphic */}
-              <div className="relative w-full h-[150px] sm:h-[180px] flex items-end justify-center mb-1">
-                {/* Fulcrum Base */}
+                {/* Orbiting Gluten-Free Badges */}
+                <div ref={s1PropsFloatRef} className="absolute inset-0 z-20">
+                  <div className="absolute left-[4%] top-[10%] inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border-2 border-[#3CA837] text-[#236B20] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-sm -rotate-6">
+                    <WheatOff className="w-3.5 h-3.5 text-[#3CA837]" />
+                    <span>Zero Wheat</span>
+                  </div>
+                  <div className="absolute right-[4%] top-[14%] inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border-2 border-[#522C28]/80 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-sm rotate-6">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#D73B3A]" />
+                    <span>Celiac Safe</span>
+                  </div>
+                  <div className="absolute left-[14%] bottom-[8%] inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border-2 border-[#E88938] text-[#9A4A0B] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-sm rotate-3">
+                    <Feather className="w-3.5 h-3.5 text-[#E88938]" />
+                    <span>Water Lily Seed</span>
+                  </div>
+                </div>
+
+                {/* Seesaw Base & Triangle Fulcrum */}
                 <div
                   ref={seesawBaseRef}
-                  className="absolute bottom-1 left-1/2 -translate-x-1/2 w-20 sm:w-24 flex flex-col items-center z-0 will-change-transform"
+                  className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 w-24 sm:w-28 flex flex-col items-center z-0 will-change-transform"
                 >
-                  <svg viewBox="0 0 110 56" fill="none" className="w-full h-auto">
+                  <svg viewBox="0 0 110 56" fill="none" className="w-full h-auto overflow-visible">
                     <path d="M55 6 L82 48 L28 48 Z" fill="#E88938" stroke="#522C28" strokeWidth="4" strokeLinejoin="round" />
                     <rect x="10" y="45" width="90" height="9" rx="4.5" fill="#522C28" />
                     <circle cx="55" cy="11" r="6" fill="#FAC537" stroke="#522C28" strokeWidth="3" />
                   </svg>
                 </div>
 
-                {/* Seesaw Plank Beam */}
+                {/* Seesaw Beam */}
                 <div
                   ref={seesawBeamRef}
-                  className="relative w-[88%] h-5 sm:h-6 mb-6 sm:mb-7 z-10 will-change-transform"
+                  className="relative w-[92%] h-5 sm:h-6 mb-7 sm:mb-8 z-10 will-change-transform"
                 >
                   <div ref={seesawPlankRef} className="absolute inset-0">
-                    <div className="w-full h-3 rounded-full bg-[#FAC537] border-[3px] border-[#522C28]" />
+                    <div className="w-full h-3 sm:h-3.5 mt-1 rounded-full bg-[#FAC537] border-[3px] border-[#522C28] shadow-xs" />
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#FFF8EE] border-[3px] border-[#522C28]" />
+                    <div className="absolute left-1.5 -top-1 w-16 min-[400px]:w-20 sm:w-24 h-2 rounded-full bg-[#E88938] border-2 border-[#522C28]" />
+                    <div className="absolute right-1.5 -top-1 w-16 min-[400px]:w-20 sm:w-24 h-2 rounded-full bg-[#E88938] border-2 border-[#522C28]" />
                   </div>
 
-                  {/* Left: Heavy Junk Drop */}
+                  {/* Left Seat: Feather SVG */}
                   <div
                     ref={leftSeatRef}
-                    className="absolute left-[3%] bottom-[80%] w-[32%] aspect-[10/7] flex items-end justify-center will-change-transform"
+                    className="absolute left-[4%] bottom-[85%] w-[31%] aspect-[10/7] flex items-end justify-center will-change-transform"
                   >
-                    <div ref={cloudDropRef} className="w-full h-full flex flex-col items-center">
-                      <span className="px-2 py-0.5 rounded-md bg-[#D73B3A] text-white text-[9px] font-black uppercase tracking-wider">
-                        HEAVY JUNK
-                      </span>
-                      <svg viewBox="0 0 70 32" fill="none" className="w-14 h-auto mt-1 opacity-80">
-                        <ellipse cx="35" cy="16" rx="30" ry="12" fill="#522C28" fillOpacity="0.25" />
+                    <div ref={cloudDropRef} className="w-full h-full will-change-transform">
+                      <svg
+                        viewBox="0 0 110 74"
+                        fill="none"
+                        className="w-full h-full drop-shadow-[0_6px_8px_rgba(82,44,40,0.14)]"
+                        aria-label="Illustrated light feather"
+                      >
+                        <path
+                          d="M14 64 C22 50 32 34 50 20 C67 7 86 6 98 11 C96 24 88 37 74 47 L64 47 L69 52 C58 59 44 62 31 61 L22 65 Z"
+                          fill="#FFF8EE"
+                          stroke="#522C28"
+                          strokeWidth="3.8"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M28 57 C45 45 64 31 86 18 C80 30 68 42 52 50 C43 55 34 57 28 57 Z"
+                          fill="#FAC537"
+                          fillOpacity="0.65"
+                        />
+                        <path d="M10 66 C30 50 56 32 90 14" stroke="#E88938" strokeWidth="3" />
                       </svg>
                     </div>
                   </div>
 
-                  {/* Right: Light Feather Makhana Drop */}
+                  {/* Right Seat: High-Res Roasted Makhana Puff */}
                   <div
                     ref={rightSeatRef}
-                    className="absolute right-[3%] bottom-[85%] w-[32%] aspect-square flex items-end justify-center will-change-transform"
+                    className="absolute right-[5%] bottom-[82%] w-[28%] aspect-square flex items-end justify-center will-change-transform"
                   >
                     <img
-                      ref={makhanaSpin1Ref}
-                      src="/scroll/asset/01_makhana_with_salt.png"
-                      alt="Super Light Foxnut"
-                      className="w-full h-full object-contain drop-shadow-[0_10px_16px_rgba(82,44,40,0.2)]"
+                      ref={s1MakhanaSpinRef}
+                      src="/scroll/asset/09_large_single_makhana.png"
+                      alt="Single Roasted Makhana Puff"
+                      className="w-full h-full object-contain drop-shadow-[0_10px_14px_rgba(82,44,40,0.22)] will-change-transform"
                     />
                   </div>
-                </div>
-              </div>
-
-              {/* Bottom: Steady Energy Wave Strip */}
-              <div
-                ref={giChartWrapRef}
-                className="w-full max-w-[280px] sm:max-w-[320px] rounded-xl border border-[#522C28]/15 bg-white/95 px-3 py-2 shadow-xs z-10"
-              >
-                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider mb-1">
-                  <span className="text-[#3CA837] flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-[#3CA837]" /> Pop Culture (Steady ~22)
-                  </span>
-                  <span className="text-[#D73B3A] flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-[#D73B3A]" /> Sugar Crash (70+)
-                  </span>
-                </div>
-                <svg viewBox="0 0 240 40" fill="none" className="w-full h-7 overflow-visible">
-                  {/* Crash Spike */}
-                  <path
-                    ref={giSpikePathRef}
-                    d="M 10 32 Q 50 2, 80 10 T 150 35 T 230 36"
-                    stroke="#D73B3A"
-                    strokeWidth="2.5"
-                    strokeDasharray="300"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                  {/* Steady Wave */}
-                  <path
-                    ref={giSteadyPathRef}
-                    d="M 10 28 Q 70 20, 130 22 T 230 20"
-                    stroke="#3CA837"
-                    strokeWidth="3.2"
-                    strokeDasharray="300"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                </svg>
-              </div>
-            </div>
-          }
-        />
-
-        {/* =================================================================
-            STOP 2: BENEFITS 2 — HEART HEALTH & CELLULAR DEFENCE
-            ================================================================= */}
-        <BenefitSlideLayout
-          stageRef={slide2StageRef}
-          tagBgClass="bg-[#FFF8EE] border-[#D73B3A]/40 text-[#D73B3A]"
-          tagIcon={<Heart className="w-3.5 h-3.5 text-[#D73B3A]" />}
-          tagText="HEART-LOVING • CELLULAR DEFENCE"
-          headlineLine1={[{ text: "RICH" }, { text: "IN" }, { text: "POTASSIUM,", accent: true }]}
-          headlineLine2={[{ text: "ANTIOXIDANT" }, { text: "SHIELD." }]}
-          wordsClass="slide2-word"
-          pills={[
-            { icon: <Activity className="w-3 h-3 text-[#D73B3A]" />, label: "High Potassium (K)" },
-            { icon: <Shield className="w-3 h-3 text-[#3CA837]" />, label: "Kaempferol Flavonoids" },
-            { icon: <Check className="w-3 h-3 text-[#3CA837] stroke-[3]" />, label: "0g Trans Fat" },
-          ]}
-          pillsClass="slide2-pill"
-          compareBoxRef={slide2CompareBoxRef}
-          whatsInList={[
-            "Rich in Potassium & Magnesium for cardiovascular health",
-            "Potent Kaempferol flavonoids fight cellular oxidation",
-            "Low sodium natural mineral balance",
-            "0mg Cholesterol & 0g Trans Fat per serving",
-          ]}
-          whatsNotList={[
-            "High sodium causing sudden blood pressure spikes",
-            "Atherogenic trans-fats clogging arteries",
-            "Synthetic chemical preservatives (TBHQ / BHA)",
-            "Inflammatory oxidised frying oils",
-          ]}
-          visualComponent={
-            <div className="relative w-full aspect-[380/280] flex flex-col items-center justify-center p-2">
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] rounded-full bg-[radial-gradient(circle,rgba(255,213,158,0.45)_0%,rgba(255,231,196,0.22)_50%,transparent_75%)]" />
-
-              {/* Heart Pulse EKG & Mineral Bar Card */}
-              <div
-                ref={heartMeterWrapRef}
-                className="w-full max-w-[290px] sm:max-w-[330px] rounded-2xl border border-[#522C28]/15 bg-white/95 p-3 shadow-sm z-10"
-              >
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#522C28]/10">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#D73B3A] flex items-center gap-1.5">
-                    <Heart className="w-3.5 h-3.5 fill-[#D73B3A]" />
-                    Cardio Mineral Matrix
-                  </span>
-                  <span className="text-[9px] font-bold text-[#3CA837] bg-[#E8F5E9] px-2 py-0.5 rounded-full">
-                    Optimal K : Na
-                  </span>
-                </div>
-
-                {/* EKG Live Line */}
-                <div className="h-9 w-full bg-[#FFF8EE] rounded-lg p-1 flex items-center mb-2.5 overflow-hidden">
-                  <svg viewBox="0 0 240 32" fill="none" className="w-full h-full overflow-visible">
-                    <path
-                      ref={ekgPathRef}
-                      d="M 0 16 L 40 16 L 50 6 L 62 26 L 74 2 L 86 28 L 96 16 L 160 16 L 170 8 L 180 24 L 190 4 L 200 16 L 240 16"
-                      stroke="#D73B3A"
-                      strokeWidth="2.4"
-                      strokeDasharray="260"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-
-                {/* Mineral Meters */}
-                <div className="space-y-1.5 text-[10px] font-bold text-[#522C28]">
-                  <div>
-                    <div className="flex justify-between mb-0.5 text-[9px] uppercase tracking-wider">
-                      <span>Potassium (K) — Muscle & Heart</span>
-                      <span className="text-[#3CA837] font-black">HIGH</span>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-[#522C28]/10 overflow-hidden">
-                      <div ref={barKRef} className="h-full w-[88%] rounded-full bg-[#3CA837]" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-0.5 text-[9px] uppercase tracking-wider">
-                      <span>Magnesium (Mg) — Cellular Recovery</span>
-                      <span className="text-[#3CA837] font-black">HIGH</span>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-[#522C28]/10 overflow-hidden">
-                      <div ref={barMgRef} className="h-full w-[78%] rounded-full bg-[#FAC537]" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating Shield & Makhana Badge */}
-              <div
-                ref={shieldWrapRef}
-                className="mt-2.5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFF8EE] border border-[#522C28]/20 shadow-xs z-10"
-              >
-                <div className="w-7 h-7 relative flex items-center justify-center">
-                  <svg viewBox="0 0 40 40" className="absolute inset-0 w-full h-full -rotate-90">
-                    <circle
-                      ref={shieldRingRef}
-                      cx="20"
-                      cy="20"
-                      r="16"
-                      stroke="#3CA837"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeDasharray="280"
-                    />
-                  </svg>
-                  <img
-                    ref={makhanaSpin2Ref}
-                    src="/scroll/asset/02_makhana_cheese.png"
-                    alt="Antioxidant Makhana"
-                    className="w-5 h-5 object-contain"
-                  />
-                </div>
-                <div className="text-left">
-                  <div className="text-[10px] font-black uppercase text-[#25100E] leading-tight">
-                    Kaempferol Flavonoids
-                  </div>
-                  <div className="text-[9px] font-bold text-[#3CA837]">Natural Cellular Protection</div>
                 </div>
               </div>
             </div>
-          }
-        />
+
+            {/* Content Right: Display Typography + Clean Comparison Matrix */}
+            <div className="w-full md:flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+              <div ref={s1TagRef} className="mb-1.5 sm:mb-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF8EE] border border-[#3CA837]/40 text-[#2E7D32] text-[10px] sm:text-xs font-black uppercase tracking-wider">
+                  <WheatOff className="w-3.5 h-3.5 text-[#3CA837]" />
+                  <span>100% GLUTEN-FREE • LIGHT AS AIR</span>
+                </span>
+              </div>
+
+              <h3 className="font-display uppercase tracking-tight leading-[1.06]">
+                <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-2 sm:gap-x-2.5 text-[#522C28] text-[24px] min-[400px]:text-[28px] sm:text-[36px] md:text-[42px] lg:text-[48px]">
+                  {["LIGHT", "AS", "A", "CLOUD,"].map((w, i) => (
+                    <span key={i} className="inline-block overflow-hidden py-1 -my-1">
+                      <span className="s1-word font-display inline-block will-change-transform">{w}</span>
+                    </span>
+                  ))}
+                </span>
+                <span className="block" />
+                <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-2 sm:gap-x-2.5 text-[#D73B3A] text-[24px] min-[400px]:text-[28px] sm:text-[36px] md:text-[42px] lg:text-[48px]">
+                  {["ZERO", "GREASY", "GUILT."].map((w, i) => (
+                    <span key={i} className="inline-block overflow-hidden py-1 -my-1">
+                      <span className="s1-word font-display inline-block will-change-transform text-[#E88938]">{w}</span>
+                    </span>
+                  ))}
+                </span>
+              </h3>
+
+              <div className="mt-2.5 flex flex-wrap items-center justify-center md:justify-start gap-1.5 sm:gap-2">
+                <span className="s1-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
+                  <Check className="w-3 h-3 text-[#3CA837] stroke-[3]" />
+                  100% Handpicked Water Lily
+                </span>
+                <span className="s1-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
+                  <Check className="w-3 h-3 text-[#E88938] stroke-[3]" />
+                  Slow-Roasted, Never Fried
+                </span>
+                <span className="s1-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
+                  <Check className="w-3 h-3 text-[#D73B3A] stroke-[3]" />
+                  Zero Palm Oil
+                </span>
+              </div>
+
+              {/* Clean Comparison Box */}
+              <div
+                ref={s1CompareBoxRef}
+                className="mt-3.5 sm:mt-4 w-full max-w-xl rounded-2xl border border-[#522C28]/15 bg-[#FFF8EE]/90 backdrop-blur-[2px] p-2.5 sm:p-4 shadow-sm"
+              >
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left">
+                  <div className="rounded-xl bg-[#E8F5E9]/80 border border-[#3CA837]/30 p-2 sm:p-3">
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#2E7D32] flex items-center gap-1">
+                      <Check className="w-3 h-3 text-[#3CA837] stroke-[3]" />
+                      Pop Culture Makhana
+                    </span>
+                    <ul className="mt-1.5 space-y-1 text-[10px] sm:text-[11px] font-bold text-[#25100E]">
+                      <li>✦ 100% Lotus seeds (Popped water lily)</li>
+                      <li>✦ Roasted with light olive & rice bran mist</li>
+                      <li>✦ Zero bloated feeling after snacking</li>
+                    </ul>
+                  </div>
+
+                  <div className="rounded-xl bg-[#FFEBEE]/80 border border-[#D73B3A]/25 p-2 sm:p-3">
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#C62828] flex items-center gap-1">
+                      <X className="w-3 h-3 text-[#D73B3A] stroke-[3]" />
+                      Conventional Snacks
+                    </span>
+                    <ul className="mt-1.5 space-y-1 text-[10px] sm:text-[11px] font-medium text-[#522C28]/80">
+                      <li>✕ Submerged in cheap palm oil vats</li>
+                      <li>✕ Heavy refined wheat (Maida) & fillers</li>
+                      <li>✕ Leaves greasy residue on fingers</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* =================================================================
-            STOP 3: THE 5 SUTTA PROMISE + GRAND FLAVOUR BOWL & CTA
-            (Merged Slides 5 & 6)
+            STOP 2: HEART HEALTH & CARDIO MONITOR
             ================================================================= */}
         <div
-          ref={slide3StageRef}
+          ref={s2StageRef}
           className="absolute inset-0 pt-14 sm:pt-16 pb-4 z-20 flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
         >
-          <div className="w-full max-w-6xl mx-auto -translate-y-1 sm:-translate-y-3 flex flex-col md:flex-row items-center justify-center gap-3 min-[400px]:gap-4 sm:gap-6 md:gap-10 lg:gap-14">
-            {/* Visual Left: 5 Sutta Jumbo Wax Seal & Overflowing Flavour Bowl */}
-            <div className="relative w-[240px] min-[400px]:w-[280px] sm:w-[350px] md:w-[400px] lg:w-[430px] aspect-[400/320] shrink-0 flex items-center justify-center">
-              {/* Background Sunburst Behind Bowl */}
+          <div className="w-full max-w-6xl mx-auto -translate-y-1 sm:-translate-y-4 flex flex-col md:flex-row items-center justify-center gap-3 min-[400px]:gap-4 sm:gap-6 md:gap-10 lg:gap-14">
+            {/* Visual Stage: 3-Makhana Drop & Live EKG / Mineral Progress Bars */}
+            <div className="relative w-[235px] min-[400px]:w-[275px] sm:w-[340px] md:w-[390px] lg:w-[420px] shrink-0">
+              <div className="relative w-full aspect-[380/275] sm:aspect-[380/265]">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[82%] h-[82%] rounded-full bg-[radial-gradient(circle,rgba(255,213,158,0.45)_0%,rgba(255,231,196,0.22)_50%,transparent_75%)]" />
+
+                {/* Orbiting Mineral Pills */}
+                <div ref={s2PropsFloatRef} className="absolute inset-0 z-10">
+                  <div className="absolute left-[4%] top-[12%] inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border-2 border-[#D73B3A] text-[#B82928] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-sm -rotate-6">
+                    <Heart className="w-3.5 h-3.5 text-[#D73B3A]" />
+                    <span>0mg Cholesterol</span>
+                  </div>
+                  <div className="absolute right-[4%] top-[16%] inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border-2 border-[#3CA837] text-[#236B20] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-sm rotate-6">
+                    <Zap className="w-3.5 h-3.5 text-[#3CA837]" />
+                    <span>Rich Potassium</span>
+                  </div>
+                  <div className="absolute left-[18%] bottom-[8%] inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border-2 border-[#E88938] text-[#9A4A0B] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide shadow-sm rotate-3">
+                    <Droplets className="w-3.5 h-3.5 text-[#E88938]" />
+                    <span>Low Sodium</span>
+                  </div>
+                </div>
+
+                {/* Three Makhana Cluster Drop */}
+                <div
+                  ref={s2MakhanaDropRef}
+                  className="absolute left-1/2 top-[43%] w-[35%] aspect-square z-10 will-change-transform"
+                >
+                  <img
+                    ref={s2MakhanaSpinRef}
+                    src="/scroll/asset/02_three_makhana_cluster.png"
+                    alt="Three Crispy Pop Culture Foxnuts"
+                    className="w-full h-full object-contain drop-shadow-[0_10px_14px_rgba(82,44,40,0.22)] will-change-transform"
+                  />
+                </div>
+
+                {/* EKG Heart Pulse & Mineral Monitor Card */}
+                <div
+                  ref={heartMeterWrapRef}
+                  className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[92%] rounded-xl border border-[#522C28]/20 bg-[#FFF8EE]/95 p-2 sm:p-2.5 shadow-sm z-20 will-change-transform"
+                >
+                  <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-[#522C28]/15">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#D73B3A] flex items-center gap-1.5">
+                      <Heart className="w-3.5 h-3.5 fill-[#D73B3A]" />
+                      Heart & Mineral Monitor
+                    </span>
+                    <span className="text-[9px] font-extrabold uppercase text-[#236B20] bg-[#3CA837]/15 px-2 py-0.5 rounded-full">
+                      K:Na Optimal Ratio
+                    </span>
+                  </div>
+
+                  {/* EKG Live Line */}
+                  <div className="h-8 w-full bg-[#25100E]/05 rounded-md p-1 flex items-center mb-1.5 overflow-hidden">
+                    <svg viewBox="0 0 240 28" fill="none" className="w-full h-full">
+                      <path
+                        ref={ekgPathRef}
+                        d="M 0 14 L 35 14 L 45 4 L 55 24 L 65 2 L 75 26 L 85 14 L 150 14 L 160 6 L 170 22 L 180 4 L 190 14 L 240 14"
+                        stroke="#D73B3A"
+                        strokeWidth="2.5"
+                        strokeDasharray="260"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* Mineral Bars */}
+                  <div className="space-y-1 text-[10px] font-bold text-[#522C28]">
+                    <div>
+                      <div className="flex justify-between mb-0.5 text-[9px] uppercase tracking-wider">
+                        <span>High Potassium (K) — Cardio Fuel</span>
+                        <span className="text-[#3CA837] font-black">HIGH</span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-[#522C28]/15 overflow-hidden">
+                        <div ref={barKRef} className="h-full w-[88%] rounded-full bg-[#3CA837]" />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between mb-0.5 text-[9px] uppercase tracking-wider">
+                        <span>Magnesium (Mg) — Muscle Recovery</span>
+                        <span className="text-[#3CA837] font-black">HIGH</span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-[#522C28]/15 overflow-hidden">
+                        <div ref={barMgRef} className="h-full w-[78%] rounded-full bg-[#FAC537]" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Right: Typography & Comparison Matrix */}
+            <div className="w-full md:flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+              <div ref={s2TagRef} className="mb-1.5 sm:mb-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF8EE] border border-[#D73B3A]/40 text-[#D73B3A] text-[10px] sm:text-xs font-black uppercase tracking-wider">
+                  <Heart className="w-3.5 h-3.5 text-[#D73B3A]" />
+                  <span>HEART HEALTH • CELLULAR RECOVERY</span>
+                </span>
+              </div>
+
+              <h3 className="font-display uppercase tracking-tight leading-[1.06]">
+                <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-2 sm:gap-x-2.5 text-[#522C28] text-[24px] min-[400px]:text-[28px] sm:text-[36px] md:text-[42px] lg:text-[48px]">
+                  {["RICH", "IN", "POTASSIUM,"].map((w, i) => (
+                    <span key={i} className="inline-block overflow-hidden py-1 -my-1">
+                      <span className="s2-word font-display inline-block will-change-transform">{w}</span>
+                    </span>
+                  ))}
+                </span>
+                <span className="block" />
+                <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-2 sm:gap-x-2.5 text-[#D73B3A] text-[24px] min-[400px]:text-[28px] sm:text-[36px] md:text-[42px] lg:text-[48px]">
+                  {["ZERO", "TRANS", "FAT."].map((w, i) => (
+                    <span key={i} className="inline-block overflow-hidden py-1 -my-1">
+                      <span className="s2-word font-display inline-block will-change-transform text-[#E88938]">{w}</span>
+                    </span>
+                  ))}
+                </span>
+              </h3>
+
+              <div className="mt-2.5 flex flex-wrap items-center justify-center md:justify-start gap-1.5 sm:gap-2">
+                <span className="s2-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
+                  <Check className="w-3 h-3 text-[#3CA837] stroke-[3]" />
+                  Cardiovascular Support
+                </span>
+                <span className="s2-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
+                  <Check className="w-3 h-3 text-[#E88938] stroke-[3]" />
+                  Natural Plant Flavonoids
+                </span>
+                <span className="s2-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
+                  <Check className="w-3 h-3 text-[#D73B3A] stroke-[3]" />
+                  0mg Cholesterol
+                </span>
+              </div>
+
+              {/* Comparison Box */}
+              <div
+                ref={s2CompareBoxRef}
+                className="mt-3.5 sm:mt-4 w-full max-w-xl rounded-2xl border border-[#522C28]/15 bg-[#FFF8EE]/90 backdrop-blur-[2px] p-2.5 sm:p-4 shadow-sm"
+              >
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left">
+                  <div className="rounded-xl bg-[#E8F5E9]/80 border border-[#3CA837]/30 p-2 sm:p-3">
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#2E7D32] flex items-center gap-1">
+                      <Check className="w-3 h-3 text-[#3CA837] stroke-[3]" />
+                      Cardio Nutrition
+                    </span>
+                    <ul className="mt-1.5 space-y-1 text-[10px] sm:text-[11px] font-bold text-[#25100E]">
+                      <li>✦ Naturally high in Potassium & Magnesium</li>
+                      <li>✦ Zero trans fats & zero cholesterol</li>
+                      <li>✦ Low sodium mineral balance</li>
+                    </ul>
+                  </div>
+
+                  <div className="rounded-xl bg-[#FFEBEE]/80 border border-[#D73B3A]/25 p-2 sm:p-3">
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#C62828] flex items-center gap-1">
+                      <X className="w-3 h-3 text-[#D73B3A] stroke-[3]" />
+                      Fried Snack Hazards
+                    </span>
+                    <ul className="mt-1.5 space-y-1 text-[10px] sm:text-[11px] font-medium text-[#522C28]/80">
+                      <li>✕ Dangerous trans fats clog blood vessels</li>
+                      <li>✕ Massive salt levels cause sodium spikes</li>
+                      <li>✕ Zero beneficial electrolytes or minerals</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* =================================================================
+            STOP 3: 5 SUTTA QUALITY PROMISE & GRAND FLAVOUR BOWL
+            (Combined Slides 5 & 6)
+            ================================================================= */}
+        <div
+          ref={s3StageRef}
+          className="absolute inset-0 pt-14 sm:pt-16 pb-4 z-20 flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
+        >
+          <div className="w-full max-w-6xl mx-auto -translate-y-1 sm:-translate-y-4 flex flex-col md:flex-row items-center justify-center gap-3 min-[400px]:gap-4 sm:gap-6 md:gap-10 lg:gap-14">
+            {/* Visual Stage: 5 Sutta Jumbo Pop & Overflowing Pop Culture Bowl */}
+            <div className="relative w-[235px] min-[400px]:w-[275px] sm:w-[340px] md:w-[390px] lg:w-[420px] aspect-[380/280] shrink-0 flex items-center justify-center">
+              {/* Sunburst Rays Behind Bowl */}
               <svg
                 ref={bowlBurstRef}
                 viewBox="0 0 320 320"
@@ -942,8 +977,8 @@ export default function MakhanaBenefitsScroll() {
                 <circle cx="160" cy="160" r="105" fill="#FFF8EE" fillOpacity="0.88" />
               </svg>
 
-              {/* Overflowing Snack Bowl (Front & Center) */}
-              <div ref={bowlWrapRef} className="relative z-10 w-[68%] aspect-square flex items-center justify-center">
+              {/* Overflowing Snack Bowl (Front Center) */}
+              <div ref={bowlWrapRef} className="relative z-10 w-[70%] aspect-square flex items-center justify-center">
                 <img
                   src="/scroll/asset/04_makhana_bowl.png"
                   alt="Overflowing Pop Culture Makhana Bowl"
@@ -951,8 +986,8 @@ export default function MakhanaBenefitsScroll() {
                 />
               </div>
 
-              {/* Floating Jumbo 5 Sutta Seal Badge (Top Left Corner) */}
-              <div className="absolute top-2 left-2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFF8EE] border-2 border-[#522C28] shadow-md">
+              {/* Floating Jumbo 5 Sutta Makhana & Wax Seal (Top-Left) */}
+              <div className="absolute top-1 left-1 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFF8EE] border-2 border-[#522C28] shadow-md">
                 <div
                   ref={promiseRingRef}
                   className="w-7 h-7 rounded-full bg-[#FFF3E0] border border-[#E88938] flex items-center justify-center"
@@ -967,70 +1002,70 @@ export default function MakhanaBenefitsScroll() {
                 </div>
               </div>
 
-              {/* Quality Commitment Tag (Bottom Right Corner) */}
+              {/* Freshness Commitment Badge (Bottom-Right) */}
               <div
                 ref={promiseSealRef}
-                className="absolute bottom-2 right-2 z-20 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#25100E] text-[#FAC537] text-[10px] font-black uppercase tracking-wider shadow-sm"
+                className="absolute bottom-1 right-1 z-20 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#25100E] text-[#FAC537] text-[10px] font-black uppercase tracking-wider shadow-sm"
               >
                 <CheckCircle2 className="w-3 h-3 text-[#3CA837]" />
                 <span>Nitrogen Sealed Fresh</span>
               </div>
             </div>
 
-            {/* Content Right: The 5 Sutta Quality Promise + Clickable CTA */}
+            {/* Content Right: The 5 Sutta Quality Standard + Clickable CTA */}
             <div className="w-full md:flex-1 flex flex-col items-center md:items-start text-center md:text-left">
-              {/* Category Tag */}
-              <div className="mb-2">
+              <div ref={s3TagRef} className="mb-2">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF3E0] border border-[#E88938]/40 text-[#9A4A0B] text-[10px] sm:text-xs font-black uppercase tracking-wider">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#D73B3A]" />
                   <span>THE 5 SUTTA QUALITY STANDARD</span>
                 </span>
               </div>
 
-              {/* Display Headline */}
               <h3 className="font-display uppercase tracking-tight leading-[1.05]">
                 <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-2 sm:gap-x-2.5 text-[#522C28] text-[24px] min-[400px]:text-[28px] sm:text-[36px] md:text-[42px] lg:text-[48px]">
-                  {["REAL", "JUMBO", "PURITY,"].map((w) => (
-                    <span key={w} className="inline-block overflow-hidden py-1 -my-1">
-                      <span className="slide3-word font-display inline-block will-change-transform">{w}</span>
+                  {["REAL", "JUMBO", "PURITY,"].map((w, i) => (
+                    <span key={i} className="inline-block overflow-hidden py-1 -my-1">
+                      <span className="s3-word font-display inline-block will-change-transform">{w}</span>
                     </span>
                   ))}
                 </span>
                 <span className="block" />
                 <span className="inline-flex flex-wrap items-center justify-center md:justify-start gap-x-2 sm:gap-x-2.5 text-[#D73B3A] text-[24px] min-[400px]:text-[28px] sm:text-[36px] md:text-[42px] lg:text-[48px]">
-                  {["EXPLORE", "ALL", "CRUNCH."].map((w) => (
-                    <span key={w} className="inline-block overflow-hidden py-1 -my-1">
-                      <span className="slide3-word font-display inline-block will-change-transform">{w}</span>
+                  {["EXPLORE", "ALL", "CRUNCH."].map((w, i) => (
+                    <span key={i} className="inline-block overflow-hidden py-1 -my-1">
+                      <span className="s3-word font-display inline-block will-change-transform text-[#E88938]">{w}</span>
                     </span>
                   ))}
                 </span>
               </h3>
 
-              {/* Three Pillars */}
               <div className="mt-2.5 flex flex-wrap items-center justify-center md:justify-start gap-1.5 sm:gap-2">
-                <span className="slide3-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
+                <span className="s3-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
                   <Check className="w-3 h-3 text-[#3CA837] stroke-[3]" />
                   Purity First
                 </span>
-                <span className="slide3-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
+                <span className="s3-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
                   <Check className="w-3 h-3 text-[#E88938] stroke-[3]" />
-                  Handpicked Bihar Foxnuts
+                  Handpicked Bihar Lotus
                 </span>
-                <span className="slide3-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
+                <span className="s3-pill inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFF8EE]/95 border border-[#522C28]/15 text-[#522C28] text-[10px] sm:text-xs font-extrabold uppercase tracking-wide">
                   <Check className="w-3 h-3 text-[#D73B3A] stroke-[3]" />
-                  Zero Palm Oil
+                  Batch Slow-Roasted
                 </span>
               </div>
 
-              {/* Promise Quote Callout */}
-              <div className="mt-3 max-w-xl rounded-2xl border border-[#522C28]/15 border-l-4 border-l-[#D73B3A] bg-[#FFF8EE]/90 px-3 py-2 sm:px-4 sm:py-3 shadow-xs text-left">
+              {/* Brand Promise Callout */}
+              <div
+                ref={s3QuoteRef}
+                className="mt-3.5 max-w-xl rounded-2xl border border-[#522C28]/15 border-l-4 border-l-[#D73B3A] bg-[#FFF8EE]/90 px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-xs text-left"
+              >
                 <p className="text-[11px] sm:text-xs md:text-sm font-bold text-[#522C28] leading-snug">
                   We bring genuine 5 sutta makhana and boldly seasoned flavours with an unwavering commitment to purity, consistency, and transparency.
                 </p>
               </div>
 
-              {/* Direct CTA Action Button */}
-              <div ref={ctaWrapRef} className="mt-4 pointer-events-auto">
+              {/* Direct Call to Action */}
+              <div ref={ctaBtnRef} className="mt-4 pointer-events-auto">
                 <button
                   type="button"
                   onClick={() => smoothScrollTo("#flavours")}
