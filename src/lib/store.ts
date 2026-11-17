@@ -359,7 +359,7 @@ function buildSeedStore(): StoreData {
     orders: [],
     webhookLogs: [],
     settings: {
-      environment: (process.env.SHIPROCKET_ENV === "production" ? "production" : "staging") as ShiprocketEnv,
+      environment: (process.env.SHIPROCKET_ENV?.trim() === "staging" ? "staging" : "production") as ShiprocketEnv,
       apiKey: process.env.SHIPROCKET_API_KEY || "",
       apiSecret: process.env.SHIPROCKET_API_SECRET || "",
       sellerDomain: process.env.SHIPROCKET_SELLER_DOMAIN || "snackpopculture.com",
@@ -421,9 +421,7 @@ export function readStore(): StoreData {
     if (process.env.SHIPROCKET_API_SECRET) {
       parsed.settings.apiSecret = process.env.SHIPROCKET_API_SECRET.trim();
     }
-    if (process.env.SHIPROCKET_ENV) {
-      parsed.settings.environment = (process.env.SHIPROCKET_ENV.trim() === "staging" ? "staging" : "production") as ShiprocketEnv;
-    }
+    parsed.settings.environment = (process.env.SHIPROCKET_ENV?.trim() === "staging" ? "staging" : "production") as ShiprocketEnv;
     if (process.env.SHIPROCKET_SELLER_DOMAIN) {
       parsed.settings.sellerDomain = process.env.SHIPROCKET_SELLER_DOMAIN.trim();
     }

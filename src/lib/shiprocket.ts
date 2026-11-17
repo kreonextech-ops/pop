@@ -90,11 +90,18 @@ export async function callShiprocketApi<T = unknown>(params: {
     }
 
     if (!res.ok) {
+      const isHtml = text.trim().startsWith("<");
+      let errMsg = `Shiprocket API error (HTTP ${res.status})`;
+      if (parsed && typeof (parsed as Record<string, unknown>).error === "string") {
+        errMsg = (parsed as Record<string, unknown>).error as string;
+      } else if (text && !isHtml) {
+        errMsg = text;
+      }
       return {
         ok: false,
         status: res.status,
         data: parsed,
-        error: text || `HTTP ${res.status}`,
+        error: errMsg,
       };
     }
 
