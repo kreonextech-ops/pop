@@ -190,20 +190,20 @@ export default function ProductDetailPage() {
                 packImage: found.image || "/packets/peri peri.svg",
                 pricing: {
                   single: {
-                    label: v0?.title || (found.slug === "raw-makhana" ? "1 Pouch" : "1 Pouch (55g)"),
-                    count: found.slug === "raw-makhana" ? "1 Pouch (Raw Makhana)" : "55g Pouch",
+                    label: v0?.title || (found.slug === "raw-makhana" ? "1 Pouch (250g)" : "1 Pouch (55g)"),
+                    count: found.slug === "raw-makhana" ? "250g Pouch" : "55g Pouch",
                     price: singlePrice,
                     originalPrice: singleOrig,
                   },
                   trio: {
                     label: found.variants[1]?.title || "Pack of 3",
-                    count: found.slug === "raw-makhana" ? "Pack of 3 (Raw Makhana)" : "3 × 55g (165g)",
+                    count: found.slug === "raw-makhana" ? "3 × 250g (750g)" : "3 × 55g (165g)",
                     price: found.variants[1] ? parseFloat(found.variants[1].price) : singlePrice * 3,
                     originalPrice: singleOrig * 3,
                   },
                   party: {
                     label: found.variants[2]?.title || "Pack of 6",
-                    count: found.slug === "raw-makhana" ? "Pack of 6 (Raw Makhana)" : "6 × 55g (330g)",
+                    count: found.slug === "raw-makhana" ? "6 × 250g (1.5kg)" : "6 × 55g (330g)",
                     price: found.variants[2] ? parseFloat(found.variants[2].price) : singlePrice * 6,
                     originalPrice: singleOrig * 6,
                   },

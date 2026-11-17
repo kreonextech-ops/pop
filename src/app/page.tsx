@@ -1132,7 +1132,7 @@ export default function BiteJoyPage() {
                     ULTIMATE TRIO VARIETY PACK
                   </h3>
                   <p className="text-[11px] text-[#522C28]/70 mt-0.5 line-clamp-1">
-                    1× Peri Peri + 1× Cheese + 1× Raw Makhana
+                    1× Peri Peri + 1× Cheese + 1× Pink Salt
                   </p>
                 </div>
               </Link>

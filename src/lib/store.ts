@@ -225,9 +225,9 @@ function buildSeedStore(): StoreData {
 
   const signatureProducts: StoreProduct[] = Object.values(PRODUCTS).map((p) => {
     const isRaw = p.slug === "raw-makhana";
-    const singleTitle = isRaw ? "1 Pouch (Raw Makhana)" : "1 Pouch (55g)";
-    const trioTitle = isRaw ? "Pack of 3 (Raw Makhana)" : "Pack of 3 (165g)";
-    const partyTitle = isRaw ? "Pack of 6 (Raw Makhana)" : "Pack of 6 (330g)";
+    const singleTitle = isRaw ? "1 Pouch (250g)" : "1 Pouch (55g)";
+    const trioTitle = isRaw ? "Pack of 3 (750g)" : "Pack of 3 (165g)";
+    const partyTitle = isRaw ? "Pack of 6 (1.5kg)" : "Pack of 6 (330g)";
     const singleWeight = isRaw ? 250 : 55;
     const trioWeight = isRaw ? 750 : 165;
     const partyWeight = isRaw ? 1500 : 330;

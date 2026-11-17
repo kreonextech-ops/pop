@@ -93,20 +93,20 @@ export default function ShopPage() {
         packImage: sp.image,
         pricing: {
           single: {
-            label: v0?.title || (sp.slug === "raw-makhana" ? "1 Pouch" : "1 Pouch (55g)"),
-            count: sp.slug === "raw-makhana" ? "1 Pouch (Raw Makhana)" : "55g Pouch",
+            label: v0?.title || (sp.slug === "raw-makhana" ? "1 Pouch (250g)" : "1 Pouch (55g)"),
+            count: sp.slug === "raw-makhana" ? "250g Pouch" : "55g Pouch",
             price,
             originalPrice: orig,
           },
           trio: {
             label: "Pack of 3",
-            count: sp.slug === "raw-makhana" ? "Pack of 3 (Raw Makhana)" : "3 × 55g (165g)",
+            count: sp.slug === "raw-makhana" ? "3 × 250g (750g)" : "3 × 55g (165g)",
             price: price * 3,
             originalPrice: orig * 3,
           },
           party: {
             label: "Pack of 6",
-            count: sp.slug === "raw-makhana" ? "Pack of 6 (Raw Makhana)" : "6 × 55g (330g)",
+            count: sp.slug === "raw-makhana" ? "6 × 250g (1.5kg)" : "6 × 55g (330g)",
             price: price * 6,
             originalPrice: orig * 6,
           },

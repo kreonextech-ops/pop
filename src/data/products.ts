@@ -501,9 +501,9 @@ export const PRODUCTS: Record<string, ProductDetails> = {
       { label: "Sodium", amount: "120mg", dailyValue: "1.20%", isBold: true },
     ],
     pricing: {
-      single: { label: "1 Pouch", count: "1 Pouch (Raw Makhana)", price: 399, originalPrice: 399 },
-      trio: { label: "Pack of 3", count: "Pack of 3 (Raw Makhana)", price: 1197, originalPrice: 1197 },
-      party: { label: "Pack of 6", count: "Pack of 6 (Raw Makhana)", price: 2394, originalPrice: 2394 },
+      single: { label: "1 Pouch (250g)", count: "250g Pouch", price: 399, originalPrice: 399 },
+      trio: { label: "Pack of 3 (750g)", count: "3 × 250g (750g)", price: 1197, originalPrice: 1197 },
+      party: { label: "Pack of 6 (1.5kg)", count: "6 × 250g (1.5kg)", price: 2394, originalPrice: 2394 },
     },
     faqs: [
       {
