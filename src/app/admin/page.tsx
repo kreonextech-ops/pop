@@ -89,6 +89,7 @@ export default function AdminPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [siteOrigin, setSiteOrigin] = useState("http://localhost:3001");
+  const [endpointEnv, setEndpointEnv] = useState<"prod" | "local">("prod");
   const [hmacTestInput, setHmacTestInput] = useState('{"order_id":"12345","amount":115}');
   const [hmacTestResult, setHmacTestResult] = useState<string | null>(null);
   const [refundReports, setRefundReports] = useState<Record<string, unknown>[] | null>(null);
@@ -481,34 +482,39 @@ export default function AdminPage() {
     return matchesStatus && matchesQuery;
   });
 
+  const effectiveBaseUrl =
+    endpointEnv === "local"
+      ? siteOrigin
+      : (settingsForm.redirectBaseUrl?.trim() || "https://snackpopculture.com");
+
   const onboardingEndpoints = [
     {
       label: "Fetch Products (GET)",
-      url: `${siteOrigin}/api/shiprocket/catalog/products?page=1&limit=100`,
+      url: `${effectiveBaseUrl}/api/shiprocket/catalog/products?page=1&limit=100`,
     },
     {
       label: "Fetch Collections (GET)",
-      url: `${siteOrigin}/api/shiprocket/catalog/collections?page=1&limit=100`,
+      url: `${effectiveBaseUrl}/api/shiprocket/catalog/collections?page=1&limit=100`,
     },
     {
       label: "Fetch Products By Collection (GET)",
-      url: `${siteOrigin}/api/shiprocket/catalog/collection-products?collection_id=200001&page=1&limit=100`,
+      url: `${effectiveBaseUrl}/api/shiprocket/catalog/collection-products?collection_id=200001&page=1&limit=100`,
     },
     {
       label: "Order Webhook Receiver (POST)",
-      url: `${siteOrigin}/api/shiprocket/webhook/order`,
+      url: `${effectiveBaseUrl}/api/shiprocket/webhook/order`,
     },
     {
       label: "Loyalty Fetch Points (POST)",
-      url: `${siteOrigin}/api/shiprocket/loyalty/fetch`,
+      url: `${effectiveBaseUrl}/api/shiprocket/loyalty/fetch`,
     },
     {
       label: "Loyalty Block Points (POST)",
-      url: `${siteOrigin}/api/shiprocket/loyalty/block`,
+      url: `${effectiveBaseUrl}/api/shiprocket/loyalty/block`,
     },
     {
       label: "Loyalty Unblock Points (POST)",
-      url: `${siteOrigin}/api/shiprocket/loyalty/unblock`,
+      url: `${effectiveBaseUrl}/api/shiprocket/loyalty/unblock`,
     },
   ];
 
@@ -1490,13 +1496,39 @@ export default function AdminPage() {
 
               {/* Onboarding Endpoints to Share with Shiprocket */}
               <div className="lg:col-span-6 p-6 rounded-3xl bg-white border-2 border-[#522C28]/15 shadow-sm space-y-4">
-                <div>
-                  <h2 className="font-display text-2xl uppercase text-[#25100E]">
-                    Endpoints for Shiprocket Onboarding
-                  </h2>
-                  <p className="text-xs font-semibold text-[#522C28]/75 mt-0.5">
-                    Share these live endpoints with Shiprocket’s integration team to configure Catalog Sync, Order Webhooks & Loyalty.
-                  </p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h2 className="font-display text-2xl uppercase text-[#25100E]">
+                      Endpoints for Shiprocket Onboarding
+                    </h2>
+                    <p className="text-xs font-semibold text-[#522C28]/75 mt-0.5">
+                      Share these live endpoints with Shiprocket’s integration team to configure Catalog Sync, Order Webhooks & Loyalty.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 bg-[#FFF8EE] p-1 rounded-xl border border-[#522C28]/15 shrink-0 self-start sm:self-center">
+                    <button
+                      type="button"
+                      onClick={() => setEndpointEnv("prod")}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase transition-all cursor-pointer ${
+                        endpointEnv === "prod"
+                          ? "bg-[#25100E] text-[#FAC537] shadow-xs"
+                          : "text-[#522C28]/70 hover:text-[#25100E]"
+                      }`}
+                    >
+                      🌐 Live (snackpopculture.com)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEndpointEnv("local")}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase transition-all cursor-pointer ${
+                        endpointEnv === "local"
+                          ? "bg-[#25100E] text-[#FAC537] shadow-xs"
+                          : "text-[#522C28]/70 hover:text-[#25100E]"
+                      }`}
+                    >
+                      💻 Localhost
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-2.5">
