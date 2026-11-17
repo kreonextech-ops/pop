@@ -264,7 +264,8 @@ export default function DiscoverFoxGame() {
 
     if (isGroundedRef.current) {
       isGroundedRef.current = false;
-      velocityYRef.current = -15.2;
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+      velocityYRef.current = isMobile ? -11.6 : -15.2;
       modeRef.current = "jump";
       setCurrentMode("jump");
       switchSprite("jump-0");
@@ -395,8 +396,6 @@ export default function DiscoverFoxGame() {
     let lastTime = performance.now();
     let lastHudUpdateTime = performance.now();
 
-    const GRAVITY = 0.74;
-
     const loop = (now: number) => {
       try {
         const delta = Math.min(now - lastTime, 40);
@@ -405,6 +404,7 @@ export default function DiscoverFoxGame() {
 
         const arenaW = arenaWidthRef.current || 1200;
         const isMobilePortrait = !isLandscapeMode && arenaW < 640;
+        const GRAVITY = isMobilePortrait ? 0.58 : (isLandscapeMode ? 0.68 : 0.74);
 
         if (modeRef.current !== "crash") {
           // Ground motion
@@ -416,13 +416,17 @@ export default function DiscoverFoxGame() {
           // Distance & Speed
           if (gameStartedRef.current) {
             distanceRef.current += gameSpeedRef.current * timeFactor;
-            const dynamicSpeed = Math.min(13.5, 6.2 + (distanceRef.current / 3600) * 2.2);
+            const baseSpeed = isMobilePortrait ? 4.3 : (isLandscapeMode ? 5.2 : 6.2);
+            const dynamicSpeed = Math.min(
+              isMobilePortrait ? 9.2 : 13.5,
+              baseSpeed + (distanceRef.current / 3600) * (isMobilePortrait ? 1.5 : 2.2)
+            );
             gameSpeedRef.current = dynamicSpeed;
 
             if (now - lastHudUpdateTime >= 100) {
               const currentMeters = Math.floor(distanceRef.current / 8);
               if (scoreTextRef.current) scoreTextRef.current.textContent = `${currentMeters}m`;
-              if (speedTextRef.current) speedTextRef.current.textContent = `${(dynamicSpeed / 6.2).toFixed(1)}x`;
+              if (speedTextRef.current) speedTextRef.current.textContent = `${(dynamicSpeed / baseSpeed).toFixed(1)}x`;
               lastHudUpdateTime = now;
             }
           }
@@ -532,7 +536,7 @@ export default function DiscoverFoxGame() {
                     slot.style.display = "flex";
                     slot.style.transform = `translate3d(${newObs.x}px, 0, 0)`;
 
-                    const groundBaseline = isLandscapeMode ? 44 : (isMobilePortrait ? 34 : 48);
+                    const groundBaseline = isLandscapeMode ? 34 : (isMobilePortrait ? 24 : 48);
                     if (type === "samosa") {
                       slot.style.bottom = `${groundBaseline}px`;
                       samosaImg.style.display = "block";
@@ -541,7 +545,7 @@ export default function DiscoverFoxGame() {
                       badge.style.background = "#FFCD3C";
                       badge.style.color = "#522C28";
                     } else {
-                      slot.style.bottom = `${groundBaseline + (isLandscapeMode ? 80 : (isMobilePortrait ? 50 : 80))}px`;
+                      slot.style.bottom = `${groundBaseline + (isLandscapeMode ? 52 : (isMobilePortrait ? 32 : 80))}px`;
                       samosaImg.style.display = "none";
                       jalebiImg.style.display = "block";
                       badge.textContent = "SLIDE!";
@@ -550,18 +554,18 @@ export default function DiscoverFoxGame() {
                     }
                   }
 
-                  const baseCooldown = isMobilePortrait ? 150 : 130;
-                  const speedScale = 6.2 / gameSpeedRef.current;
-                  spawnCooldownRef.current = Math.floor(baseCooldown * speedScale + Math.random() * 45);
+                  const baseCooldown = isMobilePortrait ? 135 : 130;
+                  const speedScale = (isMobilePortrait ? 4.3 : 6.2) / gameSpeedRef.current;
+                  spawnCooldownRef.current = Math.floor(baseCooldown * speedScale + Math.random() * 40);
                 }
               }
             }
           }
 
-          // Obstacle Translation & Hitbox Collision
-          const foxX = arenaW * (isMobilePortrait ? 0.10 : 0.17);
-          const foxHitboxLeft = foxX + (isMobilePortrait ? 16 : 38);
-          const foxHitboxRight = foxX + (isMobilePortrait ? 72 : 125);
+          // Obstacle Translation & Hitbox Collision (Tight, forgiving hitboxes)
+          const foxX = arenaW * (isMobilePortrait ? 0.06 : (isLandscapeMode ? 0.08 : 0.17));
+          const foxHitboxLeft = foxX + (isMobilePortrait ? 7 : (isLandscapeMode ? 12 : 38));
+          const foxHitboxRight = foxX + (isMobilePortrait ? 44 : (isLandscapeMode ? 62 : 125));
 
           let collision = false;
           const survivingObstacles: ObstacleData[] = [];
@@ -575,12 +579,12 @@ export default function DiscoverFoxGame() {
               slot.style.transform = `translate3d(${obs.x}px, 0, 0)`;
             }
 
-            const obsHitboxLeft = obs.x + (isMobilePortrait ? 8 : 18);
-            const obsHitboxRight = obs.x + (obs.type === "samosa" ? (isMobilePortrait ? 34 : 64) : (isMobilePortrait ? 30 : 58));
+            const obsHitboxLeft = obs.x + (isMobilePortrait ? 4 : (isLandscapeMode ? 8 : 18));
+            const obsHitboxRight = obs.x + (obs.type === "samosa" ? (isMobilePortrait ? 24 : (isLandscapeMode ? 32 : 64)) : (isMobilePortrait ? 22 : (isLandscapeMode ? 30 : 58)));
 
             if (foxHitboxRight > obsHitboxLeft && foxHitboxLeft < obsHitboxRight) {
               if (obs.type === "samosa") {
-                const jumpSafeThreshold = isLandscapeMode ? -34 : (isMobilePortrait ? -28 : -48);
+                const jumpSafeThreshold = isLandscapeMode ? -24 : (isMobilePortrait ? -16 : -48);
                 const safe = !isGroundedRef.current && foxYRef.current < jumpSafeThreshold;
                 if (!safe) collision = true;
               } else if (obs.type === "jalebi") {
@@ -996,7 +1000,7 @@ export default function DiscoverFoxGame() {
             className="absolute z-20 left-0 pointer-events-none will-change-transform flex-col items-center justify-end"
             style={{ display: "none", transform: "translate3d(-999px, 0, 0)" }}
           >
-            {/* Samosa: scaled to w-10 h-10 on portrait mobile */}
+            {/* Samosa: scaled down for mobile screen & clear reaction runway */}
             <img
               ref={(el) => {
                 obstacleSamosaImgsRef.current[i] = el;
@@ -1007,13 +1011,13 @@ export default function DiscoverFoxGame() {
               decoding="async"
               className={`object-contain object-bottom pointer-events-none ${
                 isLandscapeMode
-                  ? "w-16 sm:w-20 h-16 sm:h-20"
-                  : "w-10 sm:w-20 h-10 sm:h-20"
+                  ? "w-9 sm:w-18 h-9 sm:h-18"
+                  : "w-7 sm:w-18 h-7 sm:h-18"
               }`}
               style={{ display: "none" }}
             />
 
-            {/* Jalebi: scaled to w-10 h-10 on portrait mobile */}
+            {/* Jalebi: scaled down for mobile screen & clear reaction runway */}
             <img
               ref={(el) => {
                 obstacleJalebiImgsRef.current[i] = el;
@@ -1024,8 +1028,8 @@ export default function DiscoverFoxGame() {
               decoding="async"
               className={`object-contain object-bottom pointer-events-none ${
                 isLandscapeMode
-                  ? "w-16 sm:w-20 h-16 sm:h-20"
-                  : "w-10 sm:w-20 h-10 sm:h-20"
+                  ? "w-9 sm:w-18 h-9 sm:h-18"
+                  : "w-7 sm:w-18 h-7 sm:h-18"
               }`}
               style={{ display: "none" }}
             />
@@ -1035,7 +1039,7 @@ export default function DiscoverFoxGame() {
               ref={(el) => {
                 obstacleBadgesRef.current[i] = el;
               }}
-              className="absolute -top-3 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[9px] font-black uppercase shadow-sm tracking-wider"
+              className="absolute -top-2.5 px-1 sm:px-2 py-0.2 sm:py-0.5 rounded-full text-[7px] sm:text-[9px] font-black uppercase shadow-sm tracking-wider"
             >
               JUMP!
             </span>
@@ -1043,14 +1047,14 @@ export default function DiscoverFoxGame() {
         ))}
 
         {/* =========================================================================
-            COMPLETE 16-FRAME SPRITE DECK: Scaled down gracefully on portrait mobile
+            COMPLETE 16-FRAME SPRITE DECK: Scaled down gracefully on mobile screens
             ========================================================================= */}
         <div
           ref={foxContainerRef}
           className={`absolute z-25 flex items-end justify-center pointer-events-none will-change-transform ${
             isLandscapeMode
-              ? "bottom-[44px] left-[12%] sm:left-[17%] w-[125px] sm:w-[160px] h-[125px] sm:h-[160px]"
-              : "bottom-[34px] sm:bottom-[48px] left-[10%] sm:left-[17%] w-[95px] sm:w-[190px] h-[95px] sm:h-[190px]"
+              ? "bottom-[34px] sm:bottom-[44px] left-[8%] sm:left-[17%] w-[75px] sm:w-[150px] h-[75px] sm:h-[150px]"
+              : "bottom-[24px] sm:bottom-[48px] left-[6%] sm:left-[17%] w-[54px] sm:w-[170px] h-[54px] sm:h-[170px]"
           }`}
         >
           {ALL_SPRITES.map((sprite) => (
@@ -1074,8 +1078,8 @@ export default function DiscoverFoxGame() {
           ref={shadowRef}
           className={`absolute z-10 bg-black/35 rounded-full blur-[2px] pointer-events-none will-change-transform ${
             isLandscapeMode
-              ? "bottom-[40px] left-[12%] sm:left-[17%] translate-x-[25px] sm:translate-x-[40px] w-24 sm:w-28 h-2.5 sm:h-3"
-              : "bottom-[30px] sm:bottom-[44px] left-[10%] sm:left-[17%] translate-x-[18px] sm:translate-x-[45px] w-18 sm:w-32 h-2 sm:h-3.5"
+              ? "bottom-[30px] sm:bottom-[40px] left-[8%] sm:left-[17%] translate-x-[12px] sm:translate-x-[36px] w-14 sm:w-28 h-2 sm:h-3"
+              : "bottom-[22px] sm:bottom-[44px] left-[6%] sm:left-[17%] translate-x-[8px] sm:translate-x-[45px] w-11 sm:w-32 h-1.5 sm:h-3.5"
           }`}
         />
 
