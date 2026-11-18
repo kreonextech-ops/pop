@@ -179,6 +179,7 @@ export default function MakhanaBenefitsScroll() {
   const pinSectionRef = useRef<HTMLDivElement>(null);
 
   // Beat 1: Intro Heading
+  const beat1StageRef = useRef<HTMLDivElement>(null);
   const introLine1OutRef = useRef<HTMLDivElement>(null);
   const introLine2OutRef = useRef<HTMLDivElement>(null);
 
@@ -283,7 +284,8 @@ export default function MakhanaBenefitsScroll() {
       // =====================================================================
       // 1. Initialize Clean Hidden States
       // =====================================================================
-      gsap.set(introWords, { yPercent: 115, scale: 0.92, autoAlpha: 0 });
+      if (beat1StageRef.current) gsap.set(beat1StageRef.current, { autoAlpha: 1, y: 0, scale: 1 });
+      gsap.set(introWords, { yPercent: 0, scale: 1, autoAlpha: 1 });
 
       [
         beat2StageRef.current,
@@ -379,34 +381,14 @@ export default function MakhanaBenefitsScroll() {
       });
 
       // =====================================================================
-      // Beat 1 Entrance
-      // =====================================================================
-      gsap.to(introWords, {
-        yPercent: 0,
-        scale: 1,
-        autoAlpha: 1,
-        duration: 0.65,
-        stagger: 0.08,
-        ease: "power3.out",
-        force3D: true,
-        scrollTrigger: {
-          trigger: container,
-          start: "top 38%",
-          end: "top -180px",
-          scrub: 0.72,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      // =====================================================================
-      // Master Pinned Story Timeline (Beats 1 -> 6)
+      // Master Pinned Story Timeline (Beats 1 -> 5)
       // =====================================================================
       const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container,
           start: "top top",
-          end: () => (typeof window !== "undefined" && window.innerWidth < 768 ? "+=3400" : "+=4800"),
+          end: () => (typeof window !== "undefined" && window.innerWidth < 768 ? "+=3600" : "+=5000"),
           pin: pinSection,
           pinSpacing: true,
           scrub: 0.45,
@@ -445,24 +427,29 @@ export default function MakhanaBenefitsScroll() {
         }
       };
 
-      // --- BEAT 1 HOLD + EXIT ---
-      tl.to({}, { duration: 0.4 });
-      if (introExitLines.length > 0) {
-        tl.to(introExitLines, {
-          y: -44,
-          scale: 0.94,
-          autoAlpha: 0,
-          duration: 0.4,
-          stagger: 0.08,
-          ease: "power2.inOut",
-          force3D: true,
-        });
+      // =====================================================================
+      // BEAT 1: Hold Intro Heading + Smooth Exit
+      // =====================================================================
+      tl.to({}, { duration: 0.8 });
+      if (beat1StageRef.current) {
+        tl.to(
+          beat1StageRef.current,
+          {
+            y: -44,
+            scale: 0.94,
+            autoAlpha: 0,
+            duration: 0.4,
+            ease: "power2.inOut",
+            force3D: true,
+          },
+          0.8
+        );
       }
 
       // =====================================================================
       // BEAT 2: 100% Gluten-Free + Balanced Cloud Seesaw
       // =====================================================================
-      const t2A = 0.86;
+      const t2A = 1.15;
       const t2B = t2A + 0.95;
 
       if (beat2StageRef.current) tl.to(beat2StageRef.current, { autoAlpha: 1, duration: 0.12 }, t2A);
@@ -716,32 +703,48 @@ export default function MakhanaBenefitsScroll() {
         {/* =================================================================
             BEAT 1: Centered Display Heading Stage
             ================================================================= */}
-        <div className="relative z-20 w-full max-w-5xl mx-auto px-5 sm:px-8 -translate-y-8 sm:-translate-y-10 text-center pointer-events-none">
-          <h2 className="font-display uppercase tracking-tight flex flex-col items-center justify-center gap-1 sm:gap-1.5">
-            <div ref={introLine1OutRef} className="will-change-transform">
-              <span className="inline-flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-3.5 text-[#522C28] text-[28px] min-[420px]:text-[34px] sm:text-[46px] md:text-[56px] lg:text-[64px] leading-[1.04]">
-                {["THE", "STORY", "OF"].map((word) => (
-                  <span key={word} className="inline-block overflow-hidden py-1.5 -my-1.5">
-                    <span className="scroll-intro-word-in font-display inline-block will-change-transform">
-                      {word}
-                    </span>
-                  </span>
-                ))}
+        <div
+          ref={beat1StageRef}
+          className="absolute inset-0 pt-14 sm:pt-16 pb-4 z-20 flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
+        >
+          <div className="w-full max-w-5xl mx-auto -translate-y-4 sm:-translate-y-6 text-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF8EE]/95 border-2 border-[#522C28] shadow-sm mb-3 sm:mb-4">
+              <Sparkles className="w-3.5 h-3.5 text-[#D73B3A]" />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#522C28]">
+                THE BETTER CRUNCH STORY
               </span>
             </div>
 
-            <div ref={introLine2OutRef} className="will-change-transform">
-              <span className="inline-flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 text-[#D73B3A] text-[38px] min-[420px]:text-[46px] sm:text-[64px] md:text-[80px] lg:text-[92px] leading-[0.98]">
-                {["THE", "COOLEST", "SNACK"].map((word) => (
-                  <span key={word} className="inline-block overflow-hidden py-1.5 -my-1.5">
-                    <span className="scroll-intro-word-in font-display inline-block will-change-transform">
-                      {word}
+            <h2 className="font-display uppercase tracking-tight flex flex-col items-center justify-center gap-1 sm:gap-1.5">
+              <div ref={introLine1OutRef} className="will-change-transform">
+                <span className="inline-flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-3.5 text-[#522C28] text-[28px] min-[420px]:text-[34px] sm:text-[46px] md:text-[56px] lg:text-[68px] leading-[1.04]">
+                  {["THE", "STORY", "OF"].map((word) => (
+                    <span key={word} className="inline-block overflow-hidden py-1.5 -my-1.5">
+                      <span className="scroll-intro-word-in font-display inline-block will-change-transform">
+                        {word}
+                      </span>
                     </span>
-                  </span>
-                ))}
-              </span>
-            </div>
-          </h2>
+                  ))}
+                </span>
+              </div>
+
+              <div ref={introLine2OutRef} className="will-change-transform">
+                <span className="inline-flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 text-[#D73B3A] text-[38px] min-[420px]:text-[46px] sm:text-[64px] md:text-[80px] lg:text-[96px] leading-[0.98]">
+                  {["THE", "COOLEST", "SNACK"].map((word) => (
+                    <span key={word} className="inline-block overflow-hidden py-1.5 -my-1.5">
+                      <span className="scroll-intro-word-in font-display inline-block will-change-transform">
+                        {word}
+                      </span>
+                    </span>
+                  ))}
+                </span>
+              </div>
+            </h2>
+
+            <p className="mt-3 sm:mt-4 max-w-md mx-auto text-xs sm:text-sm md:text-base font-bold text-[#522C28]/80 leading-snug">
+              How slow-roasted lotus seeds beat deep-fried chips in every single crunch.
+            </p>
+          </div>
         </div>
 
         {/* =================================================================
