@@ -285,7 +285,7 @@ export default function MakhanaBenefitsScroll() {
       // 1. Initialize Clean Hidden States
       // =====================================================================
       if (beat1StageRef.current) gsap.set(beat1StageRef.current, { autoAlpha: 1, y: 0, scale: 1 });
-      gsap.set(introWords, { yPercent: 0, scale: 1, autoAlpha: 1 });
+      gsap.set(introWords, { yPercent: 115, scale: 0.92, autoAlpha: 0 });
 
       [
         beat2StageRef.current,
@@ -378,6 +378,26 @@ export default function MakhanaBenefitsScroll() {
         if (nR) gsap.set(nR, { autoAlpha: 0, y: 16 });
         gsap.set(b.inItems, { autoAlpha: 0, x: -10 });
         gsap.set(b.outItems, { autoAlpha: 0, x: -10 });
+      });
+
+      // =====================================================================
+      // Beat 1 Entrance: Letters rise up one by one as user scrolls down
+      // =====================================================================
+      gsap.to(introWords, {
+        yPercent: 0,
+        scale: 1,
+        autoAlpha: 1,
+        duration: 0.55,
+        stagger: 0.035,
+        ease: "power2.out",
+        force3D: true,
+        scrollTrigger: {
+          trigger: container,
+          start: "top 55%",
+          end: "top top",
+          scrub: 0.45,
+          invalidateOnRefresh: true,
+        },
       });
 
       // =====================================================================
@@ -699,49 +719,48 @@ export default function MakhanaBenefitsScroll() {
         </div>
 
         {/* =================================================================
-            BEAT 1: Centered Display Heading Stage
+            BEAT 1: Centered Display Heading Stage (Letter-by-Letter Entrance)
             ================================================================= */}
         <div
           ref={beat1StageRef}
           className="absolute inset-0 pt-14 sm:pt-16 pb-4 z-20 flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
         >
-          <div className="w-full max-w-5xl mx-auto -translate-y-4 sm:-translate-y-6 text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF8EE]/95 border-2 border-[#522C28] shadow-sm mb-3 sm:mb-4">
-              <Sparkles className="w-3.5 h-3.5 text-[#D73B3A]" />
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#522C28]">
-                THE BETTER CRUNCH STORY
-              </span>
-            </div>
-
+          <div className="w-full max-w-5xl mx-auto -translate-y-8 sm:-translate-y-10 text-center pointer-events-none">
             <h2 className="font-display uppercase tracking-tight flex flex-col items-center justify-center gap-1 sm:gap-1.5">
               <div ref={introLine1OutRef} className="will-change-transform">
-                <span className="inline-flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-3.5 text-[#522C28] text-[28px] min-[420px]:text-[34px] sm:text-[46px] md:text-[56px] lg:text-[68px] leading-[1.04]">
+                <span className="inline-flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-3.5 text-[#522C28] text-[28px] min-[420px]:text-[34px] sm:text-[46px] md:text-[56px] lg:text-[64px] leading-[1.04]">
                   {["THE", "STORY", "OF"].map((word) => (
-                    <span key={word} className="inline-block overflow-hidden py-1.5 -my-1.5">
-                      <span className="scroll-intro-word-in font-display inline-block will-change-transform">
-                        {word}
-                      </span>
+                    <span key={word} className="inline-flex overflow-hidden py-1.5 -my-1.5">
+                      {word.split("").map((letter, lIdx) => (
+                        <span
+                          key={`${word}-${lIdx}`}
+                          className="scroll-intro-word-in font-display inline-block will-change-transform"
+                        >
+                          {letter}
+                        </span>
+                      ))}
                     </span>
                   ))}
                 </span>
               </div>
 
               <div ref={introLine2OutRef} className="will-change-transform">
-                <span className="inline-flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 text-[#D73B3A] text-[38px] min-[420px]:text-[46px] sm:text-[64px] md:text-[80px] lg:text-[96px] leading-[0.98]">
+                <span className="inline-flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 text-[#D73B3A] text-[38px] min-[420px]:text-[46px] sm:text-[64px] md:text-[80px] lg:text-[92px] leading-[0.98]">
                   {["THE", "COOLEST", "SNACK"].map((word) => (
-                    <span key={word} className="inline-block overflow-hidden py-1.5 -my-1.5">
-                      <span className="scroll-intro-word-in font-display inline-block will-change-transform">
-                        {word}
-                      </span>
+                    <span key={word} className="inline-flex overflow-hidden py-1.5 -my-1.5">
+                      {word.split("").map((letter, lIdx) => (
+                        <span
+                          key={`${word}-${lIdx}`}
+                          className="scroll-intro-word-in font-display inline-block will-change-transform"
+                        >
+                          {letter}
+                        </span>
+                      ))}
                     </span>
                   ))}
                 </span>
               </div>
             </h2>
-
-            <p className="mt-3 sm:mt-4 max-w-md mx-auto text-xs sm:text-sm md:text-base font-bold text-[#522C28]/80 leading-snug">
-              How slow-roasted lotus seeds beat deep-fried chips in every single crunch.
-            </p>
           </div>
         </div>
 
