@@ -611,7 +611,8 @@ export default function MakhanaBenefitsScroll() {
       }
 
       // =====================================================================
-      // PROMISE BEAT (Before Flavours): Genuine 5 Sutta Quality Commitment
+      // PROMISE BEAT: Genuine 5 Sutta Quality Commitment (Grand Finale)
+      // Stays fully visible as the finale until pin releases naturally into Flavours!
       // =====================================================================
       const tP = t5B + 1.92;
 
@@ -641,11 +642,8 @@ export default function MakhanaBenefitsScroll() {
         tl.to(promiseQuoteRef.current, { autoAlpha: 1, y: 0, duration: 0.42, ease: "power2.out" }, tP + 0.56);
       }
 
-      if (promiseStageRef.current) {
-        tl.to(promiseStageRef.current, { y: -40, autoAlpha: 0, duration: 0.38, ease: "power2.inOut", force3D: true }, tP + 1.65);
-      }
-
-      tl.to({}, { duration: 0.6 }, tP + 1.9);
+      // Finale hold: Promise slide stays 100% visible on screen without fading out!
+      tl.to({}, { duration: 1.2 }, tP + 0.8);
 
       const refreshTimer = setTimeout(() => {
         ScrollTrigger.refresh();
